@@ -1,0 +1,49 @@
+name: cashier
+description: wetaxi.station — Application Cashier
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_bloc: ^8.1.4
+  equatable: ^2.0.5
+  get_it: ^7.6.7
+  go_router: ^13.2.0
+  intl: ^0.20.2
+  http: ^1.2.0
+  shared_preferences: ^2.3.0
+  web_socket_channel: ^2.4.0
+  wakelock_plus: ^1.3.4
+  nfc_manager: ^4.0.2
+  sunmi_printer_plus: ^4.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  bloc_test: ^9.1.7
+  mocktail: ^1.0.3
+  icons_launcher: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/images/
+
+icons_launcher:
+  image_path: "assets/icons/launcher_icon.png"
+  platforms:
+    android:
+      enable: true
+      image_path: "assets/icons/launcher_icon.png"  # add explicitly
+    ios:
+      enable: true
+      image_path: "assets/icons/launcher_icon.png"

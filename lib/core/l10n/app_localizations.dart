@@ -1,0 +1,208 @@
+import 'package:flutter/material.dart';
+
+class AppLocalizations {
+  final Locale locale;
+
+  const AppLocalizations(this.locale);
+
+  static AppLocalizations of(BuildContext context) =>
+      Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+
+  static const delegate = _AppLocalizationsDelegate();
+  static const supportedLocales = [Locale('fr'), Locale('ar')];
+
+  bool get isAr => locale.languageCode == 'ar';
+
+  String _t(String fr, String ar) => isAr ? ar : fr;
+
+  // ── App ──────────────────────────────────────────────────────────────────
+  String get appName => 'wetaxi.station';
+
+  // ── Login ────────────────────────────────────────────────────────────────
+  String get login => _t('Connexion', 'تسجيل الدخول');
+
+  String get loginSubtitle => _t(
+      'Connectez-vous à votre compte caissier', 'سجّل دخولك إلى حساب الصراف');
+
+  String get phoneNumber => _t('Numéro de téléphone', 'رقم الهاتف');
+
+  String get password => _t('Mot de passe', 'كلمة المرور');
+
+  String get connect => _t('Se connecter', 'تسجيل الدخول');
+
+  String get connectionError =>
+      _t('Erreur de connexion au serveur', 'خطأ في الاتصال بالخادم');
+
+  // ── Navigation (bottom bar) ───────────────────────────────────────────────
+  String get navReserve => _t('Réserver', 'حجز');
+
+  String get navLinkNfc => _t('Lier NFC', 'ربط NFC');
+
+  // ── Booking ──────────────────────────────────────────────────────────────
+  String get bookingTitle => _t('Réservation', 'الحجز');
+
+  String get testPrint => _t('Test impression', 'اختبار الطباعة');
+
+  String get sectionLines => _t('LIGNES', 'الخطوط');
+
+  String get sectionPayment => _t('MODE DE PAIEMENT', 'طريقة الدفع');
+
+  String get taxisInQueue => _t('TAXIS EN FILE', 'تاكسي في الطابور');
+
+  String get selectLineHint => _t(
+      'Sélectionnez une ligne\npour voir les taxis disponibles',
+      'اختر خطاً لرؤية التاكسيات المتاحة');
+
+  String get cash => _t('Cash', 'نقداً');
+
+  String get nfc => 'NFC';
+
+  String get firstBadge => _t('1er', 'الأول');
+
+  String get noTaxiForLine =>
+      _t('Aucun taxi disponible pour cette ligne', 'لا يوجد تاكسي لهذا الخط');
+
+  String freeSeats(int n) =>
+      _t('$n libre${n > 1 ? "s" : ""}', '$n شاغل${n > 1 ? "ة" : ""}');
+
+  String get full => _t('Complet', 'مكتمل');
+
+  String get bookingConfirmed =>
+      _t('Réservation confirmée !', 'تم تأكيد الحجز!');
+
+  String seatsBookedSuccess(int n) => _t(
+      '$n place${n > 1 ? "s" : ""} réservée${n > 1 ? "s" : ""} avec succès',
+      'تم حجز $n مقعد بنجاح');
+
+  String get ok => _t('OK', 'حسناً');
+
+  // ── NFC scan dialog (booking) ─────────────────────────────────────────────
+  String get nfcReading => _t('Lecture en cours…', 'جاري القراءة...');
+
+  String get nfcApproach =>
+      _t('Approchez la carte NFC du passager', 'قرّب بطاقة NFC للراكب');
+
+  String get cardRead => _t('Carte lue ✓', 'تمت قراءة البطاقة ✓');
+
+  String get seats => _t('Places', 'مقاعد');
+
+  String get amount => _t('Montant', 'المبلغ');
+
+  String get currentBalance => _t('Solde actuel', 'الرصيد الحالي');
+
+  String get balanceAfter => _t('Solde après', 'الرصيد بعد');
+
+  String get insufficientBalance => _t('Solde insuffisant', 'رصيد غير كافٍ');
+
+  String get confirmAndPrint => _t('Confirmer & Imprimer', 'تأكيد وطباعة');
+
+  String get processing => _t('Traitement...', 'جاري المعالجة...');
+
+  // ── NFC link page ─────────────────────────────────────────────────────────
+  String get nfcLinkTitle => _t('Lier un passager NFC', 'ربط راكب NFC');
+
+  String get nfcLinkSubtitle =>
+      _t('Lier un passager à sa carte NFC', 'ربط راكب ببطاقته NFC');
+
+  String get nfcLinkDesc => _t(
+      'Scannez la carte NFC pour lier le passager à son compte',
+      'امسح بطاقة NFC لربط الراكب بحسابه');
+
+  String get scanNfcCard => _t('Scanner une carte NFC', 'مسح بطاقة NFC');
+
+  String get nfcScanning => _t('Scan en cours…', 'جاري المسح...');
+
+  String get nfcApproachDetect => _t(
+      'Approchez la carte NFC du passager\npour la détecter',
+      'قرّب بطاقة NFC للراكب للكشف عنها');
+
+  String get cardDetected => _t('Carte détectée', 'تم اكتشاف البطاقة');
+
+  String get nfcIdLabel => _t('IDENTIFIANT NFC', 'معرف NFC');
+
+  String get passengerToLink => _t('PASSAGER À LIER', 'الراكب المراد ربطه');
+
+  String get passengerPhoneHint =>
+      _t('N° de téléphone du passager', 'رقم هاتف الراكب');
+
+  String get linkPassenger => _t('Lier le passager', 'ربط الراكب');
+
+  String get scanAnother => _t('Scanner une autre carte', 'مسح بطاقة أخرى');
+
+  String get comingSoon => _t('Fonctionnalité à venir', 'ميزة قادمة');
+
+  String get comingSoonDesc => _t(
+      'La liaison de passagers sera disponible\ndans une prochaine mise à jour.',
+      'سيتم توفير ربط الركاب في تحديث قادم.');
+
+  // ── NFC confirm page ──────────────────────────────────────────────────────
+  String get nfcDetected => _t('Profil passager', 'ملف تعريف الراكب');
+
+  String get nfcIdentified => _t('Passager identifié', 'تم التعرف على الراكب');
+
+  String get passengerLabel => _t('Passager', 'الراكب');
+
+  String get balance => _t('Solde', 'الرصيد');
+
+  String get recentTrips => _t('Courses récentes', 'الرحلات الأخيرة');
+
+  String get selectLine => _t('Sélectionner la ligne', 'اختر الخط');
+
+  String get addSeat => _t('Ajouter un passager', 'إضافة راكب');
+
+  // ── Profile ───────────────────────────────────────────────────────────────
+  String get profile => _t('Profil', 'الملف الشخصي');
+
+  String get courtierRole => _t('Caissier de station', 'صراف محطة');
+
+  String get information => _t('Informations', 'المعلومات');
+
+  String get phone => _t('Téléphone', 'الهاتف');
+
+  String get stationLabel => _t('Station', 'المحطة');
+
+  String get agentId => _t('Identifiant agent', 'رقم الوكيل');
+
+  String get logout => _t('Déconnexion', 'تسجيل الخروج');
+
+  String get confirmLogoutTitle => _t('Déconnexion', 'تسجيل الخروج');
+
+  String get confirmLogoutMsg =>
+      _t('Voulez-vous vraiment vous déconnecter ?', 'هل تريد تسجيل الخروج؟');
+
+  String get cancel => _t('Annuler', 'إلغاء');
+
+  String get disconnect => _t('Déconnecter', 'خروج');
+
+  // ── Settings ──────────────────────────────────────────────────────────────
+  String get language => _t('Langue', 'اللغة');
+
+  String get selectLanguage => _t('Choisir la langue', 'اختر اللغة');
+
+  String get french => 'Français';
+
+  String get arabic => 'العربية';
+
+  String get settings => _t('Paramètres', 'الإعدادات');
+
+  String get appearance => _t('Apparence', 'المظهر');
+
+  String get about => _t('À propos', 'حول');
+
+  String get version => _t('Version', 'الإصدار');
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) => ['fr', 'ar'].contains(locale.languageCode);
+
+  @override
+  Future<AppLocalizations> load(Locale locale) async =>
+      AppLocalizations(locale);
+
+  @override
+  bool shouldReload(_) => false;
+}

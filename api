@@ -1,0 +1,94 @@
+Cashier App — API Reference
+All endpoints used by the cashier application, grouped by feature area.
+Existing Endpoints (reused from courtier API)
+Method
+Endpoint
+Body / Response
+POST
+/auth/login
+Body
+{ phone, password }
+
+Response
+{ token, cashier }
+GET
+/auth/me
+Response
+{ cashier profile, station }
+
+Auth
+Method
+Endpoint
+Body / Response
+POST
+/auth/cashier/logout
+Response
+200 OK
+
+Station & Lines
+Method
+Endpoint
+Body / Response
+GET
+/stations/{stationId}/lines
+Response
+[{ id, origin, destination, price, activeTaxiCount }]
+
+Taxi Queue
+Method
+Endpoint
+Body / Response
+GET
+/stations/{stationId}/lines/{lineId}/queue
+Response
+[{ id, plateNumber, totalSeats, occupiedSeats, status, isFirst, driver: { name, phone, licenseNumber, permitNumber } }]
+
+Bookings
+Method
+Endpoint
+Body / Response
+POST
+/bookings
+Body
+{ taxiId, lineId, seatCount, paymentMethod: "cash", cashierId }
+
+Response
+{ bookingId, confirmedAt, ticket: { ... } }
+POST
+/bookings
+Body
+{ taxiId, lineId, seatCount, paymentMethod: "nfc", nfcTagId, cashierId }
+
+Response
+{ bookingId, confirmedAt, passengerBalanceAfter, ticket: { ... } }
+ℹ  Same endpoint — paymentMethod drives the logic (cash or nfc).
+
+NFC — Passenger Lookup
+Method
+Endpoint
+Body / Response
+GET
+/passengers/nfc/{tagId}
+Response
+{ id, name, phone, balance, recentTrips: [{ line, date, amount }] }
+Used both in the booking NFC dialog (on card scan) and on the /nfc-confirm page.
+NFC — Link Tag to Passenger
+Method
+Endpoint
+Body / Response
+POST
+/passengers/{passengerId}/nfc
+Body
+{ nfcTagId,name, phone, }
+
+Response
+{ id, name, phone, nfcTagId }
+
+WebSocket
+Channel: station/{stationId}   Direction: Server → Client
+Event
+Description
+TAXI_JOINED
+New taxi enters the queue
+TAXI_LEFT
+Taxi departs the station
