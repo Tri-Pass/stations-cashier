@@ -6,7 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:cashier/core/di/injection.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/l10n/locale_notifier.dart';
-import 'package:cashier/core/router/router.dart';
+import 'package:cashier/navigation/router.dart';
 import 'package:cashier/core/services/sunmi_nfc_service.dart';
 import 'package:cashier/core/storage/local_storage.dart';
 import 'package:cashier/core/theme/app_theme.dart';

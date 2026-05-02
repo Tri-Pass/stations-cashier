@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:cashier/core/di/injection.dart';
 import 'package:cashier/core/services/sunmi_nfc_service.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/theme/app_theme.dart';
+import 'package:cashier/features/passengers/domain/entities/passenger_entity.dart';
+import 'package:cashier/features/passengers/domain/usecases/link_nfc_usecase.dart';
 
 class NfcLinkPage extends StatefulWidget {
   const NfcLinkPage({super.key});
@@ -21,6 +24,7 @@ class _NfcLinkPageState extends State<NfcLinkPage>
   bool _scanning = false;
   bool _nfcStarted = false;
   String? _detectedTagId;
+  bool _linking = false;
 
   bool get _hasPhone => _phoneCtrl.text.trim().isNotEmpty;
 
@@ -330,6 +334,32 @@ class _NfcLinkPageState extends State<NfcLinkPage>
     );
   }
 
+  Future<void> _linkPassenger(AppLocalizations l) async {
+    if (_detectedTagId == null || !_hasPhone) return;
+    setState(() => _linking = true);
+    try {
+      await sl<LinkNfcUseCase>()(LinkNfcParams(
+        phone: _phoneCtrl.text.trim(),
+        nfcTagId: _detectedTagId!,
+      ));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l.linkSuccess),
+        backgroundColor: AppColors.green,
+      ));
+      _reset();
+      _phoneCtrl.clear();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: AppColors.red,
+      ));
+    } finally {
+      if (mounted) setState(() => _linking = false);
+    }
+  }
+
   // ── Action button (changes per state) ─────────────────────────────────────
 
   Widget _buildActionButton(AppLocalizations l) {
@@ -360,22 +390,21 @@ class _NfcLinkPageState extends State<NfcLinkPage>
       return SizedBox(
         height: 52,
         child: ElevatedButton.icon(
-          onPressed: () => showDialog(
-            context: context,
-            builder: (ctx) =>
-                _ComingSoonDialog(onDismiss: () => Navigator.of(ctx).pop()),
-          ),
-          icon: const Icon(Icons.link, size: 20),
+          onPressed: _linking ? null : () => _linkPassenger(l),
+          icon: _linking
+              ? const SizedBox(
+                  width: 18, height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+              : const Icon(Icons.link, size: 20),
           label: Text(
             l.linkPassenger,
-            style:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.green,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            disabledBackgroundColor: AppColors.green.withValues(alpha: 0.4),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
         ),
@@ -407,75 +436,3 @@ class _NfcLinkPageState extends State<NfcLinkPage>
   }
 }
 
-// ─── Coming Soon Dialog ───────────────────────────────────────────────────────
-
-class _ComingSoonDialog extends StatelessWidget {
-  final VoidCallback onDismiss;
-  const _ComingSoonDialog({required this.onDismiss});
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return Dialog(
-      backgroundColor: AppColors.surface,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
-                border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.4)),
-              ),
-              child: const Icon(Icons.construction_outlined,
-                  color: AppColors.primary, size: 32),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l.comingSoon,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l.comingSoonDesc,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 13,
-                  height: 1.5),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 44,
-              child: ElevatedButton(
-                onPressed: onDismiss,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  elevation: 0,
-                ),
-                child: Text(
-                  l.ok,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -127,6 +127,10 @@ class AppLocalizations {
 
   String get linkPassenger => _t('Lier le passager', 'ربط الراكب');
 
+  String get linkSuccess => _t('Passager lié avec succès', 'تم ربط الراكب بنجاح');
+
+  String get retry => _t('Réessayer', 'إعادة المحاولة');
+
   String get scanAnother => _t('Scanner une autre carte', 'مسح بطاقة أخرى');
 
   String get comingSoon => _t('Fonctionnalité à venir', 'ميزة قادمة');

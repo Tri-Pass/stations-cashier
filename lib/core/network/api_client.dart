@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:cashier/core/env.dart';
+import 'package:cashier/core/config/env.dart';
 import 'package:cashier/core/storage/local_storage.dart';
 
 class ApiException implements Exception {

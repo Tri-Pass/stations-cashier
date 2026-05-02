@@ -1,4 +1,4 @@
-import 'package:cashier/core/config/api_config.dart';
+import 'package:cashier/core/constants/api_endpoints.dart';
 import 'package:cashier/core/network/api_client.dart';
 
 class LinesRemoteDataSource {
@@ -6,12 +6,12 @@ class LinesRemoteDataSource {
   LinesRemoteDataSource(this._client);
 
   Future<List<dynamic>> getLines(String stationId) async {
-    final data = await _client.get(ApiConfig.lines(stationId));
+    final data = await _client.get(ApiEndpoints.lines(stationId));
     return data as List<dynamic>;
   }
 
   Future<List<dynamic>> getLineQueue(String stationId, String lineId) async {
-    final data = await _client.get(ApiConfig.lineQueue(stationId, lineId));
+    final data = await _client.get(ApiEndpoints.lineQueue(stationId, lineId));
     return data as List<dynamic>;
   }
 }

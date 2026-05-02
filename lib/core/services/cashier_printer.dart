@@ -1,31 +1,25 @@
+import 'dart:convert';
 import 'dart:developer';
-
+import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
+import 'package:cashier/features/booking/domain/entities/booking_entity.dart';
 
 class CashierPrinter {
   static Future<void> printTest() async {
     await SunmiPrinter.lineWrap(20);
     await SunmiPrinter.printText(
       ' wetaxi.station — test ',
-      style: SunmiTextStyle(
-        align: SunmiPrintAlign.CENTER,
-        fontSize: 20,
-        bold: true,
-      ),
+      style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 20, bold: true),
     );
     await SunmiPrinter.lineWrap(20);
     await SunmiPrinter.cutPaper();
   }
 
-  static Future<bool> printBooking({
+  static Future<bool> printTicket({
+    required TicketEntity ticket,
     required String stationName,
-    required String lineName,
-    required String taxiNumber,
-    required int seatCount,
-    required double totalPrice,
-    required String paymentMethod,
   }) async {
     try {
       await _buildLogo();
@@ -36,9 +30,13 @@ class CashierPrinter {
         style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 22),
       );
       await SunmiPrinter.lineWrap(10);
+      await _separator();
+      await SunmiPrinter.lineWrap(15);
+
+      // Ticket code
       await SunmiPrinter.printText(
-        '═══════════════════════════════',
-        style: SunmiTextStyle(align: SunmiPrintAlign.CENTER),
+        ticket.code,
+        style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 22, bold: true),
       );
       await SunmiPrinter.lineWrap(20);
 
@@ -48,46 +46,54 @@ class CashierPrinter {
       );
       await SunmiPrinter.lineWrap(15);
       await SunmiPrinter.printText(
-        'Ligne: $lineName',
+        'Ligne: ${ticket.origin} → ${ticket.destination}',
         style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
       );
       await SunmiPrinter.lineWrap(15);
       await SunmiPrinter.printText(
-        'Taxi: $taxiNumber',
+        'Taxi: ${ticket.plateNumber}',
         style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
       );
       await SunmiPrinter.lineWrap(15);
       await SunmiPrinter.printText(
-        'Places: $seatCount',
+        'Chauffeur: ${ticket.driverName}',
+        style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
+      );
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText(
+        'Places: ${ticket.seatNumber}',
         style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
       );
       await SunmiPrinter.lineWrap(20);
 
-      await SunmiPrinter.printText(
-        '═══════════════════════════════',
-        style: SunmiTextStyle(align: SunmiPrintAlign.CENTER),
-      );
+      await _separator();
       await SunmiPrinter.lineWrap(20);
 
       await SunmiPrinter.printText(
-        'Total: ${totalPrice.toStringAsFixed(2)} MAD',
+        'Total: ${(ticket.price * ticket.seatNumber).toStringAsFixed(2)} MAD',
         style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 30, bold: true),
       );
       await SunmiPrinter.lineWrap(15);
       await SunmiPrinter.printText(
-        'Paiement: $paymentMethod',
+        'Paiement: ${ticket.paymentMethod == 'cash' ? 'Espèces' : 'NFC'}',
         style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
       );
-      await SunmiPrinter.lineWrap(20);
+      await SunmiPrinter.lineWrap(25);
 
-      await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
-      await SunmiPrinter.printQRCode(
-        'www.wetaxi.ma',
-        style: SunmiQrcodeStyle(
-          qrcodeSize: 8,
-          errorLevel: SunmiQrcodeLevel.LEVEL_H,
-        ),
-      );
+      // QR code — use real qrData image from API if available
+      if (ticket.qrData != null && ticket.qrData!.contains('base64,')) {
+        final base64Str = ticket.qrData!.split('base64,').last;
+        final qrBytes = base64Decode(base64Str);
+        await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
+        await SunmiPrinter.printImage(qrBytes, align: SunmiPrintAlign.CENTER);
+      } else {
+        await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
+        await SunmiPrinter.printQRCode(
+          ticket.code,
+          style: SunmiQrcodeStyle(qrcodeSize: 8, errorLevel: SunmiQrcodeLevel.LEVEL_H),
+        );
+      }
+
       await SunmiPrinter.lineWrap(20);
       await SunmiPrinter.printText(
         'Merci pour votre confiance',
@@ -100,6 +106,65 @@ class CashierPrinter {
       log('CashierPrinter error: $e');
       return false;
     }
+  }
+
+  // Legacy fallback — used if API call fails before ticket is received
+  static Future<bool> printBooking({
+    required String stationName,
+    required String lineName,
+    required String taxiNumber,
+    required int seatCount,
+    required double totalPrice,
+    required String paymentMethod,
+  }) async {
+    try {
+      await _buildLogo();
+      final timestamp = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now());
+      await SunmiPrinter.printText(timestamp,
+          style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 22));
+      await SunmiPrinter.lineWrap(10);
+      await _separator();
+      await SunmiPrinter.lineWrap(20);
+      await SunmiPrinter.printText('Station: $stationName',
+          style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25, bold: true));
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText('Ligne: $lineName',
+          style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25));
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText('Taxi: $taxiNumber',
+          style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25));
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText('Places: $seatCount',
+          style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25));
+      await SunmiPrinter.lineWrap(20);
+      await _separator();
+      await SunmiPrinter.lineWrap(20);
+      await SunmiPrinter.printText('Total: ${totalPrice.toStringAsFixed(2)} MAD',
+          style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 30, bold: true));
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText('Paiement: $paymentMethod',
+          style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25));
+      await SunmiPrinter.lineWrap(20);
+      await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
+      await SunmiPrinter.printQRCode('www.wetaxi.ma',
+          style: SunmiQrcodeStyle(qrcodeSize: 8, errorLevel: SunmiQrcodeLevel.LEVEL_H));
+      await SunmiPrinter.lineWrap(20);
+      await SunmiPrinter.printText('Merci pour votre confiance',
+          style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 20, bold: true));
+      await SunmiPrinter.lineWrap(20);
+      await SunmiPrinter.cutPaper();
+      return true;
+    } catch (e) {
+      log('CashierPrinter error: $e');
+      return false;
+    }
+  }
+
+  static Future<void> _separator() async {
+    await SunmiPrinter.printText(
+      '═══════════════════════════════',
+      style: SunmiTextStyle(align: SunmiPrintAlign.CENTER),
+    );
   }
 
   static Future<void> _buildLogo() async {

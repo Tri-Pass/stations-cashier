@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cashier/core/env.dart';
+import 'package:cashier/core/config/env.dart';
 import 'package:cashier/core/network/api_client.dart';
 import 'package:cashier/core/network/socket_service.dart';
 import 'package:cashier/features/auth/domain/entities/driver_entity.dart';

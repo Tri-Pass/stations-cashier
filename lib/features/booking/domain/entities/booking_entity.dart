@@ -1,43 +1,64 @@
 class CreateBookingParams {
-  final String stationId;
+  final String taxiId;
   final String lineId;
   final int seatCount;
   final String paymentMethod; // 'cash' | 'nfc'
+  final String cashierId;
   final String? nfcTagId;
-  final String? passengerId;
-  final int? seatNumber;
 
   const CreateBookingParams({
-    required this.stationId,
+    required this.taxiId,
     required this.lineId,
     required this.seatCount,
     required this.paymentMethod,
+    required this.cashierId,
     this.nfcTagId,
-    this.passengerId,
-    this.seatNumber,
   });
 
   Map<String, dynamic> toJson() => {
-        'stationId': stationId,
+        'taxiId': taxiId,
         'lineId': lineId,
         'seatCount': seatCount,
         'paymentMethod': paymentMethod,
+        'cashierId': cashierId,
         if (nfcTagId != null) 'nfcTagId': nfcTagId,
-        if (passengerId != null) 'passengerId': passengerId,
-        if (seatNumber != null) 'seatNumber': seatNumber,
       };
 }
 
-class BookingResultEntity {
-  final String id;
-  final int seatCount;
-  final double amount;
+class TicketEntity {
+  final String code;
+  final int seatNumber;
+  final String origin;
+  final String destination;
+  final double price;
   final String paymentMethod;
+  final String plateNumber;
+  final String driverName;
+  final String? qrData; // data:image/png;base64,...
+
+  const TicketEntity({
+    required this.code,
+    required this.seatNumber,
+    required this.origin,
+    required this.destination,
+    required this.price,
+    required this.paymentMethod,
+    required this.plateNumber,
+    required this.driverName,
+    this.qrData,
+  });
+}
+
+class BookingResultEntity {
+  final String bookingId;
+  final String confirmedAt;
+  final double? passengerBalanceAfter;
+  final TicketEntity? ticket;
 
   const BookingResultEntity({
-    required this.id,
-    required this.seatCount,
-    required this.amount,
-    required this.paymentMethod,
+    required this.bookingId,
+    required this.confirmedAt,
+    this.passengerBalanceAfter,
+    this.ticket,
   });
 }
