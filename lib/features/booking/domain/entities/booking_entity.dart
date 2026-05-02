@@ -47,6 +47,18 @@ class TicketEntity {
     required this.driverName,
     this.qrData,
   });
+
+  TicketEntity copyWith({int? seatNumber}) => TicketEntity(
+        code: code,
+        seatNumber: seatNumber ?? this.seatNumber,
+        origin: origin,
+        destination: destination,
+        price: price,
+        paymentMethod: paymentMethod,
+        plateNumber: plateNumber,
+        driverName: driverName,
+        qrData: qrData,
+      );
 }
 
 class BookingResultEntity {
