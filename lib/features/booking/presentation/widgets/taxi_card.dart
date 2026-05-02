@@ -34,13 +34,16 @@ class TaxiCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(
-                        taxi.plateNumber,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.4,
+                      Flexible(
+                        child: Text(
+                          taxi.plateNumber,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.4,
+                          ),
                         ),
                       ),
                       if (taxi.isFirst) ...[

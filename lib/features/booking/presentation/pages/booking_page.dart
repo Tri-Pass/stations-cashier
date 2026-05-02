@@ -192,7 +192,7 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         setState(() => _sessionBooked[taxi.id] = (_sessionBooked[taxi.id]! - count).clamp(0, 999));
         return;
       }
-      _printWithTicket(result, taxi);
+      _printWithTicket(result, taxi, count);
       _showSuccessDialog(count);
       _loadLines();
       if (_selectedLine != null) _loadQueue(_selectedLine!.id, silent: true);
@@ -230,21 +230,24 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
     }
   }
 
-  void _printWithTicket(BookingResultEntity result, TaxiInfo taxi) {
+  void _printWithTicket(BookingResultEntity result, TaxiInfo taxi, int count) {
     final authState = context.read<AuthBloc>().state;
     final stationName = authState is AuthAuthenticated
         ? (authState.driver.station?.name ?? 'Station')
         : 'Station';
 
     if (result.ticket != null) {
-      CashierPrinter.printTicket(ticket: result.ticket!, stationName: stationName);
+      CashierPrinter.printTicket(
+        ticket: result.ticket!.copyWith(seatNumber: count),
+        stationName: stationName,
+      );
     } else {
       CashierPrinter.printBooking(
         stationName: stationName,
         lineName: '${_selectedLine!.origin} → ${_selectedLine!.destination}',
         taxiNumber: taxi.plateNumber,
-        seatCount: _selectedLine!.price,
-        totalPrice: taxi.totalSeats * _selectedLine!.price.toDouble(),
+        seatCount: count,
+        totalPrice: count * _selectedLine!.price.toDouble(),
         paymentMethod: _paymentMethod == 'cash' ? 'Espèces' : 'NFC',
       );
     }
@@ -274,7 +277,7 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         ),
         onBooked: (result) {
           setState(() => _sessionBooked[taxi.id] = (_sessionBooked[taxi.id] ?? 0) + count);
-          _printWithTicket(result, taxi);
+          _printWithTicket(result, taxi, count);
           _showSuccessDialog(count);
           _loadLines();
           if (_selectedLine != null) _loadQueue(_selectedLine!.id, silent: true);
