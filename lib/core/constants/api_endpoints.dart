@@ -27,7 +27,11 @@ class ApiEndpoints {
   static String passengerByNfc(String tagId) =>
       '/passengers/nfc/$tagId';
 
-  static const String linkNfc = '/passengers/nfc/link';
+  static const String linkNfc           = '/passengers/nfc/link';
+  static const String rechargePassenger = '/passengers/recharge';
+
+  static String nfcTopup(String tagId)     => '/passengers/nfc/$tagId/topup';
+  static String phoneTopup(String phone)   => '/passengers/phone/$phone/topup';
 
   // ── Socket channels ───────────────────────────────────────────────────────
   static String stationChannel(String stationId) => 'station/$stationId';

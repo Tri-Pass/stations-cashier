@@ -5,7 +5,16 @@ import 'package:cashier/core/services/sunmi_nfc_service.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/features/passengers/domain/entities/passenger_entity.dart';
+import 'package:cashier/features/passengers/domain/usecases/get_passenger_by_nfc_usecase.dart';
 import 'package:cashier/features/passengers/domain/usecases/link_nfc_usecase.dart';
+import 'package:cashier/features/passengers/domain/usecases/nfc_topup_usecase.dart';
+import 'package:cashier/features/passengers/domain/usecases/phone_topup_usecase.dart';
+import 'package:cashier/core/services/cashier_printer.dart';
+import 'package:cashier/features/nfc/presentation/widgets/nfc_mode_selector.dart';
+import 'package:cashier/features/nfc/presentation/widgets/nfc_link_section.dart';
+import 'package:cashier/features/nfc/presentation/widgets/nfc_recharge_section.dart';
+
+enum _PageMode { link, recharge }
 
 class NfcLinkPage extends StatefulWidget {
   const NfcLinkPage({super.key});
@@ -16,17 +25,36 @@ class NfcLinkPage extends StatefulWidget {
 
 class _NfcLinkPageState extends State<NfcLinkPage>
     with SingleTickerProviderStateMixin {
+  // ── Animation ─────────────────────────────────────────────────────────────
   late AnimationController _pulseCtrl;
   late Animation<double> _pulseAnim;
+
+  // ── NFC ───────────────────────────────────────────────────────────────────
   StreamSubscription<Map<String, dynamic>>? _nfcSub;
-  final TextEditingController _phoneCtrl = TextEditingController();
-
-  bool _scanning = false;
   bool _nfcStarted = false;
-  String? _detectedTagId;
-  bool _linking = false;
 
-  bool get _hasPhone => _phoneCtrl.text.trim().isNotEmpty;
+  // ── Mode ──────────────────────────────────────────────────────────────────
+  _PageMode _mode = _PageMode.link;
+
+  // ── Link state ────────────────────────────────────────────────────────────
+  final TextEditingController _linkNameCtrl = TextEditingController();
+  final TextEditingController _linkPhoneCtrl = TextEditingController();
+  bool _linkScanning = false;
+  String? _linkTagId;
+  bool _linking = false;
+  String? _linkNameError;
+  String? _linkPhoneError;
+
+  // ── Recharge state ────────────────────────────────────────────────────────
+  RechargeInput _rechargeInput = RechargeInput.nfc;
+  RechargeState _rechargeState = RechargeState.idle;
+  final TextEditingController _amountCtrl = TextEditingController();
+  final TextEditingController _rechargePhoneCtrl = TextEditingController();
+  String? _rechargeTagId;
+  PassengerEntity? _rechargePassenger;
+  bool _recharging = false;
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
 
   @override
   void initState() {
@@ -38,20 +66,32 @@ class _NfcLinkPageState extends State<NfcLinkPage>
     _pulseAnim = Tween<double>(begin: 0.85, end: 1.0).animate(
       CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut),
     );
-    _phoneCtrl.addListener(() => setState(() {}));
+    _linkNameCtrl.addListener(() => setState(() => _linkNameError = null));
+    _linkPhoneCtrl.addListener(() => setState(() => _linkPhoneError = null));
+    _amountCtrl.addListener(() => setState(() {}));
+    _rechargePhoneCtrl.addListener(() => setState(() {}));
   }
 
-  void _startScan() {
-    setState(() {
-      _scanning = true;
-      _detectedTagId = null;
-    });
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    _linkNameCtrl.dispose();
+    _linkPhoneCtrl.dispose();
+    _amountCtrl.dispose();
+    _rechargePhoneCtrl.dispose();
+    _stopNfc();
+    super.dispose();
+  }
+
+  // ── NFC helpers ───────────────────────────────────────────────────────────
+
+  void _startNfc(void Function(String tagId) onTag) {
     _pulseCtrl.repeat(reverse: true);
     _nfcStarted = true;
     SunmiNfcService.startScanning();
     _nfcSub = SunmiNfcService.allEventsStream().listen((event) {
       if (event['event'] == 'CARD_FOUND' && mounted) {
-        _onTagDetected(event['details']?.toString() ?? '');
+        onTag(event['details']?.toString() ?? '');
       }
     });
   }
@@ -63,38 +103,176 @@ class _NfcLinkPageState extends State<NfcLinkPage>
     _nfcSub?.cancel();
   }
 
-  void _onTagDetected(String tagId) {
+  void _stopPulse() {
     _pulseCtrl.stop();
     _pulseCtrl.reset();
     _stopNfc();
+  }
+
+  // ── Link flow ─────────────────────────────────────────────────────────────
+
+  void _linkStartScan() {
+    final nameEmpty = _linkNameCtrl.text.trim().isEmpty;
+    final phoneEmpty = _linkPhoneCtrl.text.trim().isEmpty;
+    if (nameEmpty || phoneEmpty) {
+      setState(() {
+        _linkNameError = nameEmpty ? AppLocalizations.of(context).fieldNameRequired : null;
+        _linkPhoneError = phoneEmpty ? AppLocalizations.of(context).fieldPhoneRequired : null;
+      });
+      return;
+    }
     setState(() {
-      _scanning = false;
-      _detectedTagId = tagId;
+      _linkScanning = true;
+      _linkTagId = null;
+      _linkNameError = null;
+      _linkPhoneError = null;
+    });
+    _startNfc((tagId) {
+      _stopPulse();
+      setState(() {
+        _linkScanning = false;
+        _linkTagId = tagId;
+      });
     });
   }
 
-  void _cancelScan() {
-    _pulseCtrl.stop();
-    _pulseCtrl.reset();
-    _stopNfc();
-    setState(() => _scanning = false);
+  void _linkCancelScan() {
+    _stopPulse();
+    setState(() => _linkScanning = false);
   }
 
-  void _reset() {
-    _pulseCtrl.reset();
+  void _linkReset() {
+    _stopPulse();
     setState(() {
-      _scanning = false;
-      _detectedTagId = null;
+      _linkScanning = false;
+      _linkTagId = null;
+      _linkNameError = null;
+      _linkPhoneError = null;
     });
   }
 
-  @override
-  void dispose() {
-    _pulseCtrl.dispose();
-    _phoneCtrl.dispose();
-    _stopNfc();
-    super.dispose();
+  Future<void> _linkPassenger() async {
+    if (_linkTagId == null || _linkPhoneCtrl.text.trim().isEmpty) return;
+    final l = AppLocalizations.of(context);
+    setState(() => _linking = true);
+    try {
+      final name = _linkNameCtrl.text.trim();
+      await sl<LinkNfcUseCase>()(LinkNfcParams(
+        phone: _linkPhoneCtrl.text.trim(),
+        nfcTagId: _linkTagId!,
+        name: name.isEmpty ? null : name,
+      ));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l.linkSuccess),
+        backgroundColor: AppColors.green,
+      ));
+      _linkReset();
+      _linkNameCtrl.clear();
+      _linkPhoneCtrl.clear();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: AppColors.red,
+      ));
+    } finally {
+      if (mounted) setState(() => _linking = false);
+    }
   }
+
+  // ── Recharge flow ─────────────────────────────────────────────────────────
+
+  void _rechargeScan() {
+    setState(() {
+      _rechargeState = RechargeState.scanning;
+      _rechargeTagId = null;
+      _rechargePassenger = null;
+    });
+    _startNfc((tagId) async {
+      _stopPulse();
+      setState(() {
+        _rechargeTagId = tagId;
+        _rechargeState = RechargeState.fetching;
+      });
+      try {
+        final passenger = await sl<GetPassengerByNfcUseCase>()(tagId);
+        if (!mounted) return;
+        setState(() {
+          _rechargePassenger = passenger;
+          _rechargeState = RechargeState.ready;
+        });
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: AppColors.red,
+        ));
+        setState(() => _rechargeState = RechargeState.idle);
+      }
+    });
+  }
+
+  void _rechargeCancel() {
+    _stopPulse();
+    setState(() {
+      _rechargeState = RechargeState.idle;
+      _rechargeTagId = null;
+      _rechargePassenger = null;
+    });
+  }
+
+  Future<void> _confirmRecharge() async {
+    final amount = double.tryParse(_amountCtrl.text.trim());
+    if (amount == null || amount <= 0) return;
+    final l = AppLocalizations.of(context);
+
+    setState(() => _recharging = true);
+    try {
+      final NfcTopupResult result;
+      final String method;
+      if (_rechargeInput == RechargeInput.nfc) {
+        result = await sl<NfcTopupUseCase>()(NfcTopupParams(
+          nfcTagId: _rechargeTagId!,
+          amount: amount,
+        ));
+        method = 'NFC';
+      } else {
+        result = await sl<PhoneTopupUseCase>()(PhoneTopupParams(
+          phone: _rechargePhoneCtrl.text.trim(),
+          amount: amount,
+        ));
+        method = 'Téléphone';
+      }
+      if (!mounted) return;
+      await CashierPrinter.printRecharge(
+        passengerName: result.name,
+        passengerPhone: result.phone,
+        amount: result.amount,
+        balanceBefore: result.balanceBefore,
+        balanceAfter: result.balanceAfter,
+        method: method,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(l.rechargeSuccess),
+        backgroundColor: AppColors.green,
+      ));
+      _rechargeCancel();
+      _amountCtrl.clear();
+      _rechargePhoneCtrl.clear();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(e.toString()),
+        backgroundColor: AppColors.red,
+      ));
+    } finally {
+      if (mounted) setState(() => _recharging = false);
+    }
+  }
+
+  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -120,77 +298,46 @@ class _NfcLinkPageState extends State<NfcLinkPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Phone number input ────────────────────────────────
-              Container(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l.passengerToLink,
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 10,
-                        letterSpacing: 1,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _phoneCtrl,
-                      keyboardType: TextInputType.phone,
-                      enabled: !_scanning,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText: l.passengerPhoneHint,
-                        hintStyle: const TextStyle(
-                            color: AppColors.textSecondary, fontSize: 13),
-                        prefixIcon: const Icon(Icons.phone_outlined,
-                            color: AppColors.textSecondary, size: 20),
-                        filled: true,
-                        fillColor: AppColors.inputBg,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 12),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildModeSelector(l),
               const SizedBox(height: 20),
-              // ── NFC status area ───────────────────────────────────
               Expanded(
                 child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 280),
-                  child: _detectedTagId != null
-                      ? _buildTagDetected(l)
-                      : _scanning
-                          ? _buildScanning(l)
-                          : _buildIdle(l),
+                  duration: const Duration(milliseconds: 250),
+                  child: _mode == _PageMode.link
+                      ? NfcLinkSection(
+                          key: const ValueKey('link'),
+                          nameCtrl: _linkNameCtrl,
+                          phoneCtrl: _linkPhoneCtrl,
+                          scanning: _linkScanning,
+                          tagId: _linkTagId,
+                          linking: _linking,
+                          pulseAnim: _pulseAnim,
+                          nameError: _linkNameError,
+                          phoneError: _linkPhoneError,
+                          onStartScan: _linkStartScan,
+                          onCancelScan: _linkCancelScan,
+                          onReset: _linkReset,
+                          onLink: _linkPassenger,
+                        )
+                      : NfcRechargeSection(
+                          key: const ValueKey('recharge'),
+                          input: _rechargeInput,
+                          rechargeState: _rechargeState,
+                          amountCtrl: _amountCtrl,
+                          phoneCtrl: _rechargePhoneCtrl,
+                          passenger: _rechargePassenger,
+                          recharging: _recharging,
+                          pulseAnim: _pulseAnim,
+                          onInputChanged: (v) {
+                            _rechargeCancel();
+                            setState(() => _rechargeInput = v);
+                          },
+                          onScan: _rechargeScan,
+                          onCancel: _rechargeCancel,
+                          onConfirm: _confirmRecharge,
+                        ),
                 ),
               ),
-              const SizedBox(height: 16),
-              // ── Action button ─────────────────────────────────────
-              _buildActionButton(l),
-              if (_detectedTagId != null) ...[
-                const SizedBox(height: 10),
-                TextButton(
-                  onPressed: _reset,
-                  child: Text(
-                    l.scanAnother,
-                    style: const TextStyle(color: AppColors.textSecondary),
-                  ),
-                ),
-              ] else
-                const SizedBox(height: 8),
             ],
           ),
         ),
@@ -198,241 +345,30 @@ class _NfcLinkPageState extends State<NfcLinkPage>
     );
   }
 
-  // ── Idle ──────────────────────────────────────────────────────────────────
-
-  Widget _buildIdle(AppLocalizations l) {
-    return Column(
-      key: const ValueKey('idle'),
-      mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildModeSelector(AppLocalizations l) {
+    return NfcModeSelector(
       children: [
-        Container(
-          width: 110,
-          height: 110,
-          decoration: BoxDecoration(
-            color: AppColors.teal.withValues(alpha: 0.08),
-            shape: BoxShape.circle,
-            border: Border.all(
-                color: AppColors.teal.withValues(alpha: 0.35), width: 2),
-          ),
-          child: const Icon(Icons.nfc, color: AppColors.teal, size: 54),
+        NfcModeTab(
+          label: l.nfcLinkModeTab,
+          icon: Icons.link_rounded,
+          active: _mode == _PageMode.link,
+          activeColor: AppColors.teal,
+          onTap: () {
+            _rechargeCancel();
+            setState(() => _mode = _PageMode.link);
+          },
         ),
-        const SizedBox(height: 20),
-        Text(
-          l.nfcLinkDesc,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-              color: AppColors.textSecondary, fontSize: 13, height: 1.6),
+        NfcModeTab(
+          label: l.nfcRechargeModeTab,
+          icon: Icons.bolt_rounded,
+          active: _mode == _PageMode.recharge,
+          activeColor: AppColors.primary,
+          onTap: () {
+            _linkCancelScan();
+            setState(() => _mode = _PageMode.recharge);
+          },
         ),
       ],
-    );
-  }
-
-  // ── Scanning ──────────────────────────────────────────────────────────────
-
-  Widget _buildScanning(AppLocalizations l) {
-    return Column(
-      key: const ValueKey('scanning'),
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ScaleTransition(
-          scale: _pulseAnim,
-          child: Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: AppColors.teal.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.teal, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.teal.withValues(alpha: 0.2),
-                  blurRadius: 28,
-                  spreadRadius: 6,
-                ),
-              ],
-            ),
-            child: const Icon(Icons.nfc, color: AppColors.teal, size: 60),
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          l.nfcScanning,
-          style: const TextStyle(
-              color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l.nfcApproachDetect,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-              color: AppColors.textSecondary, fontSize: 13, height: 1.5),
-        ),
-      ],
-    );
-  }
-
-  // ── Tag detected ──────────────────────────────────────────────────────────
-
-  Widget _buildTagDetected(AppLocalizations l) {
-    return Column(
-      key: const ValueKey('detected'),
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(
-            color: AppColors.green.withValues(alpha: 0.12),
-            shape: BoxShape.circle,
-            border: Border.all(color: AppColors.green, width: 2),
-          ),
-          child: const Icon(Icons.nfc, color: AppColors.green, size: 40),
-        ),
-        const SizedBox(height: 14),
-        Text(
-          l.cardDetected,
-          style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 20),
-        Container(
-          padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(14),
-            border:
-                Border.all(color: AppColors.green.withValues(alpha: 0.4)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l.nfcIdLabel,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 10,
-                  letterSpacing: 1,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _detectedTagId ?? '',
-                style: const TextStyle(
-                  color: AppColors.green,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _linkPassenger(AppLocalizations l) async {
-    if (_detectedTagId == null || !_hasPhone) return;
-    setState(() => _linking = true);
-    try {
-      await sl<LinkNfcUseCase>()(LinkNfcParams(
-        phone: _phoneCtrl.text.trim(),
-        nfcTagId: _detectedTagId!,
-      ));
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l.linkSuccess),
-        backgroundColor: AppColors.green,
-      ));
-      _reset();
-      _phoneCtrl.clear();
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: AppColors.red,
-      ));
-    } finally {
-      if (mounted) setState(() => _linking = false);
-    }
-  }
-
-  // ── Action button (changes per state) ─────────────────────────────────────
-
-  Widget _buildActionButton(AppLocalizations l) {
-    // Scanning → Cancel
-    if (_scanning) {
-      return SizedBox(
-        height: 52,
-        child: OutlinedButton.icon(
-          onPressed: _cancelScan,
-          icon: const Icon(Icons.close, size: 18),
-          label: Text(
-            l.cancel,
-            style:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.textSecondary,
-            side: const BorderSide(color: AppColors.border),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
-          ),
-        ),
-      );
-    }
-
-    // Tag detected → Link passenger
-    if (_detectedTagId != null) {
-      return SizedBox(
-        height: 52,
-        child: ElevatedButton.icon(
-          onPressed: _linking ? null : () => _linkPassenger(l),
-          icon: _linking
-              ? const SizedBox(
-                  width: 18, height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-              : const Icon(Icons.link, size: 20),
-          label: Text(
-            l.linkPassenger,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.green,
-            foregroundColor: Colors.white,
-            disabledBackgroundColor: AppColors.green.withValues(alpha: 0.4),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            elevation: 0,
-          ),
-        ),
-      );
-    }
-
-    // Idle → Scan NFC (disabled until phone is entered)
-    return SizedBox(
-      height: 52,
-      child: ElevatedButton.icon(
-        onPressed: _hasPhone ? _startScan : null,
-        icon: const Icon(Icons.nfc, size: 22),
-        label: Text(
-          l.scanNfcCard,
-          style:
-              const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.teal,
-          foregroundColor: Colors.black,
-          disabledBackgroundColor: AppColors.teal.withValues(alpha: 0.25),
-          disabledForegroundColor: Colors.black38,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14)),
-          elevation: 0,
-        ),
-      ),
     );
   }
 }
-
