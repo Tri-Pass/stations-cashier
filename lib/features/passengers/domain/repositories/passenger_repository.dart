@@ -3,4 +3,7 @@ import 'package:cashier/features/passengers/domain/entities/passenger_entity.dar
 abstract class PassengerRepository {
   Future<PassengerEntity> getByNfcTag(String tagId);
   Future<void> linkNfc(LinkNfcParams params);
+  Future<void> recharge(RechargeParams params);
+  Future<NfcTopupResult> nfcTopup(NfcTopupParams params);
+  Future<NfcTopupResult> phoneTopup(PhoneTopupParams params);
 }

@@ -7,14 +7,31 @@ class PassengerTripModel {
   const PassengerTripModel({required this.from, required this.to});
 
   factory PassengerTripModel.fromJson(Map<String, dynamic> json) {
-    final line = json['line'] as Map<String, dynamic>?;
+    final raw = json['line'];
+
+    // Case 1: line is a Map { origin, destination }
+    if (raw is Map<String, dynamic>) {
+      return PassengerTripModel(
+        from: (raw['origin'] ?? '') as String,
+        to: (raw['destination'] ?? '') as String,
+      );
+    }
+
+    // Case 2: line is a String e.g. "Ticket X — Bab doukkala → Mhamid"
+    if (raw is String) {
+      // Try to extract "origin → destination" after the em-dash separator
+      final afterDash = raw.contains(' — ') ? raw.split(' — ').last : raw;
+      final parts = afterDash.split(' → ');
+      return PassengerTripModel(
+        from: parts.isNotEmpty ? parts.first.trim() : raw,
+        to: parts.length > 1 ? parts.last.trim() : '',
+      );
+    }
+
+    // Case 3: no line field — fall back to from/to
     return PassengerTripModel(
-      from: line != null
-          ? (line['origin'] ?? '') as String
-          : (json['from'] ?? '') as String,
-      to: line != null
-          ? (line['destination'] ?? '') as String
-          : (json['to'] ?? '') as String,
+      from: (json['from'] ?? '') as String,
+      to: (json['to'] ?? '') as String,
     );
   }
 

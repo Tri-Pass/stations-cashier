@@ -13,4 +13,24 @@ class PassengerRemoteDataSource {
   Future<void> linkNfc(LinkNfcParams params) async {
     await _client.post(ApiEndpoints.linkNfc, params.toJson());
   }
+
+  Future<void> recharge(RechargeParams params) async {
+    await _client.post(ApiEndpoints.rechargePassenger, params.toJson());
+  }
+
+  Future<NfcTopupResult> nfcTopup(NfcTopupParams params) async {
+    final data = await _client.post(
+      ApiEndpoints.nfcTopup(params.nfcTagId),
+      params.toJson(),
+    );
+    return NfcTopupResult.fromJson(data as Map<String, dynamic>);
+  }
+
+  Future<NfcTopupResult> phoneTopup(PhoneTopupParams params) async {
+    final data = await _client.post(
+      ApiEndpoints.phoneTopup(params.phone),
+      params.toJson(),
+    );
+    return NfcTopupResult.fromJson(data as Map<String, dynamic>);
+  }
 }

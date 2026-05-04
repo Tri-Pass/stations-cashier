@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cashier/core/di/injection.dart';
 import 'package:cashier/core/network/socket_service.dart';
+import 'package:cashier/core/notifiers/booking_refresh_notifier.dart';
 import 'package:cashier/core/services/cashier_printer.dart';
 import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/features/auth/presentation/bloc/auth_bloc.dart';
@@ -47,6 +48,7 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
   @override
   void initState() {
     super.initState();
+    sl<BookingRefreshNotifier>().addListener(_onExternalBooking);
     Future.microtask(() {
       _subscribeToStation();
       _loadLines();
@@ -55,8 +57,14 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
 
   @override
   void dispose() {
+    sl<BookingRefreshNotifier>().removeListener(_onExternalBooking);
     sl<SocketService>().unsubscribeByOwner(_socketOwner);
     super.dispose();
+  }
+
+  void _onExternalBooking() {
+    _loadLines();
+    if (_selectedLine != null) _loadQueue(_selectedLine!.id, silent: true);
   }
 
   Future<void> _refresh() async {

@@ -36,7 +36,7 @@ class AppLocalizations {
   // ── Navigation (bottom bar) ───────────────────────────────────────────────
   String get navReserve => _t('Réserver', 'حجز');
 
-  String get navLinkNfc => _t('Lier NFC', 'ربط NFC');
+  String get navLinkNfc => _t('NFC', 'NFC');
 
   // ── Booking ──────────────────────────────────────────────────────────────
   String get bookingTitle => _t('Réservation', 'الحجز');
@@ -99,7 +99,11 @@ class AppLocalizations {
   String get processing => _t('Traitement...', 'جاري المعالجة...');
 
   // ── NFC link page ─────────────────────────────────────────────────────────
-  String get nfcLinkTitle => _t('Lier un passager NFC', 'ربط راكب NFC');
+  String get nfcLinkTitle => _t('NFC', 'NFC');
+
+  String get nfcLinkModeTab => _t('Lier', 'ربط');
+
+  String get nfcRechargeModeTab => _t('Recharger', 'شحن');
 
   String get nfcLinkSubtitle =>
       _t('Lier un passager à sa carte NFC', 'ربط راكب ببطاقته NFC');
@@ -107,6 +111,10 @@ class AppLocalizations {
   String get nfcLinkDesc => _t(
       'Scannez la carte NFC pour lier le passager à son compte',
       'امسح بطاقة NFC لربط الراكب بحسابه');
+
+  String get nfcRechargeDesc => _t(
+      'Approchez la carte NFC du passager\npour recharger son compte',
+      'قرّب بطاقة NFC للراكب\nلشحن حسابه');
 
   String get scanNfcCard => _t('Scanner une carte NFC', 'مسح بطاقة NFC');
 
@@ -125,6 +133,13 @@ class AppLocalizations {
   String get passengerPhoneHint =>
       _t('N° de téléphone du passager', 'رقم هاتف الراكب');
 
+  String get passengerNameHint =>
+      _t('Nom du passager', 'اسم الراكب');
+
+  String get fieldNameRequired => _t('Nom requis', 'الاسم مطلوب');
+
+  String get fieldPhoneRequired => _t('Téléphone requis', 'الهاتف مطلوب');
+
   String get linkPassenger => _t('Lier le passager', 'ربط الراكب');
 
   String get linkSuccess => _t('Passager lié avec succès', 'تم ربط الراكب بنجاح');
@@ -132,6 +147,24 @@ class AppLocalizations {
   String get retry => _t('Réessayer', 'إعادة المحاولة');
 
   String get scanAnother => _t('Scanner une autre carte', 'مسح بطاقة أخرى');
+
+  String get nfcCardTab => _t('Carte NFC', 'بطاقة NFC');
+
+  String get phoneTab => _t('Téléphone', 'هاتف');
+
+  String get rechargeAmountLabel => _t('Montant (MAD)', 'المبلغ (درهم)');
+
+  String get scanAndCharge => _t('Scanner & Charger', 'مسح وشحن');
+
+  String get confirmAndCharge => _t('Confirmer & Recharger', 'تأكيد الشحن');
+
+  String get rechargeSuccess => _t('Compte rechargé avec succès', 'تم شحن الحساب بنجاح');
+
+  String get rechargePassenger => _t('Recharger', 'شحن');
+
+  String get balanceLabel => _t('Solde', 'الرصيد');
+
+  String get madSuffix => 'MAD';
 
   String get comingSoon => _t('Fonctionnalité à venir', 'ميزة قادمة');
 
@@ -153,6 +186,18 @@ class AppLocalizations {
   String get selectLine => _t('Sélectionner la ligne', 'اختر الخط');
 
   String get addSeat => _t('Ajouter un passager', 'إضافة راكب');
+
+  String get seatValidationTitle => _t('Places insuffisantes', 'مقاعد غير كافية');
+
+  String seatValidationHasNext(int available) => _t(
+      'Le premier taxi n\'a que $available place(s) disponible(s).\nVoulez-vous réserver avec le taxi suivant ?',
+      'التاكسي الأول لديه $available مقعد(مقاعد) فقط.\nهل تريد الحجز مع التاكسي التالي؟');
+
+  String seatValidationNoNext(int available) => _t(
+      'Aucun taxi disponible n\'a assez de places ($available place(s) au maximum).',
+      'لا يوجد تاكسي متاح يملك مقاعد كافية ($available مقعد كحد أقصى).');
+
+  String get nextTaxi => _t('Taxi suivant', 'التاكسي التالي');
 
   // ── Profile ───────────────────────────────────────────────────────────────
   String get profile => _t('Profil', 'الملف الشخصي');
