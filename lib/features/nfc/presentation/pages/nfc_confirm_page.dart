@@ -7,9 +7,17 @@ import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:cashier/features/booking/domain/entities/booking_entity.dart';
 import 'package:cashier/features/booking/domain/usecases/create_booking_usecase.dart';
+import 'package:cashier/features/lines/domain/entities/station_line_entity.dart';
 import 'package:cashier/features/lines/domain/usecases/get_lines_usecase.dart';
 import 'package:cashier/features/lines/domain/usecases/get_line_queue_usecase.dart';
 import 'package:cashier/features/passengers/domain/usecases/get_passenger_by_nfc_usecase.dart';
+import 'package:cashier/core/services/cashier_printer.dart';
+import 'package:cashier/core/notifiers/booking_refresh_notifier.dart';
+import 'package:cashier/features/nfc/presentation/viewmodels/nfc_confirm_viewmodels.dart';
+import 'package:cashier/features/nfc/presentation/widgets/nfc_confirm_balance_card.dart';
+import 'package:cashier/features/nfc/presentation/widgets/nfc_confirm_trips_section.dart';
+import 'package:cashier/features/nfc/presentation/widgets/nfc_confirm_seat_picker.dart';
+import 'package:cashier/features/nfc/presentation/widgets/nfc_confirm_line_list.dart';
 
 class NfcConfirmPage extends StatefulWidget {
   final String nfcTagId;
@@ -20,14 +28,15 @@ class NfcConfirmPage extends StatefulWidget {
 }
 
 class _NfcConfirmPageState extends State<NfcConfirmPage> {
-  _ClientInfo? _client;
-  List<_LineInfo> _availableLines = [];
+  NfcClientInfo? _client;
+  List<NfcLineInfo> _availableLines = [];
   bool _loading = true;
   String? _loadError;
   bool _adding = false;
-  _LineInfo? _selectedLine;
+  NfcLineInfo? _selectedLine;
   int? _selectedSeat;
-  String? _resolvedTaxiId; // first taxi in queue for selected line
+  String? _resolvedTaxiId;
+  List<QueueTaxiEntity> _taxiQueue = [];
   bool _tripsExpanded = false;
 
   static const int _totalSeats = 6;
@@ -43,6 +52,8 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
     Future.microtask(_loadData);
   }
 
+  // ── Data loading ─────────────────────────────────────────────────────────
+
   Future<void> _loadData() async {
     final stationId = _stationId;
     try {
@@ -56,17 +67,17 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 
       if (!mounted) return;
       setState(() {
-        _client = _ClientInfo(
+        _client = NfcClientInfo(
           id: passenger.id,
           name: passenger.name,
           phone: passenger.phone,
           balance: passenger.balance,
           trips: passenger.recentTrips
-              .map((t) => _TripInfo(from: t.from, to: t.to))
+              .map((t) => NfcTripInfo(from: t.from, to: t.to))
               .toList(),
         );
         _availableLines = linesRaw
-            .map((e) => _LineInfo(
+            .map((e) => NfcLineInfo(
                   id: e.id,
                   origin: e.origin,
                   destination: e.destination,
@@ -76,9 +87,16 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
         _loading = false;
       });
     } catch (e) {
-      if (mounted) setState(() { _loading = false; _loadError = e.toString(); });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+          _loadError = e.toString();
+        });
+      }
     }
   }
+
+  // ── Queue resolution ─────────────────────────────────────────────────────
 
   Future<void> _resolveFirstTaxi(String lineId) async {
     final stationId = _stationId;
@@ -88,34 +106,128 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
       if (!mounted) return;
       final first = queue.isEmpty
           ? null
-          : (queue.firstWhere((t) => t.isFirst, orElse: () => queue.first));
-      setState(() => _resolvedTaxiId = first?.id);
+          : queue.firstWhere((t) => t.isFirst, orElse: () => queue.first);
+      setState(() {
+        _taxiQueue = queue;
+        _resolvedTaxiId = first?.id;
+      });
     } catch (_) {}
   }
 
+  // ── Seat validation dialog ───────────────────────────────────────────────
+
+  Future<bool> _showSeatValidationDialog(
+      int available, {required bool hasNext}) async {
+    final l = AppLocalizations.of(context);
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surface,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded,
+                color: AppColors.primary, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l.seatValidationTitle,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          hasNext
+              ? l.seatValidationHasNext(available)
+              : l.seatValidationNoNext(available),
+          style: const TextStyle(
+              color: AppColors.textSecondary, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.cancel,
+                style: const TextStyle(color: AppColors.textSecondary)),
+          ),
+          if (hasNext)
+            ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                elevation: 0,
+              ),
+              child: Text(l.nextTaxi,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+            ),
+        ],
+      ),
+    );
+    return result == true;
+  }
+
+  // ── Booking ──────────────────────────────────────────────────────────────
+
   Future<void> _addToQueue() async {
-    if (_client == null || _selectedLine == null || _selectedSeat == null) return;
+    if (_client == null || _selectedLine == null || _selectedSeat == null) {
+      return;
+    }
     final authState = context.read<AuthBloc>().state;
     if (authState is! AuthAuthenticated) return;
+
     final taxiId = _resolvedTaxiId;
     if (taxiId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Aucun taxi disponible pour cette ligne'),
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(AppLocalizations.of(context).noTaxiForLine),
         backgroundColor: AppColors.red,
       ));
       return;
     }
+
+    final currentIndex = _taxiQueue.indexWhere((t) => t.id == taxiId);
+    if (currentIndex >= 0) {
+      final current = _taxiQueue[currentIndex];
+      if (_selectedSeat! > current.availableSeats) {
+        final hasNext = currentIndex + 1 < _taxiQueue.length;
+        final confirmed = await _showSeatValidationDialog(
+            current.availableSeats,
+            hasNext: hasNext);
+        if (!mounted || !confirmed) return;
+        setState(() => _resolvedTaxiId = _taxiQueue[currentIndex + 1].id);
+        return _addToQueue();
+      }
+    }
+
     setState(() => _adding = true);
     try {
-      await sl<CreateBookingUseCase>()(CreateBookingParams(
-        taxiId: taxiId,
+      final result = await sl<CreateBookingUseCase>()(CreateBookingParams(
+        taxiId: _resolvedTaxiId!,
         lineId: _selectedLine!.id,
         seatCount: _selectedSeat!,
         paymentMethod: 'nfc',
         cashierId: authState.driver.id,
         nfcTagId: widget.nfcTagId,
       ));
-      if (mounted) context.go('/home');
+
+      final ticket = result.ticket;
+      if (ticket != null) {
+        await CashierPrinter.printTicket(
+          ticket: ticket.copyWith(seatNumber: _selectedSeat!),
+          stationName: authState.driver.station?.name ?? '',
+        );
+      }
+
+      if (mounted) {
+        sl<BookingRefreshNotifier>().refresh();
+        context.go('/home');
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _adding = false);
@@ -126,6 +238,8 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
       }
     }
   }
+
+  // ── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -141,34 +255,142 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
         ),
         title: Text(
           l.nfcDetected,
-          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(
+              color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
         child: _loading
-            ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.primary))
             : _loadError != null
                 ? _buildError(l)
-                : _ContentView(
-                    client: _client!,
-                    lines: _availableLines,
-                    selectedLine: _selectedLine,
-                    selectedSeat: _selectedSeat,
-                    totalSeats: _totalSeats,
-                    tripsExpanded: _tripsExpanded,
-                    onTripsToggled: () => setState(() => _tripsExpanded = !_tripsExpanded),
-                    onLineSelected: (line) {
-                      setState(() {
-                        _selectedLine = line;
+                : _buildContent(l),
+      ),
+    );
+  }
+
+  Widget _buildContent(AppLocalizations l) {
+    final isResolving =
+        _selectedLine != null && _resolvedTaxiId == null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                NfcConfirmBalanceCard(client: _client!),
+                const SizedBox(height: 16),
+                NfcConfirmTripsSection(
+                  client: _client!,
+                  expanded: _tripsExpanded,
+                  onToggle: () =>
+                      setState(() => _tripsExpanded = !_tripsExpanded),
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 10),
+                  child: Text(l.seats,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 11,
+                          letterSpacing: 0.5,
+                          fontWeight: FontWeight.w600)),
+                ),
+                NfcConfirmSeatPicker(
+                  totalSeats: _totalSeats,
+                  selectedSeat: _selectedSeat,
+                  onSeatTap: (seat) {
+                    setState(() {
+                      _selectedSeat = seat;
+                      if (_selectedLine != null) {
                         _resolvedTaxiId = null;
-                      });
-                      _resolveFirstTaxi(line.id);
-                    },
-                    onSeatSelected: (seat) => setState(() => _selectedSeat = seat),
-                    adding: _adding || (_selectedLine != null && _resolvedTaxiId == null),
-                    onAdd: _addToQueue,
-                    l: l,
-                  ),
+                        _taxiQueue = [];
+                      }
+                    });
+                    if (_selectedLine != null) {
+                      _resolveFirstTaxi(_selectedLine!.id);
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 10),
+                  child: Text(l.selectLine,
+                      style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 11,
+                          letterSpacing: 0.5,
+                          fontWeight: FontWeight.w600)),
+                ),
+                NfcConfirmLineList(
+                  lines: _availableLines,
+                  selectedLine: _selectedLine,
+                  onLineSelected: (line) {
+                    setState(() {
+                      _selectedLine = line;
+                      _resolvedTaxiId = null;
+                      _taxiQueue = [];
+                    });
+                    _resolveFirstTaxi(line.id);
+                  },
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+        _buildBottomCta(l, isResolving),
+      ],
+    );
+  }
+
+  Widget _buildBottomCta(AppLocalizations l, bool isResolving) {
+    final disabled =
+        _adding || isResolving || _selectedLine == null || _selectedSeat == null;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 52,
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: disabled ? null : _addToQueue,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.black,
+                disabledBackgroundColor:
+                    AppColors.primary.withValues(alpha: 0.3),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+                elevation: 0,
+              ),
+              child: (_adding || isResolving)
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.black),
+                    )
+                  : Text(l.addSeat,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 15)),
+            ),
+          ),
+          const SizedBox(height: 4),
+          TextButton(
+            onPressed: () => context.go('/home'),
+            child: Text(l.cancel,
+                style:
+                    const TextStyle(color: AppColors.textSecondary)),
+          ),
+        ],
       ),
     );
   }
@@ -185,18 +407,23 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
             Text(
               _loadError ?? '',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              style: const TextStyle(
+                  color: AppColors.textSecondary, fontSize: 13),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                setState(() { _loading = true; _loadError = null; });
+                setState(() {
+                  _loading = true;
+                  _loadError = null;
+                });
                 _loadData();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 elevation: 0,
               ),
               child: Text(l.retry),
@@ -206,538 +433,4 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
       ),
     );
   }
-}
-
-// ─── Content view ─────────────────────────────────────────────────────────────
-class _ContentView extends StatelessWidget {
-  final _ClientInfo client;
-  final List<_LineInfo> lines;
-  final _LineInfo? selectedLine;
-  final int? selectedSeat;
-  final int totalSeats;
-  final bool tripsExpanded;
-  final VoidCallback onTripsToggled;
-  final ValueChanged<_LineInfo> onLineSelected;
-  final ValueChanged<int> onSeatSelected;
-  final bool adding;
-  final VoidCallback onAdd;
-  final AppLocalizations l;
-
-  const _ContentView({
-    required this.client,
-    required this.lines,
-    required this.selectedLine,
-    required this.selectedSeat,
-    required this.totalSeats,
-    required this.tripsExpanded,
-    required this.onTripsToggled,
-    required this.onLineSelected,
-    required this.onSeatSelected,
-    required this.adding,
-    required this.onAdd,
-    required this.l,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // ── NFC badge ──────────────────────────────────────────────
-                Center(
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.primary, width: 1.5),
-                    ),
-                    child: const Icon(Icons.nfc, color: AppColors.primary, size: 30),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Center(
-                  child: Text(
-                    l.nfcIdentified,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, letterSpacing: 0.4),
-                  ),
-                ),
-                const SizedBox(height: 32),
-
-                // ── Balance card ───────────────────────────────────────────
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.primary, width: 1.2),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(l.balance,
-                              style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, letterSpacing: 0.3)),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${client.balance.toStringAsFixed(2)} MAD',
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.15),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.account_balance_wallet_outlined,
-                            color: AppColors.primary, size: 22),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // ── Passenger info card ────────────────────────────────────
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border),
-                  ),
-                  child: Column(
-                    children: [
-                      _InfoRow(icon: Icons.person_outline, label: l.passengerLabel, value: client.name),
-                      const _Divider(),
-                      _InfoRow(icon: Icons.phone_outlined, label: l.phone, value: client.phone),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // ── Recent trips — collapsible ─────────────────────────────
-                GestureDetector(
-                  onTap: onTripsToggled,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: tripsExpanded
-                          ? const BorderRadius.vertical(top: Radius.circular(16))
-                          : BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.history, color: AppColors.primary, size: 18),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(l.recentTrips,
-                              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            '${client.trips.length}',
-                            style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        AnimatedRotation(
-                          turns: tripsExpanded ? 0.5 : 0,
-                          duration: const Duration(milliseconds: 200),
-                          child: const Icon(Icons.keyboard_arrow_down,
-                              color: AppColors.textSecondary, size: 20),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                AnimatedCrossFade(
-                  firstChild: const SizedBox(width: double.infinity),
-                  secondChild: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
-                      border: Border(
-                        left: BorderSide(color: AppColors.border),
-                        right: BorderSide(color: AppColors.border),
-                        bottom: BorderSide(color: AppColors.border),
-                      ),
-                    ),
-                    child: Column(
-                      children: client.trips.asMap().entries.map((e) {
-                        final isLast = e.key == client.trips.length - 1;
-                        return Column(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.primary.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      '${e.key + 1}',
-                                      style: const TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(e.value.from,
-                                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
-                                        overflow: TextOverflow.ellipsis),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                                    child: Row(
-                                      children: [
-                                        Container(width: 14, height: 1, color: AppColors.textSecondary.withValues(alpha: 0.4)),
-                                        const Icon(Icons.arrow_forward_ios, color: AppColors.primary, size: 9),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Text(e.value.to,
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
-                                        overflow: TextOverflow.ellipsis),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (!isLast) Divider(color: AppColors.border, height: 1, thickness: 1),
-                          ],
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  crossFadeState: tripsExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-                  duration: const Duration(milliseconds: 220),
-                ),
-
-                const SizedBox(height: 20),
-
-                // ── Seat picker ────────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.only(left: 4, bottom: 10),
-                  child: Text(l.seats,
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
-                ),
-                _SeatPicker(
-                  totalSeats: totalSeats,
-                  selectedSeat: selectedSeat,
-                  onSeatTap: onSeatSelected,
-                ),
-
-                const SizedBox(height: 20),
-
-                // ── Line selector ──────────────────────────────────────────
-                Padding(
-                  padding: const EdgeInsets.only(left: 4, bottom: 10),
-                  child: Text(l.selectLine,
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, letterSpacing: 0.5, fontWeight: FontWeight.w600)),
-                ),
-                ...lines.map((line) => _LineCard(
-                  line: line,
-                  isSelected: selectedLine?.id == line.id,
-                  onTap: () => onLineSelected(line),
-                )),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        ),
-
-        // ── Bottom CTA ────────────────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 52,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: (adding || selectedLine == null || selectedSeat == null) ? null : onAdd,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.black,
-                    disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.3),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    elevation: 0,
-                  ),
-                  child: adding
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
-                        )
-                      : Text(l.addSeat,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                ),
-              ),
-              const SizedBox(height: 4),
-              TextButton(
-                onPressed: () => context.go('/home'),
-                child: Text(l.cancel, style: const TextStyle(color: AppColors.textSecondary)),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// ─── Line card ────────────────────────────────────────────────────────────────
-class _LineCard extends StatelessWidget {
-  final _LineInfo line;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _LineCard({required this.line, required this.isSelected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.12) : AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
-            width: isSelected ? 1.5 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                  width: 1.5,
-                ),
-                color: isSelected ? AppColors.primary : Colors.transparent,
-              ),
-              child: isSelected ? const Icon(Icons.check, color: Colors.black, size: 12) : null,
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(line.origin,
-                            style: TextStyle(
-                              color: isSelected ? AppColors.primary : Colors.white,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            )),
-                        const SizedBox(height: 2),
-                        Text('→ ${line.destination}',
-                            style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.primary.withValues(alpha: 0.2)
-                          : AppColors.border.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '${line.price} MAD',
-                      style: TextStyle(
-                        color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Info row ─────────────────────────────────────────────────────────────────
-class _InfoRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  const _InfoRow({required this.icon, required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        children: [
-          Icon(icon, color: AppColors.primary, size: 20),
-          const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label,
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, letterSpacing: 0.3)),
-              const SizedBox(height: 2),
-              Text(value,
-                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  const _Divider();
-  @override
-  Widget build(BuildContext context) =>
-      const Divider(color: AppColors.border, height: 1, thickness: 1);
-}
-
-// ─── Seat picker ─────────────────────────────────────────────────────────────
-
-class _SeatPicker extends StatelessWidget {
-  final int totalSeats;
-  final int? selectedSeat;
-  final ValueChanged<int> onSeatTap;
-
-  const _SeatPicker({required this.totalSeats, required this.selectedSeat, required this.onSeatTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(totalSeats, (i) {
-        final seat = i + 1;
-        return Padding(
-          padding: EdgeInsets.only(right: i < totalSeats - 1 ? 8 : 0),
-          child: _SeatBtn(
-            number: seat,
-            isSelected: selectedSeat == seat,
-            onTap: () => onSeatTap(seat),
-          ),
-        );
-      }),
-    );
-  }
-}
-
-class _SeatBtn extends StatelessWidget {
-  final int number;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _SeatBtn({required this.number, required this.isSelected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        width: 42,
-        height: 42,
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.teal.withValues(alpha: 0.18) : AppColors.teal.withValues(alpha: 0.07),
-          borderRadius: BorderRadius.circular(9),
-          border: Border.all(
-            color: isSelected ? AppColors.teal : AppColors.teal.withValues(alpha: 0.45),
-            width: isSelected ? 2.0 : 1.0,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            '$number',
-            style: TextStyle(
-              color: AppColors.teal,
-              fontSize: 14,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Models ───────────────────────────────────────────────────────────────────
-class _ClientInfo {
-  final String id;
-  final String name;
-  final String phone;
-  final double balance;
-  final List<_TripInfo> trips;
-
-  _ClientInfo({
-    required this.id,
-    required this.name,
-    required this.phone,
-    required this.balance,
-    required this.trips,
-  });
-}
-
-class _TripInfo {
-  final String from;
-  final String to;
-  const _TripInfo({required this.from, required this.to});
-}
-
-class _LineInfo {
-  final String id;
-  final String origin;
-  final String destination;
-  final int price;
-  const _LineInfo({
-    required this.id,
-    required this.origin,
-    required this.destination,
-    required this.price,
-  });
 }

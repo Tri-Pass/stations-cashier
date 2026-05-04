@@ -160,6 +160,80 @@ class CashierPrinter {
     }
   }
 
+  static Future<bool> printRecharge({
+    required String passengerName,
+    required String passengerPhone,
+    required double amount,
+    required double balanceBefore,
+    required double balanceAfter,
+    required String method, // 'NFC' | 'Téléphone'
+  }) async {
+    try {
+      await _buildLogo();
+
+      final timestamp = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now());
+      await SunmiPrinter.printText(
+        timestamp,
+        style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 22),
+      );
+      await SunmiPrinter.lineWrap(10);
+      await _separator();
+      await SunmiPrinter.lineWrap(15);
+
+      await SunmiPrinter.printText(
+        'RECHARGE DE COMPTE',
+        style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 26, bold: true),
+      );
+      await SunmiPrinter.lineWrap(20);
+
+      await SunmiPrinter.printText(
+        'Nom: $passengerName',
+        style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
+      );
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText(
+        'Tel: $passengerPhone',
+        style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
+      );
+      await SunmiPrinter.lineWrap(20);
+
+      await _separator();
+      await SunmiPrinter.lineWrap(20);
+
+      await SunmiPrinter.printText(
+        'Montant: +${amount.toStringAsFixed(2)} MAD',
+        style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 30, bold: true),
+      );
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText(
+        'Solde avant: ${balanceBefore.toStringAsFixed(2)} MAD',
+        style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
+      );
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText(
+        'Solde apres: ${balanceAfter.toStringAsFixed(2)} MAD',
+        style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25, bold: true),
+      );
+      await SunmiPrinter.lineWrap(15);
+      await SunmiPrinter.printText(
+        'Paiement: $method',
+        style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25),
+      );
+      await SunmiPrinter.lineWrap(25);
+
+      await SunmiPrinter.printText(
+        'Merci pour votre confiance',
+        style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 20, bold: true),
+      );
+      await SunmiPrinter.lineWrap(20);
+      await SunmiPrinter.cutPaper();
+      return true;
+    } catch (e) {
+      log('CashierPrinter.printRecharge error: $e');
+      return false;
+    }
+  }
+
   static Future<void> _separator() async {
     await SunmiPrinter.printText(
       '═══════════════════════════════',

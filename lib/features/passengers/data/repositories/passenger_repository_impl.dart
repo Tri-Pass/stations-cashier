@@ -15,4 +15,15 @@ class PassengerRepositoryImpl implements PassengerRepository {
 
   @override
   Future<void> linkNfc(LinkNfcParams params) => _dataSource.linkNfc(params);
+
+  @override
+  Future<void> recharge(RechargeParams params) => _dataSource.recharge(params);
+
+  @override
+  Future<NfcTopupResult> nfcTopup(NfcTopupParams params) =>
+      _dataSource.nfcTopup(params);
+
+  @override
+  Future<NfcTopupResult> phoneTopup(PhoneTopupParams params) =>
+      _dataSource.phoneTopup(params);
 }

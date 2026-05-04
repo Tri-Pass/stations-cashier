@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:cashier/core/l10n/locale_notifier.dart';
+import 'package:cashier/core/notifiers/booking_refresh_notifier.dart';
 import 'package:cashier/core/network/api_client.dart';
 import 'package:cashier/core/network/socket_service.dart';
 import 'package:cashier/core/storage/local_storage.dart';
@@ -30,6 +31,9 @@ import 'package:cashier/features/passengers/data/repositories/passenger_reposito
 import 'package:cashier/features/passengers/domain/repositories/passenger_repository.dart';
 import 'package:cashier/features/passengers/domain/usecases/get_passenger_by_nfc_usecase.dart';
 import 'package:cashier/features/passengers/domain/usecases/link_nfc_usecase.dart';
+import 'package:cashier/features/passengers/domain/usecases/recharge_usecase.dart';
+import 'package:cashier/features/passengers/domain/usecases/nfc_topup_usecase.dart';
+import 'package:cashier/features/passengers/domain/usecases/phone_topup_usecase.dart';
 
 final sl = GetIt.instance;
 
@@ -41,6 +45,7 @@ Future<void> setupDependencies() async {
 
   // Core infrastructure
   sl.registerLazySingleton(() => LocalStorage());
+  sl.registerLazySingleton(() => BookingRefreshNotifier());
   sl.registerLazySingleton(() => ApiClient(sl()));
   sl.registerLazySingleton(() => SocketService.getInstance());
 
@@ -68,4 +73,7 @@ Future<void> setupDependencies() async {
   sl.registerLazySingleton<PassengerRepository>(() => PassengerRepositoryImpl(sl()));
   sl.registerLazySingleton(() => GetPassengerByNfcUseCase(sl()));
   sl.registerLazySingleton(() => LinkNfcUseCase(sl()));
+  sl.registerLazySingleton(() => RechargeUseCase(sl()));
+  sl.registerLazySingleton(() => NfcTopupUseCase(sl()));
+  sl.registerLazySingleton(() => PhoneTopupUseCase(sl()));
 }
