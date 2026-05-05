@@ -97,6 +97,7 @@ class _NfcScanDialogState extends State<NfcScanDialog>
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
 
     final Widget iconWidget = _processing
         ? const SizedBox(
@@ -136,7 +137,7 @@ class _NfcScanDialogState extends State<NfcScanDialog>
           );
 
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: c.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(28, 32, 28, 24),
@@ -151,7 +152,7 @@ class _NfcScanDialogState extends State<NfcScanDialog>
                   : _errorMessage != null
                       ? 'Erreur NFC'
                       : l.nfcReading,
-              style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+              style: TextStyle(color: c.textPrimary, fontSize: 17, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 6),
             Text(
@@ -163,7 +164,7 @@ class _NfcScanDialogState extends State<NfcScanDialog>
               _errorMessage ?? l.nfcApproach,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: _errorMessage != null ? AppColors.red : AppColors.textSecondary,
+                color: _errorMessage != null ? AppColors.red : c.textSecondary,
                 fontSize: 12,
                 height: 1.5,
               ),
@@ -172,7 +173,7 @@ class _NfcScanDialogState extends State<NfcScanDialog>
             if (!_processing)
               TextButton(
                 onPressed: widget.onCancel,
-                child: Text(l.cancel, style: const TextStyle(color: AppColors.textSecondary)),
+                child: Text(l.cancel, style: TextStyle(color: c.textSecondary)),
               ),
           ],
         ),

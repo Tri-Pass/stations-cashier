@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:cashier/core/di/injection.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/l10n/locale_notifier.dart';
+import 'package:cashier/core/theme/theme_notifier.dart';
 import 'package:cashier/navigation/router.dart';
 import 'package:cashier/core/services/sunmi_nfc_service.dart';
 import 'package:cashier/core/storage/local_storage.dart';
@@ -19,7 +20,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
   ));
   await setupDependencies();
 
@@ -92,26 +92,31 @@ class _TaxiDriverAppState extends State<TaxiDriverApp> {
             _router.go('/home');
           }
         },
-        child: ValueListenableBuilder<Locale>(
-          valueListenable: sl<LocaleNotifier>(),
-          builder: (_, locale, __) => MaterialApp.router(
-            title: 'wetaxi.station',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.darkTheme,
-            locale: locale,
-            supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            routerConfig: _router,
-            builder: (context, child) => MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                textScaler: const TextScaler.linear(AppFontSizes.scale),
+        child: ValueListenableBuilder<ThemeMode>(
+          valueListenable: sl<ThemeNotifier>(),
+          builder: (_, themeMode, __) => ValueListenableBuilder<Locale>(
+            valueListenable: sl<LocaleNotifier>(),
+            builder: (_, locale, __) => MaterialApp.router(
+              title: 'wetaxi.station',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeMode,
+              locale: locale,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              routerConfig: _router,
+              builder: (context, child) => MediaQuery(
+                data: MediaQuery.of(context).copyWith(
+                  textScaler: const TextScaler.linear(AppFontSizes.scale),
+                ),
+                child: child!,
               ),
-              child: child!,
             ),
           ),
         ),

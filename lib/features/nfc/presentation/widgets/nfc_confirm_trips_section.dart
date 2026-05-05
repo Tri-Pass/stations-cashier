@@ -18,6 +18,7 @@ class NfcConfirmTripsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     return Column(
       children: [
         GestureDetector(
@@ -26,11 +27,11 @@ class NfcConfirmTripsSection extends StatelessWidget {
             padding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: c.surface,
               borderRadius: expanded
                   ? const BorderRadius.vertical(top: Radius.circular(16))
                   : BorderRadius.circular(16),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: c.border),
             ),
             child: Row(
               children: [
@@ -38,8 +39,8 @@ class NfcConfirmTripsSection extends StatelessWidget {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(l.recentTrips,
-                      style: const TextStyle(
-                          color: Colors.white,
+                      style: TextStyle(
+                          color: c.textPrimary,
                           fontSize: 13,
                           fontWeight: FontWeight.w600)),
                 ),
@@ -62,8 +63,8 @@ class NfcConfirmTripsSection extends StatelessWidget {
                 AnimatedRotation(
                   turns: expanded ? 0.5 : 0,
                   duration: const Duration(milliseconds: 200),
-                  child: const Icon(Icons.keyboard_arrow_down,
-                      color: AppColors.textSecondary, size: 20),
+                  child: Icon(Icons.keyboard_arrow_down,
+                      color: c.textSecondary, size: 20),
                 ),
               ],
             ),
@@ -72,14 +73,14 @@ class NfcConfirmTripsSection extends StatelessWidget {
         AnimatedCrossFade(
           firstChild: const SizedBox(width: double.infinity),
           secondChild: Container(
-            decoration: const BoxDecoration(
-              color: AppColors.surface,
+            decoration: BoxDecoration(
+              color: c.surface,
               borderRadius:
-                  BorderRadius.vertical(bottom: Radius.circular(16)),
+                  const BorderRadius.vertical(bottom: Radius.circular(16)),
               border: Border(
-                left: BorderSide(color: AppColors.border),
-                right: BorderSide(color: AppColors.border),
-                bottom: BorderSide(color: AppColors.border),
+                left: BorderSide(color: c.border),
+                right: BorderSide(color: c.border),
+                bottom: BorderSide(color: c.border),
               ),
             ),
             child: Column(
@@ -112,8 +113,8 @@ class NfcConfirmTripsSection extends StatelessWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(e.value.from,
-                                style: const TextStyle(
-                                    color: Colors.white,
+                                style: TextStyle(
+                                    color: c.textPrimary,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500),
                                 overflow: TextOverflow.ellipsis),
@@ -126,7 +127,7 @@ class NfcConfirmTripsSection extends StatelessWidget {
                                 Container(
                                     width: 14,
                                     height: 1,
-                                    color: AppColors.textSecondary
+                                    color: c.textSecondary
                                         .withValues(alpha: 0.4)),
                                 const Icon(Icons.arrow_forward_ios,
                                     color: AppColors.primary, size: 9),
@@ -136,8 +137,8 @@ class NfcConfirmTripsSection extends StatelessWidget {
                           Expanded(
                             child: Text(e.value.to,
                                 textAlign: TextAlign.end,
-                                style: const TextStyle(
-                                    color: Colors.white,
+                                style: TextStyle(
+                                    color: c.textPrimary,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500),
                                 overflow: TextOverflow.ellipsis),
@@ -146,8 +147,8 @@ class NfcConfirmTripsSection extends StatelessWidget {
                       ),
                     ),
                     if (!isLast)
-                      const Divider(
-                          color: AppColors.border, height: 1, thickness: 1),
+                      Divider(
+                          color: c.border, height: 1, thickness: 1),
                   ],
                 );
               }).toList(),

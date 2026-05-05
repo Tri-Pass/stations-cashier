@@ -270,16 +270,17 @@ class _NfcLinkPageState extends State<NfcLinkPage>
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: c.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: c.surface,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Text(
           l.nfcLinkTitle,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: c.textPrimary,
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),

@@ -15,8 +15,9 @@ class MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: c.background,
       body: child,
       bottomNavigationBar: _BottomNav(location: location),
     );
@@ -29,11 +30,12 @@ class _BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     final l = AppLocalizations.of(context);
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border, width: 1)),
+      decoration: BoxDecoration(
+        color: c.surface,
+        border: Border(top: BorderSide(color: c.border, width: 1)),
       ),
       child: SafeArea(
         top: false,
@@ -80,6 +82,7 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -89,17 +92,16 @@ class _NavItem extends StatelessWidget {
           children: [
             Icon(
               isActive ? activeIcon : icon,
-              color: isActive ? AppColors.primary : AppColors.textSecondary,
+              color: isActive ? AppColors.primary : c.textSecondary,
               size: 22,
             ),
             const SizedBox(height: 3),
             Text(
               label,
               style: TextStyle(
-                color: isActive ? AppColors.primary : AppColors.textSecondary,
+                color: isActive ? AppColors.primary : c.textSecondary,
                 fontSize: 10,
-                fontWeight:
-                    isActive ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
           ],

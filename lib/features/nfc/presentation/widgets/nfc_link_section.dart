@@ -35,6 +35,7 @@ class NfcLinkSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -43,17 +44,17 @@ class NfcLinkSection extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _buildInputCard(l),
+                _buildInputCard(l, c),
                 const SizedBox(height: 20),
                 SizedBox(
                   height: 220,
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 280),
                     child: tagId != null
-                        ? _buildDetected(l)
+                        ? _buildDetected(l, c)
                         : scanning
-                            ? _buildScanning(l)
-                            : _buildIdle(l),
+                            ? _buildScanning(l, c)
+                            : _buildIdle(l, c),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -61,13 +62,13 @@ class NfcLinkSection extends StatelessWidget {
             ),
           ),
         ),
-        _buildActionButton(l),
+        _buildActionButton(l, c),
         if (tagId != null) ...[
           const SizedBox(height: 10),
           TextButton(
             onPressed: onReset,
             child: Text(l.scanAnother,
-                style: const TextStyle(color: AppColors.textSecondary)),
+                style: TextStyle(color: c.textSecondary)),
           ),
         ] else
           const SizedBox(height: 8),
@@ -75,23 +76,23 @@ class NfcLinkSection extends StatelessWidget {
     );
   }
 
-  // ── Input card ───────────────────────────────────────────────────────────
+  // ── Input card ────────────────────────────────────────────────────────────
 
-  Widget _buildInputCard(AppLocalizations l) {
+  Widget _buildInputCard(AppLocalizations l, AppColors c) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: c.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: c.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l.passengerToLink,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: c.textSecondary,
               fontSize: 10,
               letterSpacing: 1,
               fontWeight: FontWeight.w600,
@@ -105,6 +106,7 @@ class NfcLinkSection extends StatelessWidget {
             type: TextInputType.name,
             enabled: !scanning,
             errorText: nameError,
+            c: c,
           ),
           const SizedBox(height: 10),
           _field(
@@ -114,15 +116,16 @@ class NfcLinkSection extends StatelessWidget {
             type: TextInputType.phone,
             enabled: !scanning,
             errorText: phoneError,
+            c: c,
           ),
         ],
       ),
     );
   }
 
-  // ── NFC status states ────────────────────────────────────────────────────
+  // ── NFC status states ─────────────────────────────────────────────────────
 
-  Widget _buildIdle(AppLocalizations l) {
+  Widget _buildIdle(AppLocalizations l, AppColors c) {
     return Column(
       key: const ValueKey('link-idle'),
       mainAxisAlignment: MainAxisAlignment.center,
@@ -142,14 +145,13 @@ class NfcLinkSection extends StatelessWidget {
         Text(
           l.nfcLinkDesc,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-              color: AppColors.textSecondary, fontSize: 13, height: 1.6),
+          style: TextStyle(color: c.textSecondary, fontSize: 13, height: 1.6),
         ),
       ],
     );
   }
 
-  Widget _buildScanning(AppLocalizations l) {
+  Widget _buildScanning(AppLocalizations l, AppColors c) {
     return Column(
       key: const ValueKey('link-scanning'),
       mainAxisAlignment: MainAxisAlignment.center,
@@ -176,20 +178,20 @@ class NfcLinkSection extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         Text(l.nfcScanning,
-            style: const TextStyle(
-                color: Colors.white,
+            style: TextStyle(
+                color: c.textPrimary,
                 fontSize: 17,
                 fontWeight: FontWeight.w600)),
         const SizedBox(height: 8),
         Text(l.nfcApproachDetect,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-                color: AppColors.textSecondary, fontSize: 13, height: 1.5)),
+            style: TextStyle(
+                color: c.textSecondary, fontSize: 13, height: 1.5)),
       ],
     );
   }
 
-  Widget _buildDetected(AppLocalizations l) {
+  Widget _buildDetected(AppLocalizations l, AppColors c) {
     return Column(
       key: const ValueKey('link-detected'),
       mainAxisAlignment: MainAxisAlignment.center,
@@ -206,25 +208,24 @@ class NfcLinkSection extends StatelessWidget {
         ),
         const SizedBox(height: 14),
         Text(l.cardDetected,
-            style: const TextStyle(
-                color: Colors.white,
+            style: TextStyle(
+                color: c.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.bold)),
         const SizedBox(height: 20),
         Container(
           padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: c.surface,
             borderRadius: BorderRadius.circular(14),
-            border:
-                Border.all(color: AppColors.green.withValues(alpha: 0.4)),
+            border: Border.all(color: AppColors.green.withValues(alpha: 0.4)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l.nfcIdLabel,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: c.textSecondary,
                     fontSize: 10,
                     letterSpacing: 1,
                     fontWeight: FontWeight.w600,
@@ -244,9 +245,9 @@ class NfcLinkSection extends StatelessWidget {
     );
   }
 
-  // ── Action button ────────────────────────────────────────────────────────
+  // ── Action button ─────────────────────────────────────────────────────────
 
-  Widget _buildActionButton(AppLocalizations l) {
+  Widget _buildActionButton(AppLocalizations l, AppColors c) {
     if (scanning) {
       return SizedBox(
         height: 52,
@@ -254,11 +255,10 @@ class NfcLinkSection extends StatelessWidget {
           onPressed: onCancelScan,
           icon: const Icon(Icons.close, size: 18),
           label: Text(l.cancel,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 15)),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.textSecondary,
-            side: const BorderSide(color: AppColors.border),
+            foregroundColor: c.textSecondary,
+            side: BorderSide(color: c.border),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14)),
           ),
@@ -279,13 +279,11 @@ class NfcLinkSection extends StatelessWidget {
                       strokeWidth: 2, color: Colors.white))
               : const Icon(Icons.link, size: 20),
           label: Text(l.linkPassenger,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 15)),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.green,
             foregroundColor: Colors.white,
-            disabledBackgroundColor:
-                AppColors.green.withValues(alpha: 0.4),
+            disabledBackgroundColor: AppColors.green.withValues(alpha: 0.4),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14)),
             elevation: 0,
@@ -300,13 +298,11 @@ class NfcLinkSection extends StatelessWidget {
         onPressed: onStartScan,
         icon: const Icon(Icons.nfc, size: 22),
         label: Text(l.scanNfcCard,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 15)),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.teal,
           foregroundColor: Colors.black,
-          disabledBackgroundColor:
-              AppColors.teal.withValues(alpha: 0.25),
+          disabledBackgroundColor: AppColors.teal.withValues(alpha: 0.25),
           disabledForegroundColor: Colors.black38,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14)),
@@ -316,7 +312,7 @@ class NfcLinkSection extends StatelessWidget {
     );
   }
 
-  // ── Shared field builder ─────────────────────────────────────────────────
+  // ── Shared field builder ──────────────────────────────────────────────────
 
   Widget _field({
     required TextEditingController controller,
@@ -324,28 +320,26 @@ class NfcLinkSection extends StatelessWidget {
     required IconData icon,
     required TextInputType type,
     required bool enabled,
+    required AppColors c,
     String? errorText,
   }) {
     return TextField(
       controller: controller,
       keyboardType: type,
       enabled: enabled,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: c.textPrimary),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle:
-            const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+        hintStyle: TextStyle(color: c.textSecondary, fontSize: 13),
         prefixIcon: Icon(icon,
-            color: errorText != null
-                ? AppColors.red
-                : AppColors.textSecondary,
+            color: errorText != null ? AppColors.red : c.textSecondary,
             size: 20),
         errorText: errorText,
         errorStyle: const TextStyle(color: AppColors.red, fontSize: 11),
         filled: true,
         fillColor: errorText != null
             ? AppColors.red.withValues(alpha: 0.06)
-            : AppColors.inputBg,
+            : c.inputBg,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: BorderSide.none,
