@@ -10,6 +10,7 @@ import 'package:cashier/features/passengers/domain/usecases/link_nfc_usecase.dar
 import 'package:cashier/features/passengers/domain/usecases/nfc_topup_usecase.dart';
 import 'package:cashier/features/passengers/domain/usecases/phone_topup_usecase.dart';
 import 'package:cashier/core/services/cashier_printer.dart';
+import 'package:cashier/core/widgets/app_notification.dart';
 import 'package:cashier/features/nfc/presentation/widgets/nfc_mode_selector.dart';
 import 'package:cashier/features/nfc/presentation/widgets/nfc_link_section.dart';
 import 'package:cashier/features/nfc/presentation/widgets/nfc_recharge_section.dart';
@@ -163,19 +164,13 @@ class _NfcLinkPageState extends State<NfcLinkPage>
         name: name.isEmpty ? null : name,
       ));
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l.linkSuccess),
-        backgroundColor: AppColors.green,
-      ));
+      showAppSuccess(context, title: l.linkSuccess);
       _linkReset();
       _linkNameCtrl.clear();
       _linkPhoneCtrl.clear();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: AppColors.red,
-      ));
+      showAppError(context, message: e.toString());
     } finally {
       if (mounted) setState(() => _linking = false);
     }
@@ -204,10 +199,7 @@ class _NfcLinkPageState extends State<NfcLinkPage>
         });
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: AppColors.red,
-        ));
+        showAppError(context, message: e.toString());
         setState(() => _rechargeState = RechargeState.idle);
       }
     });
@@ -254,19 +246,20 @@ class _NfcLinkPageState extends State<NfcLinkPage>
         method: method,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(l.rechargeSuccess),
-        backgroundColor: AppColors.green,
-      ));
+      showAppSuccess(
+        context,
+        title: l.rechargeSuccess,
+        details: [
+          ('Montant', '${result.amount.toStringAsFixed(0)} MAD'),
+          ('Téléphone', result.phone),
+        ],
+      );
       _rechargeCancel();
       _amountCtrl.clear();
       _rechargePhoneCtrl.clear();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
-        backgroundColor: AppColors.red,
-      ));
+      showAppError(context, message: e.toString());
     } finally {
       if (mounted) setState(() => _recharging = false);
     }

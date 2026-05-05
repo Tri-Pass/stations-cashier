@@ -17,6 +17,7 @@ import 'package:cashier/features/booking/presentation/viewmodels/booking_viewmod
 import 'package:cashier/features/booking/presentation/widgets/line_card.dart';
 import 'package:cashier/features/booking/presentation/widgets/payment_button.dart';
 import 'package:cashier/features/booking/presentation/widgets/taxi_card.dart';
+import 'package:cashier/core/widgets/app_notification.dart';
 import 'package:cashier/features/booking/presentation/widgets/success_dialog.dart';
 import 'package:cashier/features/booking/presentation/widgets/nfc_scan_dialog.dart';
 
@@ -229,10 +230,7 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
       ));
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: AppColors.red,
-        ));
+        showAppError(context, message: e.toString());
       }
       return null;
     }
