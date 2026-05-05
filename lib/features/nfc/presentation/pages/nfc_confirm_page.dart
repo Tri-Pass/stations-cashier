@@ -13,6 +13,7 @@ import 'package:cashier/features/lines/domain/usecases/get_line_queue_usecase.da
 import 'package:cashier/features/passengers/domain/usecases/get_passenger_by_nfc_usecase.dart';
 import 'package:cashier/core/services/cashier_printer.dart';
 import 'package:cashier/core/notifiers/booking_refresh_notifier.dart';
+import 'package:cashier/core/widgets/app_notification.dart';
 import 'package:cashier/features/nfc/presentation/viewmodels/nfc_confirm_viewmodels.dart';
 import 'package:cashier/features/nfc/presentation/widgets/nfc_confirm_balance_card.dart';
 import 'package:cashier/features/nfc/presentation/widgets/nfc_confirm_trips_section.dart';
@@ -38,6 +39,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
   String? _resolvedTaxiId;
   List<QueueTaxiEntity> _taxiQueue = [];
   bool _tripsExpanded = false;
+  bool _isResolvingTaxi = false;
 
   static const int _totalSeats = 6;
 
@@ -101,6 +103,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
   Future<void> _resolveFirstTaxi(String lineId) async {
     final stationId = _stationId;
     if (stationId == null) return;
+    setState(() => _isResolvingTaxi = true);
     try {
       final queue = await sl<GetLineQueueUseCase>()(stationId, lineId);
       if (!mounted) return;
@@ -110,8 +113,11 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
       setState(() {
         _taxiQueue = queue;
         _resolvedTaxiId = first?.id;
+        _isResolvingTaxi = false;
       });
-    } catch (_) {}
+    } catch (_) {
+      if (mounted) setState(() => _isResolvingTaxi = false);
+    }
   }
 
   // ── Seat validation dialog ───────────────────────────────────────────────
@@ -184,10 +190,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 
     final taxiId = _resolvedTaxiId;
     if (taxiId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(AppLocalizations.of(context).noTaxiForLine),
-        backgroundColor: AppColors.red,
-      ));
+      showAppError(context, message: AppLocalizations.of(context).noTaxiForLine);
       return;
     }
 
@@ -231,10 +234,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _adding = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: AppColors.red,
-        ));
+        showAppError(context, message: e.toString());
       }
     }
   }
@@ -271,8 +271,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
   }
 
   Widget _buildContent(AppLocalizations l) {
-    final isResolving =
-        _selectedLine != null && _resolvedTaxiId == null;
+    final isResolving = _isResolvingTaxi;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -310,6 +309,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                       if (_selectedLine != null) {
                         _resolvedTaxiId = null;
                         _taxiQueue = [];
+                        _isResolvingTaxi = false;
                       }
                     });
                     if (_selectedLine != null) {
@@ -335,6 +335,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                       _selectedLine = line;
                       _resolvedTaxiId = null;
                       _taxiQueue = [];
+                      _isResolvingTaxi = false;
                     });
                     _resolveFirstTaxi(line.id);
                   },
