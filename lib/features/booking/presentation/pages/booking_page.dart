@@ -296,6 +296,7 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     final authState = context.watch<AuthBloc>().state;
     final driver = authState is AuthAuthenticated ? authState.driver : null;
 
@@ -309,15 +310,15 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         }
       },
       child: Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: c.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: c.surface,
         elevation: 0,
         automaticallyImplyLeading: false,
         title: Text(
           l.bookingTitle,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: c.textPrimary,
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
@@ -334,7 +335,7 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         child: RefreshIndicator(
           onRefresh: _refresh,
           color: AppColors.primary,
-          backgroundColor: AppColors.surface,
+          backgroundColor: c.surface,
           child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
@@ -368,26 +369,30 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
     );
   }
 
-  Widget _buildSectionLabel(String text) => Text(
-        text,
-        style: const TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 11,
-          letterSpacing: 0.8,
-          fontWeight: FontWeight.w600,
-        ),
-      );
+  Widget _buildSectionLabel(String text) {
+    final c = AppColors.of(context);
+    return Text(
+      text,
+      style: TextStyle(
+        color: c.textSecondary,
+        fontSize: 11,
+        letterSpacing: 0.8,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+  }
 
   Widget _buildStationCard(driver) {
+    final c = AppColors.of(context);
     final stationName = driver?.station?.name ?? '';
     final stationCity = driver?.station?.city ?? '';
     final stationCode = driver?.station?.code ?? '';
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: c.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         children: [
@@ -407,8 +412,8 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
               children: [
                 Text(
                   stationName.isNotEmpty ? stationName : '—',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: c.textPrimary,
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
                   ),
@@ -416,7 +421,7 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
                 if (stationCity.isNotEmpty)
                   Text(
                     stationCity,
-                    style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+                    style: TextStyle(color: c.textSecondary, fontSize: 12),
                   ),
               ],
             ),
@@ -446,20 +451,21 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
       );
     }
     if (_linesError != null) {
+      final c = AppColors.of(context);
       return GestureDetector(
         onTap: () { setState(() { _linesLoading = true; _linesError = null; }); _loadLines(); },
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: c.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: c.border),
           ),
           child: Row(
             children: [
-              const Icon(Icons.refresh, color: AppColors.textSecondary, size: 18),
+              Icon(Icons.refresh, color: c.textSecondary, size: 18),
               const SizedBox(width: 8),
-              Text(l.retry, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+              Text(l.retry, style: TextStyle(color: c.textSecondary, fontSize: 13)),
             ],
           ),
         ),
@@ -519,21 +525,22 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
   }
 
   Widget _buildHint(AppLocalizations l) {
+    final c = AppColors.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: c.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: c.border),
       ),
       child: Column(
         children: [
-          const Icon(Icons.touch_app_outlined, color: AppColors.textSecondary, size: 34),
+          Icon(Icons.touch_app_outlined, color: c.textSecondary, size: 34),
           const SizedBox(height: 10),
           Text(
             l.selectLineHint,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.5),
+            style: TextStyle(color: c.textSecondary, fontSize: 13, height: 1.5),
           ),
         ],
       ),
@@ -558,18 +565,19 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
       });
 
     if (sorted.isEmpty) {
+      final c = AppColors.of(context);
       return [
         Container(
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: c.surface,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: c.border),
           ),
           child: Center(
             child: Text(
               AppLocalizations.of(context).noTaxiForLine,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              style: TextStyle(color: c.textSecondary, fontSize: 13),
             ),
           ),
         ),

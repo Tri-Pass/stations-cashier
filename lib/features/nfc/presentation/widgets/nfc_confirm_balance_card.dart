@@ -10,6 +10,7 @@ class NfcConfirmBalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     return Column(
       children: [
         Container(
@@ -26,8 +27,8 @@ class NfcConfirmBalanceCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(l.balance,
-                      style: const TextStyle(
-                          color: AppColors.textSecondary,
+                      style: TextStyle(
+                          color: c.textSecondary,
                           fontSize: 12,
                           letterSpacing: 0.3)),
                   const SizedBox(height: 4),
@@ -59,9 +60,9 @@ class NfcConfirmBalanceCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: c.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: c.border),
           ),
           child: Column(
             children: [
@@ -69,7 +70,7 @@ class NfcConfirmBalanceCard extends StatelessWidget {
                   icon: Icons.person_outline,
                   label: l.passengerLabel,
                   value: client.name),
-              const Divider(color: AppColors.border, height: 1, thickness: 1),
+              Divider(color: c.border, height: 1, thickness: 1),
               _InfoRow(
                   icon: Icons.phone_outlined,
                   label: l.phone,
@@ -91,6 +92,7 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -101,14 +103,14 @@ class _InfoRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label,
-                  style: const TextStyle(
-                      color: AppColors.textSecondary,
+                  style: TextStyle(
+                      color: c.textSecondary,
                       fontSize: 11,
                       letterSpacing: 0.3)),
               const SizedBox(height: 2),
               Text(value,
-                  style: const TextStyle(
-                      color: Colors.white,
+                  style: TextStyle(
+                      color: c.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600)),
             ],

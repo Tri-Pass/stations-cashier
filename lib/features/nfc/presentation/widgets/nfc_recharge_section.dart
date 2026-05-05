@@ -45,42 +45,43 @@ class NfcRechargeSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildInputTabs(l),
+        _buildInputTabs(l, c),
         const SizedBox(height: 16),
-        _buildAmountField(l),
+        _buildAmountField(l, c),
         const SizedBox(height: 16),
         if (input == RechargeInput.phone) ...[
-          _buildPhoneField(l),
+          _buildPhoneField(l, c),
           const SizedBox(height: 16),
         ],
         if (input == RechargeInput.nfc)
           Expanded(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 280),
-              child: _buildNfcStatusArea(l),
+              child: _buildNfcStatusArea(l, c),
             ),
           )
         else
           const Spacer(),
         const SizedBox(height: 16),
-        _buildActionButton(l),
+        _buildActionButton(l, c),
         const SizedBox(height: 8),
       ],
     );
   }
 
-  // ── Input method sub-tabs ────────────────────────────────────────────────
+  // ── Input method sub-tabs ─────────────────────────────────────────────────
 
-  Widget _buildInputTabs(AppLocalizations l) {
+  Widget _buildInputTabs(AppLocalizations l, AppColors c) {
     return Container(
       height: 44,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: c.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: c.border),
       ),
       child: Row(
         children: [
@@ -101,23 +102,23 @@ class NfcRechargeSection extends StatelessWidget {
     );
   }
 
-  // ── Amount field ─────────────────────────────────────────────────────────
+  // ── Amount field ──────────────────────────────────────────────────────────
 
-  Widget _buildAmountField(AppLocalizations l) {
+  Widget _buildAmountField(AppLocalizations l, AppColors c) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: c.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: c.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l.rechargeAmountLabel,
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: c.textSecondary,
               fontSize: 10,
               letterSpacing: 1,
               fontWeight: FontWeight.w600,
@@ -130,21 +131,21 @@ class NfcRechargeSection extends StatelessWidget {
                 const TextInputType.numberWithOptions(decimal: true),
             enabled: rechargeState == RechargeState.idle ||
                 rechargeState == RechargeState.ready,
-            style: const TextStyle(
-                color: Colors.white,
+            style: TextStyle(
+                color: c.textPrimary,
                 fontSize: 22,
                 fontWeight: FontWeight.bold),
             decoration: InputDecoration(
               hintText: '0',
-              hintStyle: const TextStyle(
-                  color: AppColors.textSecondary,
+              hintStyle: TextStyle(
+                  color: c.textSecondary,
                   fontSize: 22,
                   fontWeight: FontWeight.bold),
               suffixText: 'MAD',
-              suffixStyle: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 14),
+              suffixStyle: TextStyle(
+                  color: c.textSecondary, fontSize: 14),
               filled: true,
-              fillColor: AppColors.inputBg,
+              fillColor: c.inputBg,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
@@ -158,23 +159,23 @@ class NfcRechargeSection extends StatelessWidget {
     );
   }
 
-  // ── Phone field (phone mode only) ────────────────────────────────────────
+  // ── Phone field (phone mode only) ─────────────────────────────────────────
 
-  Widget _buildPhoneField(AppLocalizations l) {
+  Widget _buildPhoneField(AppLocalizations l, AppColors c) {
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: c.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: c.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l.passengerPhoneHint.toUpperCase(),
-            style: const TextStyle(
-              color: AppColors.textSecondary,
+            style: TextStyle(
+              color: c.textSecondary,
               fontSize: 10,
               letterSpacing: 1,
               fontWeight: FontWeight.w600,
@@ -184,18 +185,18 @@ class NfcRechargeSection extends StatelessWidget {
           TextField(
             controller: phoneCtrl,
             keyboardType: TextInputType.phone,
-            style: const TextStyle(
-                color: Colors.white,
+            style: TextStyle(
+                color: c.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w600),
             decoration: InputDecoration(
               hintText: '06XXXXXXXX',
-              hintStyle: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 18),
+              hintStyle: TextStyle(
+                  color: c.textSecondary, fontSize: 18),
               prefixIcon: const Icon(Icons.phone_outlined,
                   color: AppColors.primary, size: 20),
               filled: true,
-              fillColor: AppColors.inputBg,
+              fillColor: c.inputBg,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
                 borderSide: BorderSide.none,
@@ -209,22 +210,22 @@ class NfcRechargeSection extends StatelessWidget {
     );
   }
 
-  // ── NFC status area ──────────────────────────────────────────────────────
+  // ── NFC status area ───────────────────────────────────────────────────────
 
-  Widget _buildNfcStatusArea(AppLocalizations l) {
+  Widget _buildNfcStatusArea(AppLocalizations l, AppColors c) {
     switch (rechargeState) {
       case RechargeState.scanning:
-        return _buildScanning(l);
+        return _buildScanning(l, c);
       case RechargeState.fetching:
         return _buildFetching();
       case RechargeState.ready:
-        return _buildPassengerCard(l);
+        return _buildPassengerCard(l, c);
       case RechargeState.idle:
-        return _buildNfcIdle(l);
+        return _buildNfcIdle(l, c);
     }
   }
 
-  Widget _buildNfcIdle(AppLocalizations l) {
+  Widget _buildNfcIdle(AppLocalizations l, AppColors c) {
     return Column(
       key: const ValueKey('r-idle'),
       mainAxisAlignment: MainAxisAlignment.center,
@@ -244,14 +245,14 @@ class NfcRechargeSection extends StatelessWidget {
         Text(
           l.nfcRechargeDesc,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-              color: AppColors.textSecondary, fontSize: 13, height: 1.6),
+          style: TextStyle(
+              color: c.textSecondary, fontSize: 13, height: 1.6),
         ),
       ],
     );
   }
 
-  Widget _buildScanning(AppLocalizations l) {
+  Widget _buildScanning(AppLocalizations l, AppColors c) {
     return Column(
       key: const ValueKey('r-scanning'),
       mainAxisAlignment: MainAxisAlignment.center,
@@ -278,15 +279,15 @@ class NfcRechargeSection extends StatelessWidget {
         ),
         const SizedBox(height: 18),
         Text(l.nfcScanning,
-            style: const TextStyle(
-                color: Colors.white,
+            style: TextStyle(
+                color: c.textPrimary,
                 fontSize: 16,
                 fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         Text(l.nfcApproachDetect,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-                color: AppColors.textSecondary, fontSize: 13, height: 1.5)),
+            style: TextStyle(
+                color: c.textSecondary, fontSize: 13, height: 1.5)),
       ],
     );
   }
@@ -301,7 +302,7 @@ class NfcRechargeSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPassengerCard(AppLocalizations l) {
+  Widget _buildPassengerCard(AppLocalizations l, AppColors c) {
     final p = passenger;
     if (p == null) return const SizedBox.shrink();
     final amount = double.tryParse(amountCtrl.text.trim()) ?? 0;
@@ -310,10 +311,9 @@ class NfcRechargeSection extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: c.surface,
           borderRadius: BorderRadius.circular(14),
-          border:
-              Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,14 +336,14 @@ class NfcRechargeSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(p.name,
-                          style: const TextStyle(
-                              color: Colors.white,
+                          style: TextStyle(
+                              color: c.textPrimary,
                               fontSize: 15,
                               fontWeight: FontWeight.bold)),
                       const SizedBox(height: 2),
                       Text(p.phone,
-                          style: const TextStyle(
-                              color: AppColors.textSecondary,
+                          style: TextStyle(
+                              color: c.textSecondary,
                               fontSize: 12)),
                     ],
                   ),
@@ -351,30 +351,30 @@ class NfcRechargeSection extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 14),
-            const Divider(color: AppColors.border, height: 1),
+            Divider(color: c.border, height: 1),
             const SizedBox(height: 14),
             _balanceRow(l.currentBalance,
-                '${p.balance.toStringAsFixed(2)} MAD', Colors.white),
+                '${p.balance.toStringAsFixed(2)} MAD', c.textPrimary, c),
             const SizedBox(height: 8),
             _balanceRow(l.rechargeAmountLabel,
-                '+${amount.toStringAsFixed(2)} MAD', AppColors.primary),
+                '+${amount.toStringAsFixed(2)} MAD', AppColors.primary, c),
             const SizedBox(height: 8),
             _balanceRow(l.balanceAfter,
                 '${(p.balance + amount).toStringAsFixed(2)} MAD',
-                AppColors.green),
+                AppColors.green, c),
           ],
         ),
       ),
     );
   }
 
-  Widget _balanceRow(String label, String value, Color valueColor) {
+  Widget _balanceRow(String label, String value, Color valueColor, AppColors c) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label,
-            style: const TextStyle(
-                color: AppColors.textSecondary, fontSize: 12)),
+            style: TextStyle(
+                color: c.textSecondary, fontSize: 12)),
         Text(value,
             style: TextStyle(
                 color: valueColor,
@@ -384,9 +384,9 @@ class NfcRechargeSection extends StatelessWidget {
     );
   }
 
-  // ── Action button ────────────────────────────────────────────────────────
+  // ── Action button ─────────────────────────────────────────────────────────
 
-  Widget _buildActionButton(AppLocalizations l) {
+  Widget _buildActionButton(AppLocalizations l, AppColors c) {
     if (rechargeState == RechargeState.scanning ||
         rechargeState == RechargeState.fetching) {
       return SizedBox(
@@ -398,8 +398,8 @@ class NfcRechargeSection extends StatelessWidget {
               style: const TextStyle(
                   fontWeight: FontWeight.bold, fontSize: 15)),
           style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.textSecondary,
-            side: const BorderSide(color: AppColors.border),
+            foregroundColor: c.textSecondary,
+            side: BorderSide(color: c.border),
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14)),
           ),
@@ -462,7 +462,7 @@ class NfcRechargeSection extends StatelessWidget {
   }
 }
 
-// ── Sub-tab ───────────────────────────────────────────────────────────────────
+// ── Sub-tab ────────────────────────────────────────────────────────────────────
 
 class _NfcSubTab extends StatelessWidget {
   const _NfcSubTab({
@@ -479,6 +479,7 @@ class _NfcSubTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -502,14 +503,14 @@ class _NfcSubTab extends StatelessWidget {
                   size: 15,
                   color: active
                       ? AppColors.primary
-                      : AppColors.textSecondary),
+                      : c.textSecondary),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
                   color: active
                       ? AppColors.primary
-                      : AppColors.textSecondary,
+                      : c.textSecondary,
                   fontWeight:
                       active ? FontWeight.w600 : FontWeight.normal,
                   fontSize: 13,

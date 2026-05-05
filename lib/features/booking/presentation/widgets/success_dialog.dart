@@ -9,8 +9,9 @@ class SuccessDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     return Dialog(
-      backgroundColor: AppColors.surface,
+      backgroundColor: c.surface,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Padding(
         padding: const EdgeInsets.all(28),
@@ -29,11 +30,11 @@ class SuccessDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(l.bookingConfirmed,
-                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                style: TextStyle(color: c.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
             Text(l.seatsBookedSuccess(count),
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                style: TextStyle(color: c.textSecondary, fontSize: 13)),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,

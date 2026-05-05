@@ -9,29 +9,35 @@ class ApiEndpoints {
   static const Duration receiveTimeout = Duration(seconds: 20);
 
   // ── Auth ──────────────────────────────────────────────────────────────────
-  static const String login  = '/auth/login';
-  static const String me     = '/auth/me';
-  static const String logout = '/auth/cashier/logout';
+  static const String login  = '/api/cashier/auth/login';
+  static const String me     = '/api/cashier/auth/me';
+  static const String logout = '/api/cashier/auth/cashier/logout';
 
   // ── Lines & queue ─────────────────────────────────────────────────────────
   static String lines(String stationId) =>
-      '/stations/$stationId/lines';
+      '/api/cashier/stations/$stationId/lines';
 
   static String lineQueue(String stationId, String lineId) =>
-      '/stations/$stationId/lines/$lineId/queue';
+      '/api/cashier/stations/$stationId/lines/$lineId/queue';
 
   // ── Bookings ──────────────────────────────────────────────────────────────
-  static const String bookings = '/bookings';
+  static const String bookings = '/api/cashier/bookings';
+
+  // ── Drivers / NFC ─────────────────────────────────────────────────────────
+  static String driverByNfc(String tagId) => '/api/courtier/drivers/nfc?tagId=$tagId';
+
+  // ── Queue ──────────────────────────────────────────────────────────────────
+  static const String queue = '/api/courtier/queue';
 
   // ── Passengers / NFC ──────────────────────────────────────────────────────
   static String passengerByNfc(String tagId) =>
-      '/passengers/nfc/$tagId';
+      '/api/cashier/passengers/nfc/$tagId';
 
-  static const String linkNfc           = '/passengers/nfc/link';
-  static const String rechargePassenger = '/passengers/recharge';
+  static const String linkNfc           = '/api/cashier/passengers/nfc/link';
+  static const String rechargePassenger = '/api/cashier/passengers/recharge';
 
-  static String nfcTopup(String tagId)     => '/passengers/nfc/$tagId/topup';
-  static String phoneTopup(String phone)   => '/passengers/phone/$phone/topup';
+  static String nfcTopup(String tagId)     => '/api/cashier/passengers/nfc/$tagId/topup';
+  static String phoneTopup(String phone)   => '/api/cashier/passengers/phone/$phone/topup';
 
   // ── Socket channels ───────────────────────────────────────────────────────
   static String stationChannel(String stationId) => 'station/$stationId';

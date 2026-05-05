@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:cashier/core/l10n/locale_notifier.dart';
+import 'package:cashier/core/theme/theme_notifier.dart';
 import 'package:cashier/core/notifiers/booking_refresh_notifier.dart';
 import 'package:cashier/core/network/api_client.dart';
 import 'package:cashier/core/network/socket_service.dart';
@@ -25,6 +26,9 @@ import 'package:cashier/features/booking/data/repositories/booking_repository_im
 import 'package:cashier/features/booking/domain/repositories/booking_repository.dart';
 import 'package:cashier/features/booking/domain/usecases/create_booking_usecase.dart';
 
+// Drivers
+import 'package:cashier/features/drivers/data/datasources/driver_remote_datasource.dart';
+
 // Passengers
 import 'package:cashier/features/passengers/data/datasources/passenger_remote_datasource.dart';
 import 'package:cashier/features/passengers/data/repositories/passenger_repository_impl.dart';
@@ -42,6 +46,11 @@ Future<void> setupDependencies() async {
   final localeNotifier = LocaleNotifier();
   await localeNotifier.init();
   sl.registerSingleton(localeNotifier);
+
+  // Theme
+  final themeNotifier = ThemeNotifier();
+  await themeNotifier.init();
+  sl.registerSingleton(themeNotifier);
 
   // Core infrastructure
   sl.registerLazySingleton(() => LocalStorage());
@@ -67,6 +76,9 @@ Future<void> setupDependencies() async {
   sl.registerLazySingleton(() => BookingRemoteDataSource(sl()));
   sl.registerLazySingleton<BookingRepository>(() => BookingRepositoryImpl(sl()));
   sl.registerLazySingleton(() => CreateBookingUseCase(sl()));
+
+  // Drivers feature
+  sl.registerLazySingleton(() => DriverRemoteDataSource(sl()));
 
   // Passengers feature
   sl.registerLazySingleton(() => PassengerRemoteDataSource(sl()));

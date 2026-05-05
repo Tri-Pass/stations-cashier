@@ -16,14 +16,15 @@ class TaxiCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     return Opacity(
       opacity: _isFull ? 0.55 : 1.0,
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: c.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: c.border),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,8 +39,8 @@ class TaxiCard extends StatelessWidget {
                         child: Text(
                           taxi.plateNumber,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: c.textPrimary,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.4,
@@ -68,9 +69,9 @@ class TaxiCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 3),
                   Text(taxi.driver.name,
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                      style: TextStyle(color: c.textSecondary, fontSize: 12)),
                   Text(taxi.driver.phone,
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+                      style: TextStyle(color: c.textSecondary, fontSize: 11)),
                   const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),

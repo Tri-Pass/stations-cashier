@@ -11,12 +11,13 @@ class NfcModeSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Container(
       height: 46,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: c.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: c.border),
       ),
       child: Row(children: children),
     );
@@ -41,6 +42,7 @@ class NfcModeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -56,12 +58,12 @@ class NfcModeTab extends StatelessWidget {
             children: [
               Icon(icon,
                   size: 16,
-                  color: active ? Colors.black : AppColors.textSecondary),
+                  color: active ? Colors.black : c.textSecondary),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
-                  color: active ? Colors.black : AppColors.textSecondary,
+                  color: active ? Colors.black : c.textSecondary,
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),

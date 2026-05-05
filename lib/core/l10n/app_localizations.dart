@@ -172,6 +172,26 @@ class AppLocalizations {
       'La liaison de passagers sera disponible\ndans une prochaine mise à jour.',
       'سيتم توفير ربط الركاب في تحديث قادم.');
 
+  // ── Driver NFC confirm ────────────────────────────────────────────────────
+  String get driverProfile => _t('Profil chauffeur', 'ملف السائق');
+
+  String get driverIdentified => _t('Chauffeur identifié', 'تم التعرف على السائق');
+
+  String get taxiNumberLabel => _t('N° taxi', 'رقم التاكسي');
+
+  String get driverLabel => _t('Chauffeur', 'السائق');
+
+  String get destination => _t('Destination', 'الوجهة');
+
+  String get seatsAvailable => _t('places disponibles', 'مقاعد متاحة');
+
+  String get addToQueue => _t('Ajouter à la file', 'إضافة للطابور');
+
+  String get lineLabel => _t('ligne', 'خط');
+
+  String get tagNotRecognized =>
+      _t('Tag NFC non reconnu', 'لم يتم التعرف على بطاقة NFC');
+
   // ── NFC confirm page ──────────────────────────────────────────────────────
   String get nfcDetected => _t('Profil passager', 'ملف تعريف الراكب');
 
@@ -235,6 +255,12 @@ class AppLocalizations {
   String get settings => _t('Paramètres', 'الإعدادات');
 
   String get appearance => _t('Apparence', 'المظهر');
+
+  String get themeMode => _t('Mode d\'affichage', 'وضع العرض');
+
+  String get lightMode => _t('Mode clair', 'الوضع الفاتح');
+
+  String get darkMode => _t('Mode sombre', 'الوضع الداكن');
 
   String get about => _t('À propos', 'حول');
 

@@ -7,6 +7,8 @@ import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:cashier/features/booking/domain/entities/booking_entity.dart';
 import 'package:cashier/features/booking/domain/usecases/create_booking_usecase.dart';
+import 'package:cashier/features/drivers/data/datasources/driver_remote_datasource.dart';
+import 'package:cashier/features/drivers/domain/entities/nfc_driver_info.dart';
 import 'package:cashier/features/lines/domain/entities/station_line_entity.dart';
 import 'package:cashier/features/lines/domain/usecases/get_lines_usecase.dart';
 import 'package:cashier/features/lines/domain/usecases/get_line_queue_usecase.dart';
@@ -29,12 +31,19 @@ class NfcConfirmPage extends StatefulWidget {
 }
 
 class _NfcConfirmPageState extends State<NfcConfirmPage> {
-  NfcClientInfo? _client;
-  List<NfcLineInfo> _availableLines = [];
+  // ── Shared state ─────────────────────────────────────────────────────────
   bool _loading = true;
   String? _loadError;
   bool _adding = false;
   NfcLineInfo? _selectedLine;
+  List<NfcLineInfo> _availableLines = [];
+
+  // ── Driver mode ──────────────────────────────────────────────────────────
+  bool _isDriverMode = false;
+  NfcDriverInfo? _driver;
+
+  // ── Passenger mode ───────────────────────────────────────────────────────
+  NfcClientInfo? _client;
   int? _selectedSeat;
   String? _resolvedTaxiId;
   List<QueueTaxiEntity> _taxiQueue = [];
@@ -58,47 +67,84 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 
   Future<void> _loadData() async {
     final stationId = _stationId;
-    try {
-      final passengerFuture = sl<GetPassengerByNfcUseCase>()(widget.nfcTagId);
-      final linesFuture = stationId != null
-          ? sl<GetLinesUseCase>()(stationId)
-          : Future.value([]);
+    setState(() {
+      _loading = true;
+      _loadError = null;
+    });
 
-      final passenger = await passengerFuture;
-      final linesRaw = await linesFuture;
+    // Both NFC lookups run in parallel; individual failures are swallowed.
+    NfcDriverInfo? driver;
+    dynamic passenger;
 
-      if (!mounted) return;
+    final driverFut = (() async {
+      try {
+        driver = await sl<DriverRemoteDataSource>().lookupByNfc(widget.nfcTagId);
+      } catch (_) {}
+    })();
+
+    final passengerFut = (() async {
+      try {
+        passenger = await sl<GetPassengerByNfcUseCase>()(widget.nfcTagId);
+      } catch (_) {}
+    })();
+
+    await Future.wait([driverFut, passengerFut]);
+
+    if (!mounted) return;
+
+    if (driver == null && passenger == null) {
       setState(() {
+        _loading = false;
+        _loadError = AppLocalizations.of(context).tagNotRecognized;
+      });
+      return;
+    }
+
+    // Load lines now that we know we have a valid tag.
+    List<StationLineEntity> linesRaw = [];
+    if (stationId != null) {
+      try {
+        linesRaw = await sl<GetLinesUseCase>()(stationId);
+      } catch (_) {}
+    }
+
+    if (!mounted) return;
+
+    final lines = linesRaw
+        .map((e) => NfcLineInfo(
+              id: e.id,
+              origin: e.origin,
+              destination: e.destination,
+              price: e.price.toInt(),
+            ))
+        .toList();
+
+    if (driver != null) {
+      setState(() {
+        _isDriverMode = true;
+        _driver = driver;
+        _availableLines = lines;
+        _loading = false;
+      });
+    } else {
+      setState(() {
+        _isDriverMode = false;
         _client = NfcClientInfo(
           id: passenger.id,
           name: passenger.name,
           phone: passenger.phone,
           balance: passenger.balance,
-          trips: passenger.recentTrips
+          trips: (passenger.recentTrips as List)
               .map((t) => NfcTripInfo(from: t.from, to: t.to))
               .toList(),
         );
-        _availableLines = linesRaw
-            .map((e) => NfcLineInfo(
-                  id: e.id,
-                  origin: e.origin,
-                  destination: e.destination,
-                  price: e.price.toInt(),
-                ))
-            .toList();
+        _availableLines = lines;
         _loading = false;
       });
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _loading = false;
-          _loadError = e.toString();
-        });
-      }
     }
   }
 
-  // ── Queue resolution ─────────────────────────────────────────────────────
+  // ── Queue resolution (passenger) ─────────────────────────────────────────
 
   Future<void> _resolveFirstTaxi(String lineId) async {
     final stationId = _stationId;
@@ -120,68 +166,70 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
     }
   }
 
-  // ── Seat validation dialog ───────────────────────────────────────────────
+  // ── Seat validation dialog (passenger) ───────────────────────────────────
 
   Future<bool> _showSeatValidationDialog(
       int available, {required bool hasNext}) async {
     final l = AppLocalizations.of(context);
     final result = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            const Icon(Icons.warning_amber_rounded,
-                color: AppColors.primary, size: 22),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                l.seatValidationTitle,
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600),
+      builder: (ctx) {
+        final c = AppColors.of(ctx);
+        return AlertDialog(
+          backgroundColor: c.surface,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded,
+                  color: AppColors.primary, size: 22),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l.seatValidationTitle,
+                  style: TextStyle(
+                      color: c.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
+                ),
               ),
-            ),
-          ],
-        ),
-        content: Text(
-          hasNext
-              ? l.seatValidationHasNext(available)
-              : l.seatValidationNoNext(available),
-          style: const TextStyle(
-              color: AppColors.textSecondary, fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l.cancel,
-                style: const TextStyle(color: AppColors.textSecondary)),
+            ],
           ),
-          if (hasNext)
-            ElevatedButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
-                elevation: 0,
-              ),
-              child: Text(l.nextTaxi,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+          content: Text(
+            hasNext
+                ? l.seatValidationHasNext(available)
+                : l.seatValidationNoNext(available),
+            style: TextStyle(color: c.textSecondary, fontSize: 14),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(l.cancel,
+                  style: TextStyle(color: c.textSecondary)),
             ),
-        ],
-      ),
+            if (hasNext)
+              ElevatedButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  elevation: 0,
+                ),
+                child: Text(l.nextTaxi,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+              ),
+          ],
+        );
+      },
     );
     return result == true;
   }
 
-  // ── Booking ──────────────────────────────────────────────────────────────
+  // ── Booking (passenger) ──────────────────────────────────────────────────
 
-  Future<void> _addToQueue() async {
+  Future<void> _addPassengerToQueue() async {
     if (_client == null || _selectedLine == null || _selectedSeat == null) {
       return;
     }
@@ -204,7 +252,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
             hasNext: hasNext);
         if (!mounted || !confirmed) return;
         setState(() => _resolvedTaxiId = _taxiQueue[currentIndex + 1].id);
-        return _addToQueue();
+        return _addPassengerToQueue();
       }
     }
 
@@ -239,24 +287,42 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
     }
   }
 
+  // ── Enqueue (driver) ─────────────────────────────────────────────────────
+
+  Future<void> _addDriverToQueue() async {
+    if (_driver == null || _selectedLine == null) return;
+    setState(() => _adding = true);
+    try {
+      await sl<DriverRemoteDataSource>()
+          .enqueue(_driver!.id, _selectedLine!.id);
+      if (mounted) context.go('/home');
+    } catch (e) {
+      if (mounted) {
+        setState(() => _adding = false);
+        showAppError(context, message: e.toString());
+      }
+    }
+  }
+
   // ── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: c.background,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: c.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 18),
+          icon: Icon(Icons.arrow_back_ios, color: c.textPrimary, size: 18),
           onPressed: () => context.go('/home'),
         ),
         title: Text(
-          l.nfcDetected,
-          style: const TextStyle(
-              color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+          _isDriverMode ? l.driverProfile : l.nfcDetected,
+          style: TextStyle(
+              color: c.textPrimary, fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
       body: SafeArea(
@@ -265,12 +331,150 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                 child: CircularProgressIndicator(color: AppColors.primary))
             : _loadError != null
                 ? _buildError(l)
-                : _buildContent(l),
+                : _isDriverMode
+                    ? _buildDriverContent(l)
+                    : _buildPassengerContent(l),
       ),
     );
   }
 
-  Widget _buildContent(AppLocalizations l) {
+  // ── Driver content ────────────────────────────────────────────────────────
+
+  Widget _buildDriverContent(AppLocalizations l) {
+    final c = AppColors.of(context);
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                      border:
+                          Border.all(color: AppColors.primary, width: 1.5),
+                    ),
+                    child: const Icon(Icons.nfc,
+                        color: AppColors.primary, size: 32),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Center(
+                  child: Text(
+                    l.driverIdentified,
+                    style: TextStyle(
+                        color: c.textSecondary,
+                        fontSize: 12,
+                        letterSpacing: 0.4),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _DriverCard(driver: _driver!, l: l),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 16,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      l.selectLine,
+                      style: TextStyle(
+                        color: c.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                    const Spacer(),
+                    if (_availableLines.isNotEmpty)
+                      Text(
+                        '${_availableLines.length} ${l.lineLabel}s',
+                        style: TextStyle(
+                          color: c.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                if (_availableLines.isEmpty)
+                  const _EmptyLines()
+                else
+                  NfcConfirmLineList(
+                    lines: _availableLines,
+                    selectedLine: _selectedLine,
+                    onLineSelected: (line) =>
+                        setState(() => _selectedLine = line),
+                  ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          decoration: BoxDecoration(
+            color: c.background,
+            border: Border(top: BorderSide(color: c.border)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 52,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed:
+                      (_adding || _selectedLine == null) ? null : _addDriverToQueue,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.black,
+                    disabledBackgroundColor:
+                        AppColors.primary.withValues(alpha: 0.3),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
+                  ),
+                  child: _adding
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2, color: Colors.black),
+                        )
+                      : Text(l.addToQueue,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15)),
+                ),
+              ),
+              TextButton(
+                onPressed: () => context.go('/home'),
+                child: Text(l.cancel,
+                    style: TextStyle(color: c.textSecondary)),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ── Passenger content ─────────────────────────────────────────────────────
+
+  Widget _buildPassengerContent(AppLocalizations l) {
+    final c = AppColors.of(context);
     final isResolving = _isResolvingTaxi;
 
     return Column(
@@ -294,8 +498,8 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 4, bottom: 10),
                   child: Text(l.seats,
-                      style: const TextStyle(
-                          color: AppColors.textSecondary,
+                      style: TextStyle(
+                          color: c.textSecondary,
                           fontSize: 11,
                           letterSpacing: 0.5,
                           fontWeight: FontWeight.w600)),
@@ -321,8 +525,8 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 4, bottom: 10),
                   child: Text(l.selectLine,
-                      style: const TextStyle(
-                          color: AppColors.textSecondary,
+                      style: TextStyle(
+                          color: c.textSecondary,
                           fontSize: 11,
                           letterSpacing: 0.5,
                           fontWeight: FontWeight.w600)),
@@ -345,12 +549,13 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
             ),
           ),
         ),
-        _buildBottomCta(l, isResolving),
+        _buildPassengerBottomCta(l, isResolving),
       ],
     );
   }
 
-  Widget _buildBottomCta(AppLocalizations l, bool isResolving) {
+  Widget _buildPassengerBottomCta(AppLocalizations l, bool isResolving) {
+    final c = AppColors.of(context);
     final disabled =
         _adding || isResolving || _selectedLine == null || _selectedSeat == null;
     return Padding(
@@ -362,7 +567,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
             height: 52,
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: disabled ? null : _addToQueue,
+              onPressed: disabled ? null : _addPassengerToQueue,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.black,
@@ -388,8 +593,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
           TextButton(
             onPressed: () => context.go('/home'),
             child: Text(l.cancel,
-                style:
-                    const TextStyle(color: AppColors.textSecondary)),
+                style: TextStyle(color: c.textSecondary)),
           ),
         ],
       ),
@@ -397,6 +601,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
   }
 
   Widget _buildError(AppLocalizations l) {
+    final c = AppColors.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -408,18 +613,11 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
             Text(
               _loadError ?? '',
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13),
+              style: TextStyle(color: c.textSecondary, fontSize: 13),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _loading = true;
-                  _loadError = null;
-                });
-                _loadData();
-              },
+              onPressed: _loadData,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.black,
@@ -431,6 +629,119 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─── Driver card ───────────────────────────────────────────────────────────────
+
+class _DriverCard extends StatelessWidget {
+  final NfcDriverInfo driver;
+  final AppLocalizations l;
+  const _DriverCard({required this.driver, required this.l});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = AppColors.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: c.border),
+      ),
+      child: Column(
+        children: [
+          _InfoRow(
+              icon: Icons.confirmation_number_outlined,
+              label: l.taxiNumberLabel,
+              value: driver.taxiNumber),
+          const _Divider(),
+          _InfoRow(
+              icon: Icons.person_outline,
+              label: l.driverLabel,
+              value: driver.name),
+          const _Divider(),
+          _InfoRow(
+              icon: Icons.phone_outlined,
+              label: l.phone,
+              value: driver.phone),
+          const _Divider(),
+          _InfoRow(
+              icon: Icons.location_on_outlined,
+              label: l.destination,
+              value: driver.destination),
+          const _Divider(),
+          _InfoRow(
+              icon: Icons.event_seat_outlined,
+              label: l.seats,
+              value: '${driver.seatsTotal} ${l.seatsAvailable}'),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  const _InfoRow(
+      {required this.icon, required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = AppColors.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          const SizedBox(width: 14),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: TextStyle(color: c.textSecondary, fontSize: 11)),
+              const SizedBox(height: 2),
+              Text(value,
+                  style: TextStyle(
+                      color: c.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  const _Divider();
+  @override
+  Widget build(BuildContext context) {
+    final c = AppColors.of(context);
+    return Divider(color: c.border, height: 1, thickness: 1);
+  }
+}
+
+class _EmptyLines extends StatelessWidget {
+  const _EmptyLines();
+  @override
+  Widget build(BuildContext context) {
+    final c = AppColors.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          Icon(Icons.route_outlined, color: c.textSecondary, size: 40),
+          const SizedBox(height: 10),
+          Text('Aucune ligne disponible',
+              style: TextStyle(color: c.textSecondary, fontSize: 13)),
+        ],
       ),
     );
   }

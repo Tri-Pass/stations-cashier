@@ -11,16 +11,17 @@ class LineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withValues(alpha: 0.1) : AppColors.surface,
+          color: selected ? AppColors.primary.withValues(alpha: 0.1) : c.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
+            color: selected ? AppColors.primary : c.border,
             width: selected ? 1.5 : 1,
           ),
         ),
@@ -31,7 +32,7 @@ class LineCard extends StatelessWidget {
             Row(
               children: [
                 Icon(Icons.near_me,
-                    color: selected ? AppColors.primary : AppColors.textSecondary, size: 12),
+                    color: selected ? AppColors.primary : c.textSecondary, size: 12),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
@@ -39,7 +40,7 @@ class LineCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: selected ? AppColors.primary : Colors.white,
+                      color: selected ? AppColors.primary : c.textPrimary,
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                       height: 1.25,
@@ -54,7 +55,7 @@ class LineCard extends StatelessWidget {
                 Text(
                   '${line.price} DH',
                   style: TextStyle(
-                    color: selected ? AppColors.primary : AppColors.textSecondary,
+                    color: selected ? AppColors.primary : c.textSecondary,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),

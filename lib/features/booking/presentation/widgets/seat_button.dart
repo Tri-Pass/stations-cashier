@@ -10,14 +10,15 @@ class SeatButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     final Color bg;
     final Color border;
     final Color text;
 
     if (isDisabled) {
-      bg = AppColors.iconBg;
-      border = AppColors.border;
-      text = AppColors.textSecondary.withValues(alpha: 0.5);
+      bg = c.iconBg;
+      border = c.border;
+      text = c.textSecondary.withValues(alpha: 0.5);
     } else {
       bg = AppColors.teal.withValues(alpha: 0.08);
       border = AppColors.teal.withValues(alpha: 0.45);

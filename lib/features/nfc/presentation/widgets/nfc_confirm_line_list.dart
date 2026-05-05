@@ -42,6 +42,7 @@ class NfcConfirmLineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = AppColors.of(context);
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -52,10 +53,10 @@ class NfcConfirmLineCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary.withValues(alpha: 0.12)
-              : AppColors.surface,
+              : c.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.border,
+            color: isSelected ? AppColors.primary : c.border,
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -70,7 +71,7 @@ class NfcConfirmLineCard extends StatelessWidget {
                 border: Border.all(
                   color: isSelected
                       ? AppColors.primary
-                      : AppColors.textSecondary,
+                      : c.textSecondary,
                   width: 1.5,
                 ),
                 color:
@@ -93,15 +94,15 @@ class NfcConfirmLineCard extends StatelessWidget {
                           style: TextStyle(
                             color: isSelected
                                 ? AppColors.primary
-                                : Colors.white,
+                                : c.textPrimary,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text('→ ${line.destination}',
-                            style: const TextStyle(
-                                color: AppColors.textSecondary,
+                            style: TextStyle(
+                                color: c.textSecondary,
                                 fontSize: 12)),
                       ],
                     ),
@@ -112,7 +113,7 @@ class NfcConfirmLineCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary.withValues(alpha: 0.2)
-                          : AppColors.border.withValues(alpha: 0.3),
+                          : c.border.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -120,7 +121,7 @@ class NfcConfirmLineCard extends StatelessWidget {
                       style: TextStyle(
                         color: isSelected
                             ? AppColors.primary
-                            : AppColors.textSecondary,
+                            : c.textSecondary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),
