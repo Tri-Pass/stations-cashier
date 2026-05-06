@@ -325,7 +325,16 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person, color: AppColors.primary),
+            icon: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                  color: AppColors.of(context).iconBg,
+                  shape: BoxShape.rectangle,
+                  borderRadius: const BorderRadius.all(Radius.circular(12))),
+              child: const Icon(Icons.person_outline,
+                  color: AppColors.primary, size: 24),
+            ),
             tooltip: l.profile,
             onPressed: () => context.push('/profile'),
           ),

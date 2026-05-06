@@ -77,10 +77,10 @@ class NfcRechargeSection extends StatelessWidget {
 
   Widget _buildInputTabs(AppLocalizations l, AppColors c) {
     return Container(
-      height: 44,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: c.surface,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: c.border),
       ),
       child: Row(
@@ -226,69 +226,73 @@ class NfcRechargeSection extends StatelessWidget {
   }
 
   Widget _buildNfcIdle(AppLocalizations l, AppColors c) {
-    return Column(
+    return Center(
       key: const ValueKey('r-idle'),
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 96,
-          height: 96,
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            shape: BoxShape.circle,
-            border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.35), width: 2),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              shape: BoxShape.circle,
+              border: Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.35), width: 2),
+            ),
+            child: const Icon(Icons.nfc, color: AppColors.primary, size: 48),
           ),
-          child: const Icon(Icons.nfc, color: AppColors.primary, size: 48),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          l.nfcRechargeDesc,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-              color: c.textSecondary, fontSize: 13, height: 1.6),
-        ),
-      ],
+          const SizedBox(height: 16),
+          Text(
+            l.nfcRechargeDesc,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: c.textSecondary, fontSize: 13, height: 1.6),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildScanning(AppLocalizations l, AppColors c) {
-    return Column(
+    return Center(
       key: const ValueKey('r-scanning'),
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ScaleTransition(
-          scale: pulseAnim,
-          child: Container(
-            width: 110,
-            height: 110,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.25),
-                  blurRadius: 28,
-                  spreadRadius: 6,
-                ),
-              ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ScaleTransition(
+            scale: pulseAnim,
+            child: Container(
+              width: 110,
+              height: 110,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.primary, width: 2),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.25),
+                    blurRadius: 28,
+                    spreadRadius: 6,
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.nfc, color: AppColors.primary, size: 56),
             ),
-            child: const Icon(Icons.nfc, color: AppColors.primary, size: 56),
           ),
-        ),
-        const SizedBox(height: 18),
-        Text(l.nfcScanning,
-            style: TextStyle(
-                color: c.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600)),
-        const SizedBox(height: 6),
-        Text(l.nfcApproachDetect,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: c.textSecondary, fontSize: 13, height: 1.5)),
-      ],
+          const SizedBox(height: 18),
+          Text(l.nfcScanning,
+              style: TextStyle(
+                  color: c.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600)),
+          const SizedBox(height: 6),
+          Text(l.nfcApproachDetect,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: c.textSecondary, fontSize: 13, height: 1.5)),
+        ],
+      ),
     );
   }
 
@@ -484,36 +488,25 @@ class _NfcSubTab extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.all(4),
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: active
-                ? AppColors.primary.withValues(alpha: 0.15)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: active
-                ? Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.5))
-                : null,
+            color: active ? AppColors.primary : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon,
-                  size: 15,
-                  color: active
-                      ? AppColors.primary
-                      : c.textSecondary),
-              const SizedBox(width: 6),
+                  size: 18,
+                  color: active ? Colors.black : c.textSecondary),
+              const SizedBox(width: 8),
               Text(
                 label,
                 style: TextStyle(
-                  color: active
-                      ? AppColors.primary
-                      : c.textSecondary,
-                  fontWeight:
-                      active ? FontWeight.w600 : FontWeight.normal,
-                  fontSize: 13,
+                  color: active ? Colors.black : c.textSecondary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
               ),
             ],
