@@ -34,14 +34,15 @@ class _BottomNav extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: c.surface,
-        border: Border(top: BorderSide(color: c.border, width: 1)),
+        color: c.navBg,
+        border: Border(top: BorderSide(color: c.border, width: 0.5)),
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          height: 58,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _NavItem(
                 icon: Icons.local_taxi_outlined,
@@ -83,24 +84,35 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = AppColors.of(context);
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
+        decoration: BoxDecoration(
+          color: isActive
+              ? AppColors.primary.withValues(alpha: 0.15)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isActive ? AppColors.primary : Colors.transparent,
+          ),
+        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               isActive ? activeIcon : icon,
               color: isActive ? AppColors.primary : c.textSecondary,
-              size: 22,
+              size: 24,
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
                 color: isActive ? AppColors.primary : c.textSecondary,
-                fontSize: 10,
+                fontSize: 11,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
