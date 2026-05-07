@@ -134,12 +134,12 @@ class NfcLinkSection extends StatelessWidget {
           width: 110,
           height: 110,
           decoration: BoxDecoration(
-            color: AppColors.teal.withValues(alpha: 0.08),
+            color: AppColors.primary.withValues(alpha: 0.08),
             shape: BoxShape.circle,
             border: Border.all(
-                color: AppColors.teal.withValues(alpha: 0.35), width: 2),
+                color: AppColors.primary.withValues(alpha: 0.35), width: 2),
           ),
-          child: const Icon(Icons.nfc, color: AppColors.teal, size: 54),
+          child: const Icon(Icons.nfc, color: AppColors.primary, size: 54),
         ),
         const SizedBox(height: 20),
         Text(
@@ -162,18 +162,18 @@ class NfcLinkSection extends StatelessWidget {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: AppColors.teal.withValues(alpha: 0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.teal, width: 2),
+              border: Border.all(color: AppColors.primary, width: 2),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.teal.withValues(alpha: 0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                   blurRadius: 28,
                   spreadRadius: 6,
                 ),
               ],
             ),
-            child: const Icon(Icons.nfc, color: AppColors.teal, size: 60),
+            child: const Icon(Icons.nfc, color: AppColors.primary, size: 60),
           ),
         ),
         const SizedBox(height: 20),
@@ -300,9 +300,9 @@ class NfcLinkSection extends StatelessWidget {
         label: Text(l.scanNfcCard,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.teal,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.black,
-          disabledBackgroundColor: AppColors.teal.withValues(alpha: 0.25),
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.25),
           disabledForegroundColor: Colors.black38,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14)),

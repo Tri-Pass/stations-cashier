@@ -346,7 +346,7 @@ class _NfcLinkPageState extends State<NfcLinkPage>
           label: l.nfcLinkModeTab,
           icon: Icons.link_rounded,
           active: _mode == _PageMode.link,
-          activeColor: AppColors.teal,
+          activeColor: AppColors.primary,
           onTap: () {
             _rechargeCancel();
             setState(() => _mode = _PageMode.link);
