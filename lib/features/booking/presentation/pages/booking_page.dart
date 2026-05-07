@@ -192,6 +192,15 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
 
   // Cash: await API → get real ticket → print → show success
   Future<void> _bookSeats(TaxiInfo taxi, int count) async {
+    if (!taxi.isFirst) {
+      final candidates = _queue.where((t) => t.isFirst);
+      final firstTaxi = candidates.isEmpty ? null : candidates.first;
+      if (firstTaxi != null && _availableFor(firstTaxi) >= count) {
+        final confirmed = await _showFirstTaxiAvailableDialog(firstTaxi, count);
+        if (confirmed != true) return;
+      }
+    }
+
     if (_paymentMethod == 'cash') {
       // Optimistically reserve seats so buttons disable immediately
       setState(() => _sessionBooked[taxi.id] = (_sessionBooked[taxi.id] ?? 0) + count);
@@ -552,6 +561,79 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
             style: TextStyle(color: c.textSecondary, fontSize: 13, height: 1.5),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<bool?> _showFirstTaxiAvailableDialog(TaxiInfo firstTaxi, int count) {
+    final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
+    return showDialog<bool>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: c.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primary, width: 2),
+                ),
+                child: const Icon(Icons.info_outline, color: AppColors.primary, size: 32),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l.firstTaxiAvailableTitle,
+                style: TextStyle(color: c.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l.firstTaxiAvailableMsg(_availableFor(firstTaxi), firstTaxi.plateNumber),
+                style: TextStyle(color: c.textSecondary, fontSize: 13, height: 1.5),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: c.textSecondary,
+                        side: BorderSide(color: c.border),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        minimumSize: const Size.fromHeight(44),
+                      ),
+                      child: Text(l.cancel),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        elevation: 0,
+                        minimumSize: const Size.fromHeight(44),
+                      ),
+                      child: Text(l.continueAnyway),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

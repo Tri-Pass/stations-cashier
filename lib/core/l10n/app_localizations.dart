@@ -173,7 +173,7 @@ class AppLocalizations {
       'سيتم توفير ربط الركاب في تحديث قادم.');
 
   // ── Driver NFC confirm ────────────────────────────────────────────────────
-  String get driverProfile => _t('Profil chauffeur', 'ملف السائق');
+  String get driverProfile => _t('Profil chauffeur', 'ملف تعريف السائق');
 
   String get driverIdentified => _t('Chauffeur identifié', 'تم التعرف على السائق');
 
@@ -218,6 +218,14 @@ class AppLocalizations {
       'لا يوجد تاكسي متاح يملك مقاعد كافية ($available مقعد كحد أقصى).');
 
   String get nextTaxi => _t('Taxi suivant', 'التاكسي التالي');
+
+  String get firstTaxiAvailableTitle => _t('Premier taxi disponible', 'التاكسي الأول متاح');
+
+  String firstTaxiAvailableMsg(int available, String plate) => _t(
+      'Le taxi $plate (1er) a $available place(s) disponible(s).\nVoulez-vous quand même réserver ce taxi ?',
+      'التاكسي $plate (الأول) لديه $available مقعد(مقاعد) متاحة.\nهل تريد الحجز مع هذا التاكسي على أي حال؟');
+
+  String get continueAnyway => _t('Continuer', 'متابعة');
 
   // ── Profile ───────────────────────────────────────────────────────────────
   String get profile => _t('Profil', 'الملف الشخصي');

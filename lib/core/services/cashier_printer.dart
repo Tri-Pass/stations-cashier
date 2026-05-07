@@ -1,4 +1,4 @@
-import 'dart:convert';
+// import 'dart:convert';
 import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
@@ -80,21 +80,22 @@ class CashierPrinter {
       );
       await SunmiPrinter.lineWrap(25);
 
+      //Todo: remove the QR code
       // QR code — use real qrData image from API if available
-      if (ticket.qrData != null && ticket.qrData!.contains('base64,')) {
-        final base64Str = ticket.qrData!.split('base64,').last;
-        final qrBytes = base64Decode(base64Str);
-        await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
-        await SunmiPrinter.printImage(qrBytes, align: SunmiPrintAlign.CENTER);
-      } else {
-        await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
-        await SunmiPrinter.printQRCode(
-          ticket.code,
-          style: SunmiQrcodeStyle(qrcodeSize: 8, errorLevel: SunmiQrcodeLevel.LEVEL_H),
-        );
-      }
+      // if (ticket.qrData != null && ticket.qrData!.contains('base64,')) {
+      //   final base64Str = ticket.qrData!.split('base64,').last;
+      //   final qrBytes = base64Decode(base64Str);
+      //   await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
+      //   await SunmiPrinter.printImage(qrBytes, align: SunmiPrintAlign.CENTER);
+      // } else {
+      //   await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
+      //   await SunmiPrinter.printQRCode(
+      //     ticket.code,
+      //     style: SunmiQrcodeStyle(qrcodeSize: 8, errorLevel: SunmiQrcodeLevel.LEVEL_H),
+      //   );
+      // }
 
-      await SunmiPrinter.lineWrap(20);
+      // await SunmiPrinter.lineWrap(20);
       await SunmiPrinter.printText(
         'Merci pour votre confiance',
         style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 20, bold: true),
@@ -146,9 +147,10 @@ class CashierPrinter {
           style: SunmiTextStyle(align: SunmiPrintAlign.LEFT, fontSize: 25));
       await SunmiPrinter.lineWrap(20);
       await SunmiPrinter.setAlignment(SunmiPrintAlign.CENTER);
-      await SunmiPrinter.printQRCode('www.wetaxi.ma',
-          style: SunmiQrcodeStyle(qrcodeSize: 8, errorLevel: SunmiQrcodeLevel.LEVEL_H));
-      await SunmiPrinter.lineWrap(20);
+      //Todo: remove the QR code
+      // await SunmiPrinter.printQRCode('www.wetaxi.ma',
+      //     style: SunmiQrcodeStyle(qrcodeSize: 8, errorLevel: SunmiQrcodeLevel.LEVEL_H));
+      // await SunmiPrinter.lineWrap(20);
       await SunmiPrinter.printText('Merci pour votre confiance',
           style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 20, bold: true));
       await SunmiPrinter.lineWrap(20);
@@ -236,7 +238,7 @@ class CashierPrinter {
 
   static Future<void> _separator() async {
     await SunmiPrinter.printText(
-      '═══════════════════════════════',
+      '════════════════',
       style: SunmiTextStyle(align: SunmiPrintAlign.CENTER),
     );
   }
