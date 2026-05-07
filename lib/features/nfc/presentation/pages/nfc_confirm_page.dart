@@ -24,6 +24,7 @@ import 'package:cashier/features/nfc/presentation/widgets/nfc_confirm_line_list.
 
 class NfcConfirmPage extends StatefulWidget {
   final String nfcTagId;
+
   const NfcConfirmPage({super.key, required this.nfcTagId});
 
   @override
@@ -39,7 +40,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
   List<NfcLineInfo> _availableLines = [];
 
   // ── Driver mode ──────────────────────────────────────────────────────────
-  bool _isDriverMode = false;
+  bool? _isDriverMode;
   NfcDriverInfo? _driver;
 
   // ── Passenger mode ───────────────────────────────────────────────────────
@@ -78,7 +79,8 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 
     final driverFut = (() async {
       try {
-        driver = await sl<DriverRemoteDataSource>().lookupByNfc(widget.nfcTagId);
+        driver =
+            await sl<DriverRemoteDataSource>().lookupByNfc(widget.nfcTagId);
       } catch (_) {}
     })();
 
@@ -168,8 +170,8 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 
   // ── Seat validation dialog (passenger) ───────────────────────────────────
 
-  Future<bool> _showSeatValidationDialog(
-      int available, {required bool hasNext}) async {
+  Future<bool> _showSeatValidationDialog(int available,
+      {required bool hasNext}) async {
     final l = AppLocalizations.of(context);
     final result = await showDialog<bool>(
       context: context,
@@ -204,8 +206,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(l.cancel,
-                  style: TextStyle(color: c.textSecondary)),
+              child: Text(l.cancel, style: TextStyle(color: c.textSecondary)),
             ),
             if (hasNext)
               ElevatedButton(
@@ -238,7 +239,8 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 
     final taxiId = _resolvedTaxiId;
     if (taxiId == null) {
-      showAppError(context, message: AppLocalizations.of(context).noTaxiForLine);
+      showAppError(context,
+          message: AppLocalizations.of(context).noTaxiForLine);
       return;
     }
 
@@ -320,7 +322,11 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
           onPressed: () => context.go('/home'),
         ),
         title: Text(
-          _isDriverMode ? l.driverProfile : l.nfcDetected,
+          _isDriverMode == null
+              ? l.nfcScanning
+              : _isDriverMode == true
+                  ? l.driverProfile
+                  : l.nfcDetected,
           style: TextStyle(
               color: c.textPrimary, fontSize: 16, fontWeight: FontWeight.w600),
         ),
@@ -331,7 +337,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                 child: CircularProgressIndicator(color: AppColors.primary))
             : _loadError != null
                 ? _buildError(l)
-                : _isDriverMode
+                : _isDriverMode == true
                     ? _buildDriverContent(l)
                     : _buildPassengerContent(l),
       ),
@@ -350,31 +356,31 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Center(
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                      border:
-                          Border.all(color: AppColors.primary, width: 1.5),
-                    ),
-                    child: const Icon(Icons.nfc,
-                        color: AppColors.primary, size: 32),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Center(
-                  child: Text(
-                    l.driverIdentified,
-                    style: TextStyle(
-                        color: c.textSecondary,
-                        fontSize: 12,
-                        letterSpacing: 0.4),
-                  ),
-                ),
-                const SizedBox(height: 20),
+                // Center(
+                //   child: Container(
+                //     width: 64,
+                //     height: 64,
+                //     decoration: BoxDecoration(
+                //       color: AppColors.primary.withValues(alpha: 0.12),
+                //       shape: BoxShape.circle,
+                //       border:
+                //           Border.all(color: AppColors.primary, width: 1.5),
+                //     ),
+                //     child: const Icon(Icons.nfc,
+                //         color: AppColors.primary, size: 32),
+                //   ),
+                // ),
+                // const SizedBox(height: 6),
+                // Center(
+                //   child: Text(
+                //     l.driverIdentified,
+                //     style: TextStyle(
+                //         color: c.textSecondary,
+                //         fontSize: 12,
+                //         letterSpacing: 0.4),
+                //   ),
+                // ),
+                // const SizedBox(height: 20),
                 _DriverCard(driver: _driver!, l: l),
                 const SizedBox(height: 24),
                 Row(
@@ -436,8 +442,9 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                 height: 52,
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed:
-                      (_adding || _selectedLine == null) ? null : _addDriverToQueue,
+                  onPressed: (_adding || _selectedLine == null)
+                      ? null
+                      : _addDriverToQueue,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.black,
@@ -461,8 +468,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
               ),
               TextButton(
                 onPressed: () => context.go('/home'),
-                child: Text(l.cancel,
-                    style: TextStyle(color: c.textSecondary)),
+                child: Text(l.cancel, style: TextStyle(color: c.textSecondary)),
               ),
             ],
           ),
@@ -556,8 +562,10 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 
   Widget _buildPassengerBottomCta(AppLocalizations l, bool isResolving) {
     final c = AppColors.of(context);
-    final disabled =
-        _adding || isResolving || _selectedLine == null || _selectedSeat == null;
+    final disabled = _adding ||
+        isResolving ||
+        _selectedLine == null ||
+        _selectedSeat == null;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
       child: Column(
@@ -592,8 +600,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
           const SizedBox(height: 4),
           TextButton(
             onPressed: () => context.go('/home'),
-            child: Text(l.cancel,
-                style: TextStyle(color: c.textSecondary)),
+            child: Text(l.cancel, style: TextStyle(color: c.textSecondary)),
           ),
         ],
       ),
@@ -639,6 +646,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 class _DriverCard extends StatelessWidget {
   final NfcDriverInfo driver;
   final AppLocalizations l;
+
   const _DriverCard({required this.driver, required this.l});
 
   @override
@@ -664,9 +672,7 @@ class _DriverCard extends StatelessWidget {
               value: driver.name),
           const _Divider(),
           _InfoRow(
-              icon: Icons.phone_outlined,
-              label: l.phone,
-              value: driver.phone),
+              icon: Icons.phone_outlined, label: l.phone, value: driver.phone),
           const _Divider(),
           _InfoRow(
               icon: Icons.location_on_outlined,
@@ -687,6 +693,7 @@ class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+
   const _InfoRow(
       {required this.icon, required this.label, required this.value});
 
@@ -720,6 +727,7 @@ class _InfoRow extends StatelessWidget {
 
 class _Divider extends StatelessWidget {
   const _Divider();
+
   @override
   Widget build(BuildContext context) {
     final c = AppColors.of(context);
@@ -729,6 +737,7 @@ class _Divider extends StatelessWidget {
 
 class _EmptyLines extends StatelessWidget {
   const _EmptyLines();
+
   @override
   Widget build(BuildContext context) {
     final c = AppColors.of(context);
