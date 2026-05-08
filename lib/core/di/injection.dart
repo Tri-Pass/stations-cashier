@@ -3,6 +3,7 @@ import 'package:cashier/core/l10n/locale_notifier.dart';
 import 'package:cashier/core/theme/theme_notifier.dart';
 import 'package:cashier/core/notifiers/booking_refresh_notifier.dart';
 import 'package:cashier/core/network/api_client.dart';
+import 'package:cashier/core/network/connectivity_service.dart';
 import 'package:cashier/core/network/socket_service.dart';
 import 'package:cashier/core/storage/local_storage.dart';
 
@@ -57,6 +58,7 @@ Future<void> setupDependencies() async {
   sl.registerLazySingleton(() => BookingRefreshNotifier());
   sl.registerLazySingleton(() => ApiClient(sl()));
   sl.registerLazySingleton(() => SocketService.getInstance());
+  sl.registerLazySingleton(() => ConnectivityService());
 
   // Auth feature
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSource(sl()));

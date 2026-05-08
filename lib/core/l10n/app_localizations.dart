@@ -231,6 +231,15 @@ class AppLocalizations {
 
   String get continueAnyway => _t('Continuer', 'متابعة');
 
+  // ── Connectivity ─────────────────────────────────────────────────────────
+  String get noConnectionTitle =>
+      _t('Pas de connexion internet', 'لا يوجد اتصال بالإنترنت');
+
+  String get noConnectionBanner =>
+      _t('Vérification de la connexion…', 'جارٍ التحقق من الاتصال…');
+
+  String get connectionRestored => _t('Connexion rétablie', 'تم استعادة الاتصال');
+
   // ── Profile ───────────────────────────────────────────────────────────────
   String get profile => _t('Profil', 'الملف الشخصي');
 
