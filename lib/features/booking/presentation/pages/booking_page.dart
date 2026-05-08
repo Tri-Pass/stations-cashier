@@ -195,14 +195,15 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
 
   // Cash: await API → get real ticket → print → show success
   Future<void> _bookSeats(TaxiInfo taxi, int count) async {
-    if (!taxi.isFirst) {
-      final candidates = _queue.where((t) => t.isFirst);
-      final firstTaxi = candidates.isEmpty ? null : candidates.first;
-      if (firstTaxi != null && _availableFor(firstTaxi) >= count) {
-        final l = AppLocalizations.of(context);
-        showAppError(context, message: l.cannotReserveBeforeFirstFull(_availableFor(firstTaxi), firstTaxi.plateNumber));
-        return;
-      }
+    final firstEligible = _queue.firstWhere(
+      (t) => _availableFor(t) >= count,
+      orElse: () => taxi,
+    );
+    if (firstEligible.id != taxi.id) {
+      final l = AppLocalizations.of(context);
+      final position = _queue.indexOf(firstEligible) + 1;
+      showAppError(context, message: l.cannotReserveBeforeFirstFull(position, _availableFor(firstEligible), firstEligible.plateNumber));
+      return;
     }
 
     if (_paymentMethod == 'cash') {
