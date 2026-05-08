@@ -99,6 +99,7 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
           taxiCount: e.activeTaxiCount,
         )).toList();
         _linesLoading = false;
+        _linesError = null;
       });
     } catch (e) {
       if (mounted) setState(() { _linesLoading = false; _linesError = e.toString(); });
@@ -382,15 +383,10 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
                 ),
               ),
             )
-          : RefreshIndicator(
-              key: _refreshKey,
-              onRefresh: _refresh,
-              color: AppColors.primary,
-              backgroundColor: c.surface,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  GestureDetector(
+          : NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                SliverToBoxAdapter(
+                  child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onVerticalDragStart: (_) => _topDragDelta = 0,
                     onVerticalDragUpdate: (d) {
@@ -423,14 +419,18 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      children: _buildTaxiCards(),
-                    ),
-                  ),
-                ],
+                ),
+              ],
+              body: RefreshIndicator(
+                key: _refreshKey,
+                onRefresh: _refresh,
+                color: AppColors.primary,
+                backgroundColor: c.surface,
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: _buildTaxiCards(),
+                ),
               ),
             ),
       ),
