@@ -225,6 +225,10 @@ class AppLocalizations {
       'Le taxi $plate (1er) a $available place(s) disponible(s).\nVoulez-vous quand même réserver ce taxi ?',
       'التاكسي $plate (الأول) لديه $available مقعد(مقاعد) متاحة.\nهل تريد الحجز مع هذا التاكسي على أي حال؟');
 
+  String cannotReserveBeforeFirstFull(int available, String plate) => _t(
+      'Impossible de réserver depuis ce taxi. Le taxi $plate (1er) a encore $available place(s) disponible(s).',
+      'لا يمكن الحجز من هذا التاكسي. التاكسي $plate (الأول) لا يزال لديه $available مقعد(مقاعد) متاحة.');
+
   String get continueAnyway => _t('Continuer', 'متابعة');
 
   // ── Profile ───────────────────────────────────────────────────────────────
