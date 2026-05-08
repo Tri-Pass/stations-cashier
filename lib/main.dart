@@ -11,6 +11,7 @@ import 'package:cashier/navigation/router.dart';
 import 'package:cashier/core/services/sunmi_nfc_service.dart';
 import 'package:cashier/core/storage/local_storage.dart';
 import 'package:cashier/core/theme/app_theme.dart';
+import 'package:cashier/core/widgets/connectivity_wrapper.dart';
 import 'package:cashier/features/auth/domain/repositories/auth_repository.dart';
 import 'package:cashier/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -111,11 +112,13 @@ class _TaxiDriverAppState extends State<TaxiDriverApp> {
                 GlobalCupertinoLocalizations.delegate,
               ],
               routerConfig: _router,
-              builder: (context, child) => MediaQuery(
-                data: MediaQuery.of(context).copyWith(
-                  textScaler: const TextScaler.linear(AppFontSizes.scale),
+              builder: (context, child) => ConnectivityWrapper(
+                child: MediaQuery(
+                  data: MediaQuery.of(context).copyWith(
+                    textScaler: const TextScaler.linear(AppFontSizes.scale),
+                  ),
+                  child: child!,
                 ),
-                child: child!,
               ),
             ),
           ),
