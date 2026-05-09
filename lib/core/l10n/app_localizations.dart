@@ -98,6 +98,13 @@ class AppLocalizations {
 
   String get processing => _t('Traitement...', 'جاري المعالجة...');
 
+  String get nfcProcessing => _t('Traitement en cours…', 'جاري المعالجة...');
+
+  String get nfcError => _t('Erreur NFC', 'خطأ NFC');
+
+  String get nfcBookingFailed =>
+      _t('Échec de la réservation. Réessayez.', 'فشل الحجز. حاول مرة أخرى.');
+
   // ── NFC link page ─────────────────────────────────────────────────────────
   String get nfcLinkTitle => _t('NFC', 'NFC');
 
