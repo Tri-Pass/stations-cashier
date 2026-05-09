@@ -47,7 +47,7 @@ class NfcLinkSection extends StatelessWidget {
                 _buildInputCard(l, c),
                 const SizedBox(height: 20),
                 SizedBox(
-                  height: 220,
+                  height: 250,
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 280),
                     child: tagId != null
