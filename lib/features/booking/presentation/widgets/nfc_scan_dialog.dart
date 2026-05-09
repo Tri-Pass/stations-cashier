@@ -79,7 +79,7 @@ class _NfcScanDialogState extends State<NfcScanDialog>
       setState(() {
         _processing = false;
         _scanning = true;
-        _errorMessage = 'Échec de la réservation. Réessayez.';
+        _errorMessage = AppLocalizations.of(context).nfcBookingFailed;
       });
       _pulseCtrl.repeat(reverse: true);
     }
@@ -148,9 +148,9 @@ class _NfcScanDialogState extends State<NfcScanDialog>
             const SizedBox(height: 20),
             Text(
               _processing
-                  ? 'Traitement en cours…'
+                  ? l.nfcProcessing
                   : _errorMessage != null
-                      ? 'Erreur NFC'
+                      ? l.nfcError
                       : l.nfcReading,
               style: TextStyle(color: c.textPrimary, fontSize: 17, fontWeight: FontWeight.w600),
             ),
