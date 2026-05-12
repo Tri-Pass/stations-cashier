@@ -280,9 +280,7 @@ class AppLocalizations {
 
   String get cashoutsListLabel => _t('DÉTAIL DES PAIEMENTS', 'تفاصيل المدفوعات');
 
-  String get noPayments => _t(
-      'Aucun paiement pour cette date',
-      'لا توجد مدفوعات لهذا التاريخ');
+  String get noPayments => _t('Aucun paiement', 'لا توجد مدفوعات');
 
   String get filterDate => _t('DATE', 'التاريخ');
 

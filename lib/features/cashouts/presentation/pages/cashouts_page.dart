@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:cashier/core/di/injection.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/theme/app_theme.dart';
@@ -80,19 +81,20 @@ class _CashoutsPageState extends State<CashoutsPage> {
   }
 
   Future<void> _pickDate({required bool isFrom}) async {
+    final l = AppLocalizations.of(context);
+    final c = AppColors.of(context);
     final now = DateTime.now();
     final initial = isFrom ? _dateFrom : _dateTo;
-    final picked = await showDatePicker(
+    final picked = await showModalBottomSheet<DateTime>(
       context: context,
-      initialDate: initial,
-      firstDate: DateTime(now.year - 1),
-      lastDate: now,
-      builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme:
-              Theme.of(ctx).colorScheme.copyWith(primary: AppColors.primary),
-        ),
-        child: child!,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _CompactDatePickerSheet(
+        initialDate: initial,
+        firstDate: DateTime(now.year - 1),
+        lastDate: now,
+        l: l,
+        c: c,
       ),
     );
     if (picked == null) return;
@@ -107,6 +109,17 @@ class _CashoutsPageState extends State<CashoutsPage> {
     });
     _load();
   }
+
+  void _resetDateFilter() {
+    final now = DateTime.now();
+    setState(() {
+      _dateFrom = now;
+      _dateTo = now;
+    });
+    _load();
+  }
+
+  bool get _isDefaultDateRange => _isToday(_dateFrom) && _isToday(_dateTo);
 
   bool _isToday(DateTime d) {
     final now = DateTime.now();
@@ -260,14 +273,14 @@ class _CashoutsPageState extends State<CashoutsPage> {
           child: _DateChip(
             label: l.dateFrom,
             value: _formatDate(l, _dateFrom),
+            isToday: _isToday(_dateFrom),
             onTap: () => _pickDate(isFrom: true),
             c: c,
           ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.arrow_forward,
-              size: 16, color: c.textSecondary),
+          child: Icon(Icons.arrow_forward, size: 16, color: c.textSecondary),
         ),
         Expanded(
           child: _DateChip(
@@ -275,10 +288,27 @@ class _CashoutsPageState extends State<CashoutsPage> {
             value: _isSameDay && _isToday(_dateTo)
                 ? l.today
                 : _formatDate(l, _dateTo),
+            isToday: _isToday(_dateTo),
             onTap: () => _pickDate(isFrom: false),
             c: c,
           ),
         ),
+        if (!_isDefaultDateRange) ...[
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: _resetDateFilter,
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: c.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: c.border),
+              ),
+              child: Icon(Icons.close, color: c.textSecondary, size: 16),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -464,7 +494,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
         delegate: SliverChildBuilderDelegate(
           (_, i) => Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: CashoutCard(cashout: items[i]),
+            child: CashoutCard(cashout: items[i], filter: _paymentMethod),
           ),
           childCount: items.length,
         ),
@@ -478,12 +508,14 @@ class _CashoutsPageState extends State<CashoutsPage> {
 class _DateChip extends StatelessWidget {
   final String label;
   final String value;
+  final bool isToday;
   final VoidCallback onTap;
   final AppColors c;
 
   const _DateChip({
     required this.label,
     required this.value,
+    required this.isToday,
     required this.onTap,
     required this.c,
   });
@@ -492,12 +524,17 @@ class _DateChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: c.surface,
+          color: isToday
+              ? AppColors.primary.withValues(alpha: 0.07)
+              : c.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: c.border),
+          border: Border.all(
+            color: isToday ? AppColors.primary.withValues(alpha: 0.4) : c.border,
+          ),
         ),
         child: Row(
           children: [
@@ -516,7 +553,7 @@ class _DateChip extends StatelessWidget {
                   const SizedBox(height: 1),
                   Text(value,
                       style: TextStyle(
-                          color: c.textPrimary,
+                          color: isToday ? AppColors.primary : c.textPrimary,
                           fontSize: 13,
                           fontWeight: FontWeight.bold)),
                 ],
@@ -673,6 +710,344 @@ class _AdvancedFilterSheet extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Compact date picker bottom sheet ────────────────────────────────────────
+
+class _CompactDatePickerSheet extends StatefulWidget {
+  final DateTime initialDate;
+  final DateTime firstDate;
+  final DateTime lastDate;
+  final AppLocalizations l;
+  final AppColors c;
+
+  const _CompactDatePickerSheet({
+    required this.initialDate,
+    required this.firstDate,
+    required this.lastDate,
+    required this.l,
+    required this.c,
+  });
+
+  @override
+  State<_CompactDatePickerSheet> createState() =>
+      _CompactDatePickerSheetState();
+}
+
+class _CompactDatePickerSheetState extends State<_CompactDatePickerSheet> {
+  late DateTime _selected;
+  late DateTime _viewMonth;
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.initialDate;
+    _viewMonth = DateTime(widget.initialDate.year, widget.initialDate.month);
+  }
+
+  bool get _canGoPrev {
+    final prev = DateTime(_viewMonth.year, _viewMonth.month - 1);
+    final first = DateTime(widget.firstDate.year, widget.firstDate.month);
+    return !prev.isBefore(first);
+  }
+
+  bool get _canGoNext {
+    final next = DateTime(_viewMonth.year, _viewMonth.month + 1);
+    final last = DateTime(widget.lastDate.year, widget.lastDate.month);
+    return !next.isAfter(last);
+  }
+
+  bool _isSelected(int day) =>
+      _selected.year == _viewMonth.year &&
+      _selected.month == _viewMonth.month &&
+      _selected.day == day;
+
+  bool _isToday(int day) {
+    final now = DateTime.now();
+    return now.year == _viewMonth.year &&
+        now.month == _viewMonth.month &&
+        now.day == day;
+  }
+
+  bool _isDisabled(int day) {
+    final date = DateTime(_viewMonth.year, _viewMonth.month, day);
+    final first = DateTime(
+        widget.firstDate.year, widget.firstDate.month, widget.firstDate.day);
+    final last = DateTime(
+        widget.lastDate.year, widget.lastDate.month, widget.lastDate.day);
+    return date.isBefore(first) || date.isAfter(last);
+  }
+
+  Widget _buildGrid(AppColors c) {
+    final daysInMonth =
+        DateTime(_viewMonth.year, _viewMonth.month + 1, 0).day;
+    final startOffset = _viewMonth.weekday - 1; // Monday = 0
+
+    final cells = <Widget>[
+      for (int i = 0; i < startOffset; i++) const SizedBox(),
+      for (int day = 1; day <= daysInMonth; day++)
+        _DayCell(
+          day: day,
+          selected: _isSelected(day),
+          isToday: _isToday(day),
+          disabled: _isDisabled(day),
+          onTap: _isDisabled(day)
+              ? null
+              : () => setState(() => _selected =
+                  DateTime(_viewMonth.year, _viewMonth.month, day)),
+          c: c,
+        ),
+    ];
+
+    // Pad to fill last row
+    while (cells.length % 7 != 0) { cells.add(const SizedBox()); }
+
+    final rows = <Widget>[];
+    for (int i = 0; i < cells.length; i += 7) {
+      rows.add(Row(
+        children: cells
+            .sublist(i, i + 7)
+            .map((cell) => Expanded(child: cell))
+            .toList(),
+      ));
+      if (i + 7 < cells.length) rows.add(const SizedBox(height: 2));
+    }
+    return Column(mainAxisSize: MainAxisSize.min, children: rows);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = widget.l;
+    final c = widget.c;
+    final locale = l.isAr ? 'ar' : 'fr';
+    final monthLabel =
+        DateFormat('MMMM yyyy', locale).format(_viewMonth);
+    final dayNames = l.isAr
+        ? ['إث', 'ثل', 'أر', 'خم', 'جم', 'سب', 'أح']
+        : ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 10),
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: c.border,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Month navigation
+          Row(
+            children: [
+              _NavButton(
+                  icon: Icons.chevron_left,
+                  enabled: _canGoPrev,
+                  onTap: () => setState(() => _viewMonth =
+                      DateTime(_viewMonth.year, _viewMonth.month - 1)),
+                  c: c),
+              Expanded(
+                child: Text(
+                  monthLabel,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: c.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _NavButton(
+                  icon: Icons.chevron_right,
+                  enabled: _canGoNext,
+                  onTap: () => setState(() => _viewMonth =
+                      DateTime(_viewMonth.year, _viewMonth.month + 1)),
+                  c: c),
+            ],
+          ),
+          const SizedBox(height: 12),
+
+          // Weekday headers
+          Row(
+            children: dayNames
+                .map((d) => Expanded(
+                      child: Center(
+                        child: Text(
+                          d,
+                          style: TextStyle(
+                            color: c.textSecondary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+          const SizedBox(height: 6),
+
+          // Day grid
+          _buildGrid(c),
+
+          const SizedBox(height: 16),
+
+          // Cancel / OK
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: c.textSecondary,
+                    side: BorderSide(color: c.border),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: Text(l.cancel),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(_selected),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: Text(l.ok,
+                      style:
+                          const TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DayCell extends StatelessWidget {
+  final int day;
+  final bool selected;
+  final bool isToday;
+  final bool disabled;
+  final VoidCallback? onTap;
+  final AppColors c;
+
+  const _DayCell({
+    required this.day,
+    required this.selected,
+    required this.isToday,
+    required this.disabled,
+    required this.onTap,
+    required this.c,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final Color textColor;
+    final Decoration? decoration;
+
+    if (selected) {
+      decoration = const BoxDecoration(
+        color: AppColors.primary,
+        shape: BoxShape.circle,
+      );
+      textColor = Colors.white;
+    } else if (isToday) {
+      decoration = BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.primary, width: 1.5),
+      );
+      textColor = AppColors.primary;
+    } else if (disabled) {
+      decoration = null;
+      textColor = c.textSecondary.withValues(alpha: 0.35);
+    } else {
+      decoration = null;
+      textColor = c.textPrimary;
+    }
+
+    return GestureDetector(
+      onTap: onTap,
+      child: SizedBox(
+        height: 38,
+        child: Center(
+          child: Container(
+            width: 34,
+            height: 34,
+            alignment: Alignment.center,
+            decoration: decoration,
+            child: Text(
+              '$day',
+              style: TextStyle(
+                color: textColor,
+                fontSize: 13,
+                fontWeight: selected || isToday
+                    ? FontWeight.bold
+                    : FontWeight.normal,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NavButton extends StatelessWidget {
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onTap;
+  final AppColors c;
+
+  const _NavButton({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+    required this.c,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: enabled ? c.iconBg : Colors.transparent,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Icon(
+          icon,
+          color: enabled
+              ? c.textPrimary
+              : c.textSecondary.withValues(alpha: 0.3),
+          size: 20,
+        ),
       ),
     );
   }
