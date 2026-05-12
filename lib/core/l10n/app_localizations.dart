@@ -271,6 +271,59 @@ class AppLocalizations {
 
   String get disconnect => _t('Déconnecter', 'خروج');
 
+  // ── Cashouts ─────────────────────────────────────────────────────────────
+  String get navCashouts => _t('Paiements', 'المدفوعات');
+
+  String get cashoutsTitle => _t('Paiements chauffeurs', 'مدفوعات السائقين');
+
+  String get totalCashouts => _t('Total à payer', 'إجمالي المدفوعات');
+
+  String get cashoutsListLabel => _t('DÉTAIL DES PAIEMENTS', 'تفاصيل المدفوعات');
+
+  String get noPayments => _t(
+      'Aucun paiement pour cette date',
+      'لا توجد مدفوعات لهذا التاريخ');
+
+  String get filterDate => _t('DATE', 'التاريخ');
+
+  String get dateFrom => _t('Du', 'من');
+
+  String get dateTo => _t('Au', 'إلى');
+
+  String get today => _t('Aujourd\'hui', 'اليوم');
+
+  String get allMethods => _t('Tous', 'الكل');
+
+  String get filtersLabel => _t('Filtres', 'الفلاتر');
+
+  String get clearFilters => _t('Effacer', 'مسح');
+
+  String get applyFilters => _t('Appliquer', 'تطبيق');
+
+  String get filterTaxi => _t('N° taxi (plaque)', 'رقم التاكسي');
+
+  String get filterDriverName => _t('Nom du chauffeur', 'اسم السائق');
+
+  String get filterLine => _t('Ligne (ex: Rabat)', 'الخط (مثال: الرباط)');
+
+  String get trips => _t('courses', 'رحلة');
+
+  String get amountToPay => _t('Montant à payer', 'المبلغ المستحق');
+
+  String get taxiFullTitle => _t('Taxi complet !', 'اكتمل التاكسي!');
+
+  String get taxiFullSubtitle => _t(
+      'Payez le montant suivant au chauffeur',
+      'ادفع المبلغ التالي للسائق');
+
+  String get cashSeatsLabel => _t('Places cash', 'مقاعد نقداً');
+
+  String get nfcSeatsLabel => _t('Places NFC', 'مقاعد NFC');
+
+  String get cashoutLoadError => _t(
+      'Impossible de charger les données — réessayez',
+      'تعذّر تحميل البيانات — أعد المحاولة');
+
   // ── Settings ──────────────────────────────────────────────────────────────
   String get language => _t('Langue', 'اللغة');
 

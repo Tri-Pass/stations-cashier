@@ -30,6 +30,12 @@ import 'package:cashier/features/booking/domain/usecases/create_booking_usecase.
 // Drivers
 import 'package:cashier/features/drivers/data/datasources/driver_remote_datasource.dart';
 
+// Cashouts
+import 'package:cashier/features/cashouts/data/datasources/cashout_remote_datasource.dart';
+import 'package:cashier/features/cashouts/data/repositories/cashout_repository_impl.dart';
+import 'package:cashier/features/cashouts/domain/repositories/cashout_repository.dart';
+import 'package:cashier/features/cashouts/domain/usecases/get_cashouts_summary_usecase.dart';
+
 // Passengers
 import 'package:cashier/features/passengers/data/datasources/passenger_remote_datasource.dart';
 import 'package:cashier/features/passengers/data/repositories/passenger_repository_impl.dart';
@@ -81,6 +87,11 @@ Future<void> setupDependencies() async {
 
   // Drivers feature
   sl.registerLazySingleton(() => DriverRemoteDataSource(sl()));
+
+  // Cashouts feature
+  sl.registerLazySingleton(() => CashoutRemoteDataSource(sl()));
+  sl.registerLazySingleton<CashoutRepository>(() => CashoutRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => GetCashoutsSummaryUseCase(sl()));
 
   // Passengers feature
   sl.registerLazySingleton(() => PassengerRemoteDataSource(sl()));

@@ -20,6 +20,7 @@ import 'package:cashier/features/booking/presentation/widgets/taxi_card.dart';
 import 'package:cashier/core/widgets/app_notification.dart';
 import 'package:cashier/features/booking/presentation/widgets/success_dialog.dart';
 import 'package:cashier/features/booking/presentation/widgets/nfc_scan_dialog.dart';
+import 'package:cashier/features/booking/presentation/widgets/taxi_full_payment_dialog.dart';
 
 // ─── Main Booking Page ────────────────────────────────────────────────────────
 
@@ -217,7 +218,9 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         return;
       }
       _printWithTicket(result, taxi, count);
-      _showSuccessDialog(count);
+      await _showSuccessDialog(count);
+      if (!mounted) return;
+      _maybeShowTaxiFullDialog(taxi);
       _loadLines();
       if (_selectedLine != null) _loadQueue(_selectedLine!.id, silent: true);
     } else {
@@ -258,10 +261,11 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         : 'Station';
 
     if (result.ticket != null) {
-      CashierPrinter.printTicket(
-        ticket: result.ticket!.copyWith(seatNumber: count),
-        stationName: stationName,
-      );
+      //Todo: Printer active
+      // CashierPrinter.printTicket(
+      //   ticket: result.ticket!.copyWith(seatNumber: count),
+      //   stationName: stationName,
+      // );
     } else {
       CashierPrinter.printBooking(
         stationName: stationName,
@@ -274,11 +278,28 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
     }
   }
 
-  void _showSuccessDialog(int count) {
-    showDialog(
+  Future<void> _showSuccessDialog(int count) {
+    return showDialog(
       context: context,
       builder: (ctx) => SuccessDialog(count: count),
     );
+  }
+
+  void _maybeShowTaxiFullDialog(TaxiInfo taxi) {
+    if (_selectedLine == null) return;
+    final totalOccupied = taxi.occupiedSeats + (_sessionBooked[taxi.id] ?? 0);
+    if (totalOccupied >= taxi.totalSeats) {
+      //Todo: display the taxi full payment
+      // showDialog(
+      //   context: context,
+      //   builder: (_) => TaxiFullPaymentDialog(
+      //     taxi: taxi,
+      //     pricePerSeat: _selectedLine!.price,
+      //     lineOrigin: _selectedLine!.origin,
+      //     lineDestination: _selectedLine!.destination,
+      //   ),
+      // );
+    }
   }
 
   // NFC: dialog handles card scan + API call internally, returns result via onBooked
@@ -296,10 +317,12 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
           method: 'nfc',
           nfcTagId: tagId,
         ),
-        onBooked: (result) {
+        onBooked: (result) async {
           setState(() => _sessionBooked[taxi.id] = (_sessionBooked[taxi.id] ?? 0) + count);
           _printWithTicket(result, taxi, count);
-          _showSuccessDialog(count);
+          await _showSuccessDialog(count);
+          if (!mounted) return;
+          _maybeShowTaxiFullDialog(taxi);
           _loadLines();
           if (_selectedLine != null) _loadQueue(_selectedLine!.id, silent: true);
         },
