@@ -39,6 +39,9 @@ class ApiEndpoints {
   static String nfcTopup(String tagId)     => '/api/cashier/passengers/nfc/$tagId/topup';
   static String phoneTopup(String phone)   => '/api/cashier/passengers/phone/$phone/topup';
 
+  // ── Cashouts ──────────────────────────────────────────────────────────────
+  static const String cashoutsSummary = '/api/cashier/cashouts/summary';
+
   // ── Socket channels ───────────────────────────────────────────────────────
   static String stationChannel(String stationId) => 'station/$stationId';
 }

@@ -2,6 +2,7 @@ import 'package:cashier/navigation/main_shell.dart';
 import 'package:cashier/features/booking/presentation/pages/booking_page.dart';
 import 'package:cashier/features/nfc/presentation/pages/nfc_link_page.dart';
 import 'package:cashier/features/profile/presentation/pages/profile_page.dart';
+import 'package:cashier/features/cashouts/presentation/pages/cashouts_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cashier/features/auth/presentation/pages/login_page.dart';
 import 'package:cashier/features/nfc/presentation/pages/nfc_confirm_page.dart';
@@ -31,6 +32,10 @@ GoRouter createRouter(String initialLocation) => GoRouter(
             GoRoute(
               path: '/nfc-link',
               builder: (c, s) => const NfcLinkPage(),
+            ),
+            GoRoute(
+              path: '/cashouts',
+              builder: (c, s) => const CashoutsPage(),
             ),
           ],
         ),

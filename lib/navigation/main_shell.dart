@@ -44,19 +44,32 @@ class _BottomNav extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _NavItem(
-                icon: Icons.local_taxi_outlined,
-                activeIcon: Icons.local_taxi,
-                label: l.navReserve,
-                isActive: location == '/booking',
-                onTap: () => context.go('/booking'),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.local_taxi_outlined,
+                  activeIcon: Icons.local_taxi,
+                  label: l.navReserve,
+                  isActive: location == '/booking',
+                  onTap: () => context.go('/booking'),
+                ),
               ),
-              _NavItem(
-                icon: Icons.nfc_outlined,
-                activeIcon: Icons.nfc,
-                label: l.navLinkNfc,
-                isActive: location == '/nfc-link',
-                onTap: () => context.go('/nfc-link'),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.receipt_long_outlined,
+                  activeIcon: Icons.receipt_long,
+                  label: l.navCashouts,
+                  isActive: location == '/cashouts',
+                  onTap: () => context.go('/cashouts'),
+                ),
+              ),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.nfc_outlined,
+                  activeIcon: Icons.nfc,
+                  label: l.navLinkNfc,
+                  isActive: location == '/nfc-link',
+                  onTap: () => context.go('/nfc-link'),
+                ),
               ),
             ],
           ),
@@ -89,7 +102,8 @@ class _NavItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 8),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
           color: isActive
               ? AppColors.primary.withValues(alpha: 0.15)

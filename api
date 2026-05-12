@@ -1,94 +1,34 @@
-Cashier App — API Reference
-All endpoints used by the cashier application, grouped by feature area.
-Existing Endpoints (reused from courtier API)
-Method
-Endpoint
-Body / Response
-POST
-/auth/login
-Body
-{ phone, password }
+now:
+ticket == seat
 
-Response
-{ token, cashier }
-GET
-/auth/me
-Response
-{ cashier profile, station }
+better:
+ticket == trip
 
-Auth
-Method
-Endpoint
-Body / Response
-POST
-/auth/cashier/logout
-Response
-200 OK
+is better to work the ticket == trip or we keep it as it is now ticket == seat
 
-Station & Lines
-Method
-Endpoint
-Body / Response
-GET
-/stations/{stationId}/lines
-Response
-[{ id, origin, destination, price, activeTaxiCount }]
+needed api:
+list ticket by driver to get teh ticket of driver
 
-Taxi Queue
-Method
-Endpoint
-Body / Response
-GET
-/stations/{stationId}/lines/{lineId}/queue
-Response
-[{ id, plateNumber, totalSeats, occupiedSeats, status, isFirst, driver: { name, phone, licenseNumber, permitNumber } }]
+/api/cashier/ticket
+param: driverId = string
 
-Bookings
-Method
-Endpoint
-Body / Response
-POST
-/bookings
-Body
-{ taxiId, lineId, seatCount, paymentMethod: "cash", cashierId }
+cashout ticket
 
-Response
-{ bookingId, confirmedAt, ticket: { ... } }
-POST
-/bookings
-Body
-{ taxiId, lineId, seatCount, paymentMethod: "nfc", nfcTagId, cashierId }
+/api/cashier/ticket
+param: ticketId = String, all = bool
 
-Response
-{ bookingId, confirmedAt, passengerBalanceAfter, ticket: { ... } }
-ℹ  Same endpoint — paymentMethod drives the logic (cash or nfc).
+to update in exist api:
 
-NFC — Passenger Lookup
-Method
-Endpoint
-Body / Response
-GET
-/passengers/nfc/{tagId}
-Response
-{ id, name, phone, balance, recentTrips: [{ line, date, amount }] }
-Used both in the booking NFC dialog (on card scan) and on the /nfc-confirm page.
-NFC — Link Tag to Passenger
-Method
-Endpoint
-Body / Response
-POST
-/passengers/{passengerId}/nfc
-Body
-{ nfcTagId,name, phone, }
+/api/cashier/cashout/summary
 
-Response
-{ id, name, phone, nfcTagId }
+remove taxi from teh api of summery we dont need tehtaxi data
 
-WebSocket
-Channel: station/{stationId}   Direction: Server → Client
-Event
-Description
-TAXI_JOINED
-New taxi enters the queue
-TAXI_LEFT
-Taxi departs the station
+remove teh nfc because alredy transferd to the driver account so we dont need them
+
+to check:
+the ticket paied alredy by nfc alredy transfred to the driver wallet when teh passenger paid teh seat so we dont neeth to them to in teh list of ticket
+
+
+
+
+

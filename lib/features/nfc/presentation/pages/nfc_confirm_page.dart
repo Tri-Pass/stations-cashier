@@ -271,10 +271,11 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
 
       final ticket = result.ticket;
       if (ticket != null) {
-        await CashierPrinter.printTicket(
-          ticket: ticket.copyWith(seatNumber: _selectedSeat!),
-          stationName: authState.driver.station?.name ?? '',
-        );
+        //Todo: Printer active
+        // await CashierPrinter.printTicket(
+        //   ticket: ticket.copyWith(seatNumber: _selectedSeat!),
+        //   stationName: authState.driver.station?.name ?? '',
+        // );
       }
 
       if (mounted) {
