@@ -1,9 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:cashier/core/di/injection.dart';
 import 'package:cashier/core/services/sunmi_nfc_service.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/theme/app_theme.dart';
+import 'package:cashier/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:cashier/features/auth/domain/entities/driver_entity.dart';
 import 'package:cashier/features/passengers/domain/entities/passenger_entity.dart';
 import 'package:cashier/features/passengers/domain/usecases/get_passenger_by_nfc_usecase.dart';
 import 'package:cashier/features/passengers/domain/usecases/link_nfc_usecase.dart';
@@ -273,19 +278,19 @@ class _NfcLinkPageState extends State<NfcLinkPage>
     final c = AppColors.of(context);
     return Scaffold(
       backgroundColor: c.background,
-      appBar: AppBar(
-        backgroundColor: c.surface,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text(
-          l.nfcLinkTitle,
-          style: TextStyle(
-            color: c.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: c.surface,
+      //   elevation: 0,
+      //   automaticallyImplyLeading: false,
+      //   title: Text(
+      //     l.nfcLinkTitle,
+      //     style: TextStyle(
+      //       color: c.textPrimary,
+      //       fontSize: 16,
+      //       fontWeight: FontWeight.w600,
+      //     ),
+      //   ),
+      // ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
@@ -293,43 +298,64 @@ class _NfcLinkPageState extends State<NfcLinkPage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildModeSelector(l),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: _mode == _PageMode.link
-                      ? NfcLinkSection(
-                          key: const ValueKey('link'),
-                          nameCtrl: _linkNameCtrl,
-                          phoneCtrl: _linkPhoneCtrl,
-                          scanning: _linkScanning,
-                          tagId: _linkTagId,
-                          linking: _linking,
-                          pulseAnim: _pulseAnim,
-                          nameError: _linkNameError,
-                          phoneError: _linkPhoneError,
-                          onStartScan: _linkStartScan,
-                          onCancelScan: _linkCancelScan,
-                          onReset: _linkReset,
-                          onLink: _linkPassenger,
-                        )
-                      : NfcRechargeSection(
-                          key: const ValueKey('recharge'),
-                          input: _rechargeInput,
-                          rechargeState: _rechargeState,
-                          amountCtrl: _amountCtrl,
-                          phoneCtrl: _rechargePhoneCtrl,
-                          passenger: _rechargePassenger,
-                          recharging: _recharging,
-                          pulseAnim: _pulseAnim,
-                          onInputChanged: (v) {
-                            _rechargeCancel();
-                            setState(() => _rechargeInput = v);
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (_mode == _PageMode.recharge)
+                        BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            if (state is! AuthAuthenticated) return const SizedBox.shrink();
+                            return _NfcBalanceCard(
+                              driver: state.driver,
+                              onWithdraw: () => context.push('/withdraw'),
+                              onTransfer: () => context.push('/transfer'),
+                              onTopUp: () => context.push('/topup'),
+                            );
                           },
-                          onScan: _rechargeScan,
-                          onCancel: _rechargeCancel,
-                          onConfirm: _confirmRecharge,
                         ),
+                      if (_mode == _PageMode.recharge) const SizedBox(height: 20),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        child: _mode == _PageMode.link
+                            ? NfcLinkSection(
+                                key: const ValueKey('link'),
+                                nameCtrl: _linkNameCtrl,
+                                phoneCtrl: _linkPhoneCtrl,
+                                scanning: _linkScanning,
+                                tagId: _linkTagId,
+                                linking: _linking,
+                                pulseAnim: _pulseAnim,
+                                nameError: _linkNameError,
+                                phoneError: _linkPhoneError,
+                                onStartScan: _linkStartScan,
+                                onCancelScan: _linkCancelScan,
+                                onReset: _linkReset,
+                                onLink: _linkPassenger,
+                              )
+                            : NfcRechargeSection(
+                                key: const ValueKey('recharge'),
+                                input: _rechargeInput,
+                                rechargeState: _rechargeState,
+                                amountCtrl: _amountCtrl,
+                                phoneCtrl: _rechargePhoneCtrl,
+                                passenger: _rechargePassenger,
+                                recharging: _recharging,
+                                pulseAnim: _pulseAnim,
+                                onInputChanged: (v) {
+                                  _rechargeCancel();
+                                  setState(() => _rechargeInput = v);
+                                },
+                                onScan: _rechargeScan,
+                                onCancel: _rechargeCancel,
+                                onConfirm: _confirmRecharge,
+                              ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -363,6 +389,244 @@ class _NfcLinkPageState extends State<NfcLinkPage>
           },
         ),
       ],
+    );
+  }
+}
+
+// ── Balance card ───────────────────────────────────────────────────────────────
+
+class _NfcBalanceCard extends StatelessWidget {
+  final DriverEntity driver;
+  final VoidCallback onWithdraw;
+  final VoidCallback onTransfer;
+  final VoidCallback onTopUp;
+
+  const _NfcBalanceCard({
+    required this.driver,
+    required this.onWithdraw,
+    required this.onTransfer,
+    required this.onTopUp,
+  });
+
+  void _showActions(BuildContext context, AppLocalizations l) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _BalanceActionsSheet(
+        l: l,
+        onWithdraw: onWithdraw,
+        onTransfer: onTransfer,
+        onTopUp: onTopUp,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final fmt = NumberFormat('#,##0.00');
+    return GestureDetector(
+      onTap: () => _showActions(context, l),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFF5A300), Color(0xFFE08000)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFF5A300).withValues(alpha: 0.28),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.account_balance_wallet,
+                  color: Colors.black87, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l.balance,
+                    style: const TextStyle(
+                        color: Colors.black54,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  const SizedBox(height: 2),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        fmt.format(driver.balance),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 2, left: 4),
+                        child: Text('MAD',
+                            style: TextStyle(
+                                color: Colors.black54,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.chevron_right,
+                  color: Colors.black87, size: 20),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Balance actions bottom sheet ───────────────────────────────────────────────
+
+class _BalanceActionsSheet extends StatelessWidget {
+  final AppLocalizations l;
+  final VoidCallback onWithdraw;
+  final VoidCallback onTransfer;
+  final VoidCallback onTopUp;
+
+  const _BalanceActionsSheet({
+    required this.l,
+    required this.onWithdraw,
+    required this.onTransfer,
+    required this.onTopUp,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = AppColors.of(context);
+    return Container(
+      decoration: BoxDecoration(
+        color: c.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 36,
+            height: 4,
+            decoration: BoxDecoration(
+              color: c.border,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          _ActionTile(
+            icon: Icons.north_east,
+            label: l.withdraw,
+            color: AppColors.red,
+            onTap: () { Navigator.pop(context); onWithdraw(); },
+            c: c,
+          ),
+          const SizedBox(height: 10),
+          _ActionTile(
+            icon: Icons.send,
+            label: l.transfer,
+            color: AppColors.primary,
+            onTap: () { Navigator.pop(context); onTransfer(); },
+            c: c,
+          ),
+          const SizedBox(height: 10),
+          _ActionTile(
+            icon: Icons.south_west,
+            label: l.topUp,
+            color: AppColors.teal,
+            onTap: () { Navigator.pop(context); onTopUp(); },
+            c: c,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  final AppColors c;
+
+  const _ActionTile({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+    required this.c,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: c.background,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: c.border),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: 14),
+            Text(
+              label,
+              style: TextStyle(
+                color: c.textPrimary,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            Icon(Icons.chevron_right, color: c.textSecondary, size: 18),
+          ],
+        ),
+      ),
     );
   }
 }

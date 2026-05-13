@@ -43,6 +43,24 @@ class ApiEndpoints {
   static const String cashoutsSummary = '/api/cashier/cashouts/summary';
   static const String tickets         = '/api/cashier/ticket';
 
+  // ── Wallet (cashier's own wallet) ─────────────────────────────────────────
+  static const String walletData     = '/api/cashier/wallet/data';
+  static const String walletIncrease = '/api/cashier/wallet/increase';
+  static const String walletWithdraw = '/api/cashier/wallet/withdraw';
+  static const String walletTransfer = '/api/cashier/wallet/transfer';
+  static const String walletCheckPin = '/api/cashier/wallet/check/codePin';
+  static const String ribTransferRequest = '/api/cashier/rib-transfer/request';
+  static const String cashplusCredit = '/api/cashier/cashplus/transactions/creditwallet';
+
+  static String walletOptions(String type) =>
+      '/api/cashier/wallet/options?type=$type';
+
+  static String walletCandidates(String search) =>
+      '/api/cashier/wallet/candidates?page=1&search=${Uri.encodeComponent(search)}';
+
+  static String cashierWalletChannel(String cashierId) =>
+      'cashier-wallet-$cashierId';
+
   // ── Socket channels ───────────────────────────────────────────────────────
   static String stationChannel(String stationId) => 'station/$stationId';
 }

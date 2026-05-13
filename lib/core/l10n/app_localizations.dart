@@ -194,6 +194,84 @@ class AppLocalizations {
 
   String get addToQueue => _t('Ajouter à la file', 'إضافة للطابور');
 
+  String get lineRequired => _t('Veuillez sélectionner une ligne', 'يرجى اختيار الخط');
+
+  String get alreadyInQueue => _t('Déjà dans la file d\'attente', 'موجود في الطابور');
+
+  String get alreadyInQueueSub => _t('Ce chauffeur est déjà enregistré dans la file d\'attente', 'هذا السائق مسجل بالفعل في قائمة الانتظار');
+
+  String get close => _t('Fermer', 'إغلاق');
+
+  String get withdraw => _t('Retirer', 'سحب');
+  String get transfer => _t('Transférer', 'تحويل');
+  String get topUp    => _t('Recharger', 'شحن');
+
+  // ── Wallet ────────────────────────────────────────────────────────────────
+  String get confirm            => _t('Confirmer', 'تأكيد');
+
+  // PIN sheet
+  String get confirmOperation   => _t('Confirmer l\'opération', 'تأكيد العملية');
+  String get enterPinToValidate => _t('Entrez votre code PIN pour valider', 'أدخل رمز PIN للتأكيد');
+  String get pinIncorrect       => _t('Code PIN incorrect', 'رمز PIN غير صحيح');
+  String get backToWallet       => _t('Retour au portefeuille', 'العودة للمحفظة');
+  String get linkCopied         => _t('Lien copié', 'تم نسخ الرابط');
+
+  // Transfer page
+  String get transferAmountTitle  => _t('Montant du transfert', 'مبلغ التحويل');
+  String get howMuchTransfer      => _t('Combien souhaitez-vous transférer ?', 'كم تريد أن تحوّل؟');
+  String get otherAmount          => _t('Autre montant', 'مبلغ آخر');
+  String get freeTransferNote     => _t('Les transferts sont gratuits', 'التحويلات مجانية');
+  String get chooseRecipient      => _t('Choisir le destinataire', 'اختر المستلم');
+  String get searchDriver         => _t('Rechercher un utilisateur', 'ابحث عن مستخدم');
+  String get searchPlaceholder    => _t('Nom ou téléphone...', 'اسم أو هاتف...');
+  String get noResults            => _t('Aucun résultat', 'لا توجد نتائج');
+  String get confirmTransferTitle => _t('Confirmer le transfert', 'تأكيد التحويل');
+  String get confirmTransferBtn   => _t('Confirmer', 'تأكيد');
+  String get continueBtn          => _t('Continuer', 'متابعة');
+  String get recipient            => _t('Destinataire', 'المستلم');
+  String get amountLabel          => _t('Montant', 'المبلغ');
+  String get fees                 => _t('Frais', 'الرسوم');
+  String get free                 => _t('Gratuit', 'مجاناً');
+  String get transferDoneTitle    => _t('Transfert envoyé !', 'تم إرسال التحويل!');
+  String transferDoneSub(String amount, String name) =>
+      _t('$amount MAD envoyés à $name', 'تم إرسال $amount درهم إلى $name');
+
+  // TopUp page
+  String get topUpWalletTitle   => _t('Recharger mon portefeuille', 'شحن محفظتي');
+  String get chooseTopUpMethod  => _t('Choisir la méthode', 'اختر الطريقة');
+  String get howToTopUp         => _t('Comment souhaitez-vous recharger ?', 'كيف تريد الشحن؟');
+  String get topUpAmountTitle   => _t('Montant à recharger', 'المبلغ المراد شحنه');
+  String get modeSubLabel       => _t('Via ', 'عبر ');
+  String get modeLabel          => _t('Méthode', 'الطريقة');
+  String get confirmTopUp       => _t('Confirmer la recharge', 'تأكيد الشحن');
+  String get confirmTopUpBtn    => _t('Confirmer', 'تأكيد');
+  String get topUpSentTitle     => _t('Demande envoyée !', 'تم إرسال الطلب!');
+  String get topUpSentSubtitle  => _t('Votre demande de recharge a été soumise', 'تم تقديم طلب الشحن');
+  String get qrTopUpTitle       => _t('Code QR généré', 'تم توليد رمز QR');
+  String get qrTopUpSubtitle    => _t('Scannez ce code au guichet', 'امسح هذا الرمز عند الشباك');
+  String get paymentLinkTitle   => _t('Lien de paiement', 'رابط الدفع');
+  String get cardLinkSubtitle   => _t('Utilisez ce lien pour effectuer le paiement', 'استخدم هذا الرابط للدفع');
+
+  // Withdraw page
+  String get withdrawMethod       => _t('Méthode de retrait', 'طريقة السحب');
+  String get howToWithdraw        => _t('Comment souhaitez-vous retirer ?', 'كيف تريد السحب؟');
+  String get withdrawAmountTitle  => _t('Montant à retirer', 'المبلغ المراد سحبه');
+  String get bankInfoTitle        => _t('Informations bancaires', 'معلومات بنكية');
+  String get enterBankInfo        => _t('Entrez vos coordonnées bancaires', 'أدخل بياناتك البنكية');
+  String get beneficiaryName      => _t('Nom du bénéficiaire', 'اسم المستفيد');
+  String get rib                  => _t('RIB', 'رقم الحساب (RIB)');
+  String get cashplusTitle        => _t('CashPlus', 'كاش بلاس');
+  String get cashplusRecipient    => _t('Numéro du bénéficiaire', 'رقم المستفيد');
+  String get cashplusPhoneLabel   => _t('Téléphone CashPlus', 'هاتف كاش بلاس');
+  String get motif                => _t('Motif', 'السبب');
+  String get motifHint            => _t('Optionnel', 'اختياري');
+  String get confirmWithdrawTitle => _t('Confirmer le retrait', 'تأكيد السحب');
+  String get confirmWithdrawBtn   => _t('Confirmer', 'تأكيد');
+  String get qrWithdrawTitle      => _t('Code QR de retrait', 'رمز QR للسحب');
+  String get qrWithdrawSubtitle   => _t('Présentez ce code au guichet', 'أرِ هذا الرمز عند الشباك');
+  String get withdrawDoneTitle    => _t('Retrait en cours...', 'السحب قيد المعالجة...');
+  String get withdrawDoneSub      => _t('Votre demande de retrait a été traitée', 'تم معالجة طلب السحب');
+
   String get lineLabel => _t('ligne', 'خط');
 
   String get tagNotRecognized =>

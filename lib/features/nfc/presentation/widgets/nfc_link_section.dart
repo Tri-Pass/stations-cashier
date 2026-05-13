@@ -39,27 +39,25 @@ class NfcLinkSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _buildInputCard(l, c),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 250,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 280),
-                    child: tagId != null
-                        ? _buildDetected(l, c)
-                        : scanning
-                            ? _buildScanning(l, c)
-                            : _buildIdle(l, c),
-                  ),
+        SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildInputCard(l, c),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 250,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 280),
+                  child: tagId != null
+                      ? _buildDetected(l, c)
+                      : scanning
+                          ? _buildScanning(l, c)
+                          : _buildIdle(l, c),
                 ),
-                const SizedBox(height: 16),
-              ],
-            ),
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
         _buildActionButton(l, c),
