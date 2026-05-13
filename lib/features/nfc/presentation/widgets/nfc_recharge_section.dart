@@ -58,15 +58,16 @@ class NfcRechargeSection extends StatelessWidget {
           const SizedBox(height: 16),
         ],
         if (input == RechargeInput.nfc)
-          Expanded(
+          ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: 190),
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 280),
               child: _buildNfcStatusArea(l, c),
             ),
           )
         else
-          const Spacer(),
-        const SizedBox(height: 16),
+          const SizedBox(height: 16),
+        const SizedBox(height: 12),
         _buildActionButton(l, c),
         const SizedBox(height: 8),
       ],

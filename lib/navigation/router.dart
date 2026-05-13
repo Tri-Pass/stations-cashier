@@ -4,6 +4,9 @@ import 'package:cashier/features/nfc/presentation/pages/nfc_link_page.dart';
 import 'package:cashier/features/profile/presentation/pages/profile_page.dart';
 import 'package:cashier/features/cashouts/presentation/pages/cashouts_page.dart';
 import 'package:cashier/features/cashouts/presentation/pages/driver_tickets_page.dart';
+import 'package:cashier/features/wallet/presentation/pages/withdraw_page.dart';
+import 'package:cashier/features/wallet/presentation/pages/transfer_page.dart';
+import 'package:cashier/features/wallet/presentation/pages/top_up_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cashier/features/auth/presentation/pages/login_page.dart';
 import 'package:cashier/features/nfc/presentation/pages/nfc_confirm_page.dart';
@@ -54,7 +57,20 @@ GoRouter createRouter(String initialLocation) => GoRouter(
         GoRoute(
           path: '/nfc-confirm',
           builder: (c, s) => NfcConfirmPage(nfcTagId: s.extra as String),
-        ), GoRoute(
+        ),
+        GoRoute(
+          path: '/withdraw',
+          builder: (c, s) => const WithdrawPage(),
+        ),
+        GoRoute(
+          path: '/transfer',
+          builder: (c, s) => const TransferPage(),
+        ),
+        GoRoute(
+          path: '/topup',
+          builder: (c, s) => const TopUpPage(),
+        ),
+        GoRoute(
           path: '/profile',
           builder: (c, s) => const ProfilePage(),
         ),

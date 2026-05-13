@@ -293,7 +293,11 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
   // ── Enqueue (driver) ─────────────────────────────────────────────────────
 
   Future<void> _addDriverToQueue() async {
-    if (_driver == null || _selectedLine == null) return;
+    if (_driver == null) return;
+    if (_selectedLine == null) {
+      showAppError(context, message: AppLocalizations.of(context).lineRequired);
+      return;
+    }
     setState(() => _adding = true);
     try {
       await sl<DriverRemoteDataSource>()
@@ -348,6 +352,93 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
   // ── Driver content ────────────────────────────────────────────────────────
 
   Widget _buildDriverContent(AppLocalizations l) {
+    if (_driver!.alreadyQueued) return _buildAlreadyQueuedContent(l);
+    return _buildEnqueueContent(l);
+  }
+
+  Widget _buildAlreadyQueuedContent(AppLocalizations l) {
+    final c = AppColors.of(context);
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _DriverCard(driver: _driver!, l: l),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.teal.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
+                  ),
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: AppColors.teal.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.playlist_add_check_rounded,
+                            color: AppColors.teal, size: 34),
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        l.alreadyInQueue,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: AppColors.teal,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        l.alreadyInQueueSub,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: c.textSecondary,
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: SizedBox(
+            height: 52,
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => context.go('/home'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.teal,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
+                elevation: 0,
+              ),
+              child: Text(l.close,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEnqueueContent(AppLocalizations l) {
     final c = AppColors.of(context);
     return Column(
       children: [
@@ -357,31 +448,6 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Center(
-                //   child: Container(
-                //     width: 64,
-                //     height: 64,
-                //     decoration: BoxDecoration(
-                //       color: AppColors.primary.withValues(alpha: 0.12),
-                //       shape: BoxShape.circle,
-                //       border:
-                //           Border.all(color: AppColors.primary, width: 1.5),
-                //     ),
-                //     child: const Icon(Icons.nfc,
-                //         color: AppColors.primary, size: 32),
-                //   ),
-                // ),
-                // const SizedBox(height: 6),
-                // Center(
-                //   child: Text(
-                //     l.driverIdentified,
-                //     style: TextStyle(
-                //         color: c.textSecondary,
-                //         fontSize: 12,
-                //         letterSpacing: 0.4),
-                //   ),
-                // ),
-                // const SizedBox(height: 20),
                 _DriverCard(driver: _driver!, l: l),
                 const SizedBox(height: 24),
                 Row(
@@ -408,10 +474,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                     if (_availableLines.isNotEmpty)
                       Text(
                         '${_availableLines.length} ${l.lineLabel}s',
-                        style: TextStyle(
-                          color: c.textSecondary,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: c.textSecondary, fontSize: 12),
                       ),
                   ],
                 ),
@@ -443,9 +506,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                 height: 52,
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: (_adding || _selectedLine == null)
-                      ? null
-                      : _addDriverToQueue,
+                  onPressed: _adding ? null : _addDriverToQueue,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.black,
