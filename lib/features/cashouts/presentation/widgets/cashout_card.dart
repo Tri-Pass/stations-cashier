@@ -5,8 +5,11 @@ import 'package:cashier/features/cashouts/domain/entities/cashout_summary_entity
 
 class CashoutCard extends StatelessWidget {
   final CashoutSummaryEntity cashout;
+  // null = show both, 'cash' = cash only, 'nfc' = nfc only
+  final String? filter;
+  final VoidCallback? onTap;
 
-  const CashoutCard({super.key, required this.cashout});
+  const CashoutCard({super.key, required this.cashout, this.filter, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +19,9 @@ class CashoutCard extends StatelessWidget {
     final hasRoute =
         cashout.line.origin.isNotEmpty || cashout.line.destination.isNotEmpty;
 
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       decoration: BoxDecoration(
         color: c.surface,
         borderRadius: BorderRadius.circular(14),
@@ -88,27 +93,31 @@ class CashoutCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(
               children: [
-                Expanded(
-                  child: _AmountTile(
-                    icon: Icons.payments_outlined,
-                    label: l.cash,
-                    amount: cashout.cashAmount,
-                    color: const Color(0xFF2E7D32),
-                    bgColor: const Color(0xFF2E7D32).withValues(alpha: 0.10),
-                    c: c,
+                if (filter != 'nfc') ...[
+                  Expanded(
+                    child: _AmountTile(
+                      icon: Icons.payments_outlined,
+                      label: l.cash,
+                      amount: cashout.cashAmount,
+                      color: const Color(0xFF2E7D32),
+                      bgColor: const Color(0xFF2E7D32).withValues(alpha: 0.10),
+                      c: c,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _AmountTile(
-                    icon: Icons.nfc,
-                    label: l.nfc,
-                    amount: cashout.nfcAmount,
-                    color: const Color(0xFF1565C0),
-                    bgColor: const Color(0xFF1565C0).withValues(alpha: 0.10),
-                    c: c,
+                ],
+                if (filter == null) const SizedBox(width: 8),
+                if (filter != 'cash') ...[
+                  Expanded(
+                    child: _AmountTile(
+                      icon: Icons.nfc,
+                      label: l.nfc,
+                      amount: cashout.nfcAmount,
+                      color: const Color(0xFF1565C0),
+                      bgColor: const Color(0xFF1565C0).withValues(alpha: 0.10),
+                      c: c,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -149,6 +158,7 @@ class CashoutCard extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cashier/core/widgets/compact_date_picker.dart';
 import 'package:cashier/core/di/injection.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/theme/app_theme.dart';
@@ -82,18 +84,11 @@ class _CashoutsPageState extends State<CashoutsPage> {
   Future<void> _pickDate({required bool isFrom}) async {
     final now = DateTime.now();
     final initial = isFrom ? _dateFrom : _dateTo;
-    final picked = await showDatePicker(
+    final picked = await showCompactDatePicker(
       context: context,
       initialDate: initial,
       firstDate: DateTime(now.year - 1),
       lastDate: now,
-      builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(
-          colorScheme:
-              Theme.of(ctx).colorScheme.copyWith(primary: AppColors.primary),
-        ),
-        child: child!,
-      ),
     );
     if (picked == null) return;
     setState(() {
@@ -107,6 +102,17 @@ class _CashoutsPageState extends State<CashoutsPage> {
     });
     _load();
   }
+
+  void _resetDateFilter() {
+    final now = DateTime.now();
+    setState(() {
+      _dateFrom = now;
+      _dateTo = now;
+    });
+    _load();
+  }
+
+  bool get _isDefaultDateRange => _isToday(_dateFrom) && _isToday(_dateTo);
 
   bool _isToday(DateTime d) {
     final now = DateTime.now();
@@ -236,8 +242,9 @@ class _CashoutsPageState extends State<CashoutsPage> {
                       const SizedBox(height: 10),
                       _buildPaymentMethodFilter(l, c),
                       const SizedBox(height: 12),
-                      _buildSummaryCard(l, c),
-                      const SizedBox(height: 16),
+                      //Todo
+                      // _buildSummaryCard(l, c),
+                      // const SizedBox(height: 16),
                       _buildSectionLabel(l.cashoutsListLabel, c),
                       const SizedBox(height: 8),
                     ],
@@ -260,14 +267,14 @@ class _CashoutsPageState extends State<CashoutsPage> {
           child: _DateChip(
             label: l.dateFrom,
             value: _formatDate(l, _dateFrom),
+            isToday: _isToday(_dateFrom),
             onTap: () => _pickDate(isFrom: true),
             c: c,
           ),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.arrow_forward,
-              size: 16, color: c.textSecondary),
+          child: Icon(Icons.arrow_forward, size: 16, color: c.textSecondary),
         ),
         Expanded(
           child: _DateChip(
@@ -275,10 +282,27 @@ class _CashoutsPageState extends State<CashoutsPage> {
             value: _isSameDay && _isToday(_dateTo)
                 ? l.today
                 : _formatDate(l, _dateTo),
+            isToday: _isToday(_dateTo),
             onTap: () => _pickDate(isFrom: false),
             c: c,
           ),
         ),
+        if (!_isDefaultDateRange) ...[
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: _resetDateFilter,
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: c.surface,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: c.border),
+              ),
+              child: Icon(Icons.close, color: c.textSecondary, size: 16),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -464,7 +488,15 @@ class _CashoutsPageState extends State<CashoutsPage> {
         delegate: SliverChildBuilderDelegate(
           (_, i) => Padding(
             padding: const EdgeInsets.only(bottom: 10),
-            child: CashoutCard(cashout: items[i]),
+            child: CashoutCard(
+              cashout: items[i],
+              filter: _paymentMethod,
+              onTap: () => context.push('/driver-tickets', extra: {
+                'driverId': items[i].driver.id,
+                'driverName': items[i].driver.name,
+                'driverPhone': items[i].driver.phone,
+              }),
+            ),
           ),
           childCount: items.length,
         ),
@@ -478,12 +510,14 @@ class _CashoutsPageState extends State<CashoutsPage> {
 class _DateChip extends StatelessWidget {
   final String label;
   final String value;
+  final bool isToday;
   final VoidCallback onTap;
   final AppColors c;
 
   const _DateChip({
     required this.label,
     required this.value,
+    required this.isToday,
     required this.onTap,
     required this.c,
   });
@@ -492,12 +526,17 @@ class _DateChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: c.surface,
+          color: isToday
+              ? AppColors.primary.withValues(alpha: 0.07)
+              : c.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: c.border),
+          border: Border.all(
+            color: isToday ? AppColors.primary.withValues(alpha: 0.4) : c.border,
+          ),
         ),
         child: Row(
           children: [
@@ -516,7 +555,7 @@ class _DateChip extends StatelessWidget {
                   const SizedBox(height: 1),
                   Text(value,
                       style: TextStyle(
-                          color: c.textPrimary,
+                          color: isToday ? AppColors.primary : c.textPrimary,
                           fontSize: 13,
                           fontWeight: FontWeight.bold)),
                 ],
@@ -677,6 +716,7 @@ class _AdvancedFilterSheet extends StatelessWidget {
     );
   }
 }
+
 
 class _FilterField extends StatelessWidget {
   final TextEditingController controller;

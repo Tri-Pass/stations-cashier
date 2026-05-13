@@ -32,9 +32,14 @@ import 'package:cashier/features/drivers/data/datasources/driver_remote_datasour
 
 // Cashouts
 import 'package:cashier/features/cashouts/data/datasources/cashout_remote_datasource.dart';
+import 'package:cashier/features/cashouts/data/datasources/ticket_remote_datasource.dart';
 import 'package:cashier/features/cashouts/data/repositories/cashout_repository_impl.dart';
+import 'package:cashier/features/cashouts/data/repositories/ticket_repository_impl.dart';
 import 'package:cashier/features/cashouts/domain/repositories/cashout_repository.dart';
+import 'package:cashier/features/cashouts/domain/repositories/ticket_repository.dart';
 import 'package:cashier/features/cashouts/domain/usecases/get_cashouts_summary_usecase.dart';
+import 'package:cashier/features/cashouts/domain/usecases/get_driver_tickets_usecase.dart';
+import 'package:cashier/features/cashouts/domain/usecases/cashout_ticket_usecase.dart';
 
 // Passengers
 import 'package:cashier/features/passengers/data/datasources/passenger_remote_datasource.dart';
@@ -92,6 +97,12 @@ Future<void> setupDependencies() async {
   sl.registerLazySingleton(() => CashoutRemoteDataSource(sl()));
   sl.registerLazySingleton<CashoutRepository>(() => CashoutRepositoryImpl(sl()));
   sl.registerLazySingleton(() => GetCashoutsSummaryUseCase(sl()));
+
+  // Tickets feature
+  sl.registerLazySingleton(() => TicketRemoteDataSource(sl()));
+  sl.registerLazySingleton<TicketRepository>(() => TicketRepositoryImpl(sl()));
+  sl.registerLazySingleton(() => GetDriverTicketsUseCase(sl()));
+  sl.registerLazySingleton(() => CashoutTicketUseCase(sl()));
 
   // Passengers feature
   sl.registerLazySingleton(() => PassengerRemoteDataSource(sl()));

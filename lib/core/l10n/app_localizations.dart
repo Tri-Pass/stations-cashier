@@ -276,13 +276,11 @@ class AppLocalizations {
 
   String get cashoutsTitle => _t('Paiements chauffeurs', 'مدفوعات السائقين');
 
-  String get totalCashouts => _t('Total à payer', 'إجمالي المدفوعات');
+  String get totalCashouts => _t('Total à payer aux chauffeurs', 'إجمالي المستحق للسائقين');
 
   String get cashoutsListLabel => _t('DÉTAIL DES PAIEMENTS', 'تفاصيل المدفوعات');
 
-  String get noPayments => _t(
-      'Aucun paiement pour cette date',
-      'لا توجد مدفوعات لهذا التاريخ');
+  String get noPayments => _t('Aucun paiement', 'لا توجد مدفوعات');
 
   String get filterDate => _t('DATE', 'التاريخ');
 
@@ -291,6 +289,8 @@ class AppLocalizations {
   String get dateTo => _t('Au', 'إلى');
 
   String get today => _t('Aujourd\'hui', 'اليوم');
+
+  String get allDates => _t('Toutes les dates', 'كل التواريخ');
 
   String get allMethods => _t('Tous', 'الكل');
 
@@ -323,6 +323,29 @@ class AppLocalizations {
   String get cashoutLoadError => _t(
       'Impossible de charger les données — réessayez',
       'تعذّر تحميل البيانات — أعد المحاولة');
+
+  // ── Driver tickets ────────────────────────────────────────────────────────
+  String get ticketsPageTitle  => _t('Tickets de course', 'تذاكر الرحلة');
+  String get ticketsListLabel  => _t('LISTE DES TICKETS', 'قائمة التذاكر');
+  String get cashout           => _t('Payer', 'دفع');
+  String get cashoutAll        => _t('Tout payer', 'دفع الكل');
+  String get confirmCashout    => _t('Confirmer', 'تأكيد');
+  String get confirmCashoutTitle => _t('Confirmer le paiement', 'تأكيد الدفع');
+  String get cashoutSuccess    => _t('Paiement effectué', 'تم الدفع بنجاح');
+  String get unpaid            => _t('À payer', 'للدفع');
+  String get paid              => _t('Payé', 'مدفوع');
+  String get allTickets        => _t('Tous', 'الكل');
+  String get noTickets         => _t('Aucun ticket pour ce chauffeur', 'لا توجد تذاكر لهذا السائق');
+  String get totalCashToPay    => _t('À payer au chauffeur', 'للدفع للسائق');
+  String get nfcAutoTransferred => _t('Transféré auto.', 'محوّل تلقائياً');
+
+  String confirmCashoutMsg(String amount) => _t(
+      'Payer $amount MAD au chauffeur pour ce ticket ?',
+      'هل تريد دفع $amount درهم للسائق لهذه الرحلة؟');
+
+  String confirmCashoutAllMsg(int count, String amount) => _t(
+      'Payer $count ticket(s) au chauffeur pour un total de $amount MAD ?',
+      'دفع $count رحلة للسائق بمجموع $amount درهم؟');
 
   // ── Settings ──────────────────────────────────────────────────────────────
   String get language => _t('Langue', 'اللغة');

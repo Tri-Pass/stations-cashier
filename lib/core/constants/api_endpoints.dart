@@ -41,6 +41,7 @@ class ApiEndpoints {
 
   // ── Cashouts ──────────────────────────────────────────────────────────────
   static const String cashoutsSummary = '/api/cashier/cashouts/summary';
+  static const String tickets         = '/api/cashier/ticket';
 
   // ── Socket channels ───────────────────────────────────────────────────────
   static String stationChannel(String stationId) => 'station/$stationId';

@@ -65,6 +65,7 @@ class _TaxiDriverAppState extends State<TaxiDriverApp> {
             _router.routerDelegate.currentConfiguration.uri.path;
         if (tagId.isNotEmpty &&
             currentPath != '/nfc-link' &&
+            currentPath != '/login' &&
             !SunmiNfcService.localHandlerActive) {
           _router.push('/nfc-confirm', extra: tagId);
         }
