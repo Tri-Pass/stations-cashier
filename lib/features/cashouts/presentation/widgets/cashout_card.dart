@@ -7,8 +7,9 @@ class CashoutCard extends StatelessWidget {
   final CashoutSummaryEntity cashout;
   // null = show both, 'cash' = cash only, 'nfc' = nfc only
   final String? filter;
+  final VoidCallback? onTap;
 
-  const CashoutCard({super.key, required this.cashout, this.filter});
+  const CashoutCard({super.key, required this.cashout, this.filter, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,9 @@ class CashoutCard extends StatelessWidget {
     final hasRoute =
         cashout.line.origin.isNotEmpty || cashout.line.destination.isNotEmpty;
 
-    return Container(
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
       decoration: BoxDecoration(
         color: c.surface,
         borderRadius: BorderRadius.circular(14),
@@ -155,6 +158,7 @@ class CashoutCard extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:cashier/features/booking/presentation/pages/booking_page.dart';
 import 'package:cashier/features/nfc/presentation/pages/nfc_link_page.dart';
 import 'package:cashier/features/profile/presentation/pages/profile_page.dart';
 import 'package:cashier/features/cashouts/presentation/pages/cashouts_page.dart';
+import 'package:cashier/features/cashouts/presentation/pages/driver_tickets_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cashier/features/auth/presentation/pages/login_page.dart';
 import 'package:cashier/features/nfc/presentation/pages/nfc_confirm_page.dart';
@@ -21,8 +22,8 @@ GoRouter createRouter(String initialLocation) => GoRouter(
         ),
         ShellRoute(
           builder: (context, state, child) => MainShell(
-            child: child,
             location: state.uri.path,
+            child: child,
           ),
           routes: [
             GoRoute(
@@ -38,6 +39,17 @@ GoRouter createRouter(String initialLocation) => GoRouter(
               builder: (c, s) => const CashoutsPage(),
             ),
           ],
+        ),
+        GoRoute(
+          path: '/driver-tickets',
+          builder: (c, s) {
+            final extra = s.extra as Map<String, dynamic>;
+            return DriverTicketsPage(
+              driverId: extra['driverId'] as String,
+              driverName: extra['driverName'] as String,
+              driverPhone: extra['driverPhone'] as String,
+            );
+          },
         ),
         GoRoute(
           path: '/nfc-confirm',
