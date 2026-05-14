@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
+import 'package:cashier/core/constants/api_endpoints.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
+import 'package:cashier/core/network/api_client.dart';
 import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/core/widgets/app_notification.dart';
 
 const walletAmountPresets = [100, 200, 300, 500];
 
 // ─── Payment option (from GET /api/cashier/wallet/options?type=...) ───────────
-// API returns: { reqType: int, code: string, label: string }
+// API returns: { req_type: "url"|"rib"|"cashplus", code: string, label: string }
 class WalletOption {
-  final int reqType;
+  final String reqType;
   final String code;
   final String label;
   const WalletOption(
       {required this.reqType, required this.code, required this.label});
 
   factory WalletOption.fromJson(Map<String, dynamic> j) => WalletOption(
-        reqType: (j['reqType'] as int?) ?? (j['id'] as int?) ?? 0,
-        code: (j['code'] as String?) ?? (j['type'] as String?) ?? '',
+        reqType: (j['req_type'] as String?) ?? (j['reqType'] as String?) ?? 'url',
+        code: (j['code'] as String?) ?? '',
         label: (j['label'] as String?) ?? '',
       );
 }
@@ -43,14 +46,14 @@ Color walletOptionColor(WalletOption o) {
 String walletOptionName(BuildContext context, WalletOption o) => o.label;
 
 // ─── PIN confirmation sheet ────────────────────────────────────────────────────
-Future<bool> showWalletPasswordSheet(BuildContext context) async {
-  final result = await showModalBottomSheet<bool>(
+// Returns the verified PIN string on success, null if cancelled or invalid.
+Future<String?> showWalletPasswordSheet(BuildContext context) async {
+  return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (_) => const _PasswordSheet(),
   );
-  return result == true;
 }
 
 class _PasswordSheet extends StatefulWidget {
@@ -58,6 +61,7 @@ class _PasswordSheet extends StatefulWidget {
   @override
   State<_PasswordSheet> createState() => _PasswordSheetState();
 }
+
 
 class _PasswordSheetState extends State<_PasswordSheet> {
   final _hiddenCtrl = TextEditingController();
@@ -89,9 +93,13 @@ class _PasswordSheetState extends State<_PasswordSheet> {
       _error = null;
     });
     try {
-      // TODO: POST /api/cashier/wallet/check/codePin { password: pin }
-      await Future.delayed(const Duration(milliseconds: 600));
-      if (mounted) Navigator.of(context).pop(true);
+      final res = await GetIt.instance<ApiClient>().post(
+        ApiEndpoints.walletCheckPin,
+        {'code_pin': pin},
+      );
+      final valid = (res['data'] as Map?)?['valid'] == true;
+      if (!valid) throw Exception('');
+      if (mounted) Navigator.of(context).pop(pin);
     } catch (_) {
       if (mounted) {
         setState(() {

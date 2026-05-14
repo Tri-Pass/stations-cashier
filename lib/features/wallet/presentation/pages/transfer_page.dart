@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cashier/core/constants/api_endpoints.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
+import 'package:cashier/core/network/api_client.dart';
 import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/features/wallet/presentation/widgets/wallet_flow_shared.dart';
 
@@ -11,6 +14,12 @@ class _Candidate {
   final String fullName;
   const _Candidate(
       {required this.userId, required this.phone, required this.fullName});
+
+  factory _Candidate.fromJson(Map<String, dynamic> j) => _Candidate(
+        userId: (j['user_id'] as String?) ?? '',
+        phone: (j['phone'] as String?) ?? '',
+        fullName: (j['full_name'] as String?) ?? '',
+      );
 }
 
 class TransferPage extends StatefulWidget {
@@ -44,9 +53,11 @@ class _TransferPageState extends State<TransferPage> {
       _candidates = [];
     });
     try {
-      // TODO: GET /api/cashier/wallet/candidates?search={q}
-      await Future.delayed(const Duration(milliseconds: 400));
-      setState(() => _candidates = []);
+      final res = await GetIt.instance<ApiClient>().get(ApiEndpoints.walletCandidates(q));
+      final list = (res['data'] as List?) ?? [];
+      setState(() => _candidates = list
+          .map((e) => _Candidate.fromJson(e as Map<String, dynamic>))
+          .toList());
     } catch (_) {
       setState(() => _candidates = []);
     } finally {
@@ -54,14 +65,17 @@ class _TransferPageState extends State<TransferPage> {
     }
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(String pin) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      // TODO: POST /api/cashier/wallet/transfer { userId, amount }
-      await Future.delayed(const Duration(milliseconds: 800));
+      await GetIt.instance<ApiClient>().post(ApiEndpoints.walletTransfer, {
+        'amount': _amount.toInt(),
+        'user_id': _recipient!.userId,
+        'code_pin': pin,
+      });
       setState(() => _step = 3);
     } catch (e) {
       setState(() => _error = e.toString());
@@ -78,8 +92,8 @@ class _TransferPageState extends State<TransferPage> {
 
   Future<void> _next() async {
     if (_step == 2) {
-      final ok = await showWalletPasswordSheet(context);
-      if (ok && mounted) _submit();
+      final pin = await showWalletPasswordSheet(context);
+      if (pin != null && mounted) _submit(pin);
       return;
     }
     setState(() => _step++);

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cashier/core/constants/api_endpoints.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
+import 'package:cashier/core/network/api_client.dart';
 import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/features/wallet/presentation/widgets/wallet_flow_shared.dart';
 
 enum _WithdrawFlow { desk, bank, cashplus }
 
 _WithdrawFlow _flowFor(WalletOption o) {
-  final s = '${o.code} ${o.label}'.toLowerCase();
-  if (s.contains('bank') || s.contains('virement')) return _WithdrawFlow.bank;
-  if (s.contains('cashplus') || s.contains('mobile')) return _WithdrawFlow.cashplus;
+  if (o.reqType == 'rib') return _WithdrawFlow.bank;
+  if (o.reqType == 'cashplus') return _WithdrawFlow.cashplus;
   return _WithdrawFlow.desk;
 }
 
@@ -58,21 +60,17 @@ class _WithdrawPageState extends State<WithdrawPage> {
       _error = null;
     });
     try {
-      // TODO: GET /api/cashier/wallet/options?type=withdraw
-      await Future.delayed(const Duration(milliseconds: 400));
+      final res = await GetIt.instance<ApiClient>().get(ApiEndpoints.walletOptions('withdraw'));
+      final list = (res['data'] as List?) ?? [];
       setState(() {
-        _options = [
-          const WalletOption(
-              reqType: 1, code: 'guichet_qr', label: 'Guichet (QR)'),
-          const WalletOption(
-              reqType: 2, code: 'bank', label: 'Virement bancaire'),
-          const WalletOption(
-              reqType: 3, code: 'cashplus', label: 'CashPlus Mobile'),
-        ];
+        _options = list.map((e) => WalletOption.fromJson(e as Map<String, dynamic>)).toList();
         _loadingOptions = false;
       });
-    } catch (_) {
-      setState(() => _loadingOptions = false);
+    } catch (e) {
+      setState(() {
+        _loadingOptions = false;
+        _error = e.toString();
+      });
     }
   }
 
@@ -102,8 +100,8 @@ class _WithdrawPageState extends State<WithdrawPage> {
   Future<void> _next() async {
     final isConfirmStep = _step == (_totalSteps - 1);
     if (isConfirmStep) {
-      final ok = await showWalletPasswordSheet(context);
-      if (ok && mounted) _submit();
+      final pin = await showWalletPasswordSheet(context);
+      if (pin != null && mounted) _submit(pin);
       return;
     }
     setState(() => _step++);
@@ -120,25 +118,32 @@ class _WithdrawPageState extends State<WithdrawPage> {
     });
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(String pin) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
+      final body = <String, dynamic>{
+        'amount': _amount.toInt(),
+        'option': _selectedOption!.code,
+        'code_pin': pin,
+      };
       if (_flow == _WithdrawFlow.bank) {
-        // TODO: POST /api/cashier/wallet/rib-transfer { amount, beneficiaryName, rib }
-        await Future.delayed(const Duration(milliseconds: 600));
-        setState(() => _step++);
+        body['beneficiary'] = _benefCtrl.text.trim();
+        body['rib'] = _ribCtrl.text.trim();
       } else if (_flow == _WithdrawFlow.cashplus) {
-        // TODO: POST /api/cashier/wallet/cashplus { amount, receiver_phone, motif? }
-        await Future.delayed(const Duration(milliseconds: 600));
-        setState(() => _step++);
-      } else {
-        // TODO: POST /api/cashier/wallet/withdraw { amount, reqType }
-        await Future.delayed(const Duration(milliseconds: 600));
-        setState(() => _step++);
+        body['phone'] = _phoneCtrl.text.trim();
+        if (_motifCtrl.text.trim().isNotEmpty) {
+          body['motif'] = _motifCtrl.text.trim();
+        }
       }
+      final res = await GetIt.instance<ApiClient>().post(ApiEndpoints.walletWithdraw, body);
+      final url = (res['data'] as Map?)?['url'] as String?;
+      setState(() {
+        _resultUrl = url;
+        _step++;
+      });
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {

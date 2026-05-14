@@ -60,7 +60,7 @@ class ApiClient {
     final body = jsonDecode(utf8.decode(response.bodyBytes));
     if (response.statusCode >= 200 && response.statusCode < 300) return body;
     final error =
-        (body is Map ? body['error'] : null) as String? ?? 'Erreur inconnue';
+        (body is Map ? (body['message'] ?? body['error']) : null) as String? ?? 'Erreur inconnue';
     throw ApiException(error, response.statusCode);
   }
 }
