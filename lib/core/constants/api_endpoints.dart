@@ -41,7 +41,8 @@ class ApiEndpoints {
 
   // ── Cashouts ──────────────────────────────────────────────────────────────
   static const String cashoutsSummary = '/api/cashier/cashouts/summary';
-  static const String tickets         = '/api/cashier/ticket';
+  static const String ticketsList     = '/api/cashier/ticket';
+  static const String cashout         = '/api/cashier/cashout';
 
   // ── Wallet (cashier's own wallet) ─────────────────────────────────────────
   static const String walletData     = '/api/cashier/wallet/data';

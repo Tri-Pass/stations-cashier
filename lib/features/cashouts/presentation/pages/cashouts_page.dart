@@ -17,8 +17,8 @@ class CashoutsPage extends StatefulWidget {
 }
 
 class _CashoutsPageState extends State<CashoutsPage> {
-  DateTime _dateFrom = DateTime.now();
-  DateTime _dateTo = DateTime.now();
+  DateTime? _dateFrom;
+  DateTime? _dateTo;
 
   // null = all methods
   String? _paymentMethod;
@@ -57,8 +57,8 @@ class _CashoutsPageState extends State<CashoutsPage> {
     try {
       final result = await sl<GetCashoutsSummaryUseCase>()(
         CashoutSummaryParams(
-          dateFrom: _toApiDate(_dateFrom),
-          dateTo: _toApiDate(_dateTo),
+          dateFrom: _dateFrom != null ? _toApiDate(_dateFrom!) : null,
+          dateTo: _dateTo != null ? _toApiDate(_dateTo!) : null,
           paymentMethod: _paymentMethod,
           taxi: _taxiCtrl.text.trim().isEmpty ? null : _taxiCtrl.text.trim(),
           driverName: _driverNameCtrl.text.trim().isEmpty
@@ -83,7 +83,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
 
   Future<void> _pickDate({required bool isFrom}) async {
     final now = DateTime.now();
-    final initial = isFrom ? _dateFrom : _dateTo;
+    final initial = isFrom ? (_dateFrom ?? now) : (_dateTo ?? now);
     final picked = await showCompactDatePicker(
       context: context,
       initialDate: initial,
@@ -94,25 +94,24 @@ class _CashoutsPageState extends State<CashoutsPage> {
     setState(() {
       if (isFrom) {
         _dateFrom = picked;
-        if (_dateTo.isBefore(_dateFrom)) _dateTo = _dateFrom;
+        if (_dateTo != null && _dateTo!.isBefore(_dateFrom!)) _dateTo = _dateFrom;
       } else {
         _dateTo = picked;
-        if (_dateFrom.isAfter(_dateTo)) _dateFrom = _dateTo;
+        if (_dateFrom != null && _dateFrom!.isAfter(_dateTo!)) _dateFrom = _dateTo;
       }
     });
     _load();
   }
 
   void _resetDateFilter() {
-    final now = DateTime.now();
     setState(() {
-      _dateFrom = now;
-      _dateTo = now;
+      _dateFrom = null;
+      _dateTo = null;
     });
     _load();
   }
 
-  bool get _isDefaultDateRange => _isToday(_dateFrom) && _isToday(_dateTo);
+  bool get _isDefaultDateRange => _dateFrom == null && _dateTo == null;
 
   bool _isToday(DateTime d) {
     final now = DateTime.now();
@@ -120,11 +119,13 @@ class _CashoutsPageState extends State<CashoutsPage> {
   }
 
   bool get _isSameDay =>
-      _dateFrom.year == _dateTo.year &&
-      _dateFrom.month == _dateTo.month &&
-      _dateFrom.day == _dateTo.day;
+      _dateFrom != null && _dateTo != null &&
+      _dateFrom!.year == _dateTo!.year &&
+      _dateFrom!.month == _dateTo!.month &&
+      _dateFrom!.day == _dateTo!.day;
 
-  String _formatDate(AppLocalizations l, DateTime d) {
+  String _formatDate(AppLocalizations l, DateTime? d) {
+    if (d == null) return '—';
     if (_isToday(d)) return l.today;
     return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
   }
@@ -267,7 +268,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
           child: _DateChip(
             label: l.dateFrom,
             value: _formatDate(l, _dateFrom),
-            isToday: _isToday(_dateFrom),
+            isToday: _dateFrom != null && _isToday(_dateFrom!),
             onTap: () => _pickDate(isFrom: true),
             c: c,
           ),
@@ -279,10 +280,10 @@ class _CashoutsPageState extends State<CashoutsPage> {
         Expanded(
           child: _DateChip(
             label: l.dateTo,
-            value: _isSameDay && _isToday(_dateTo)
+            value: _isSameDay && _dateTo != null && _isToday(_dateTo!)
                 ? l.today
                 : _formatDate(l, _dateTo),
-            isToday: _isToday(_dateTo),
+            isToday: _dateTo != null && _isToday(_dateTo!),
             onTap: () => _pickDate(isFrom: false),
             c: c,
           ),

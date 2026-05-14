@@ -262,10 +262,10 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
 
     if (result.ticket != null) {
       //Todo: Printer active
-      // CashierPrinter.printTicket(
-      //   ticket: result.ticket!.copyWith(seatNumber: count),
-      //   stationName: stationName,
-      // );
+      CashierPrinter.printTicket(
+        ticket: result.ticket!.copyWith(seatNumber: count),
+        stationName: stationName,
+      );
     } else {
       CashierPrinter.printBooking(
         stationName: stationName,

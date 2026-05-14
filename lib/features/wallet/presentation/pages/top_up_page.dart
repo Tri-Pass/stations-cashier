@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cashier/core/constants/api_endpoints.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
+import 'package:cashier/core/network/api_client.dart';
 import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/features/wallet/presentation/widgets/wallet_flow_shared.dart';
 
@@ -42,15 +45,10 @@ class _TopUpPageState extends State<TopUpPage> {
       _error = null;
     });
     try {
-      // TODO: GET /api/cashier/wallet/options?type=topup
-      await Future.delayed(const Duration(milliseconds: 400));
+      final res = await GetIt.instance<ApiClient>().get(ApiEndpoints.walletOptions('topup'));
+      final list = (res['data'] as List?) ?? [];
       setState(() {
-        _options = [
-          const WalletOption(
-              reqType: 1, code: 'guichet_qr', label: 'Guichet (QR)'),
-          const WalletOption(
-              reqType: 2, code: 'bank', label: 'Virement bancaire'),
-        ];
+        _options = list.map((e) => WalletOption.fromJson(e as Map<String, dynamic>)).toList();
         _loadingOptions = false;
       });
     } catch (e) {
@@ -61,16 +59,21 @@ class _TopUpPageState extends State<TopUpPage> {
     }
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(String pin) async {
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      // TODO: POST /api/cashier/wallet/increase { amount, reqType }
-      await Future.delayed(const Duration(milliseconds: 600));
+      final res = await GetIt.instance<ApiClient>().post(ApiEndpoints.walletIncrease, {
+        'amount': _amount.toInt(),
+        'option': _selectedMethod!.code,
+        'code_pin': pin,
+      });
+      final url = (res['data'] as Map?)?['url'] as String?;
       setState(() {
-        _noUrlSuccess = true;
+        _resultUrl = url;
+        _noUrlSuccess = url == null || url.isEmpty;
         _step = 3;
       });
     } catch (e) {
@@ -88,8 +91,8 @@ class _TopUpPageState extends State<TopUpPage> {
 
   Future<void> _next() async {
     if (_step == 2) {
-      final ok = await showWalletPasswordSheet(context);
-      if (ok && mounted) _submit();
+      final pin = await showWalletPasswordSheet(context);
+      if (pin != null && mounted) _submit(pin);
       return;
     }
     setState(() => _step++);
