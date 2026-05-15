@@ -249,6 +249,7 @@ class _NfcLinkPageState extends State<NfcLinkPage>
         balanceBefore: result.balanceBefore,
         balanceAfter: result.balanceAfter,
         method: method,
+        l: l,
       );
       if (!mounted) return;
       showAppSuccess(

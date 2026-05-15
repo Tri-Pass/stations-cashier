@@ -259,21 +259,24 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
     final stationName = authState is AuthAuthenticated
         ? (authState.driver.station?.name ?? 'Station')
         : 'Station';
+    final l = AppLocalizations.of(context);
 
     if (result.ticket != null) {
       //Todo: Printer active
       CashierPrinter.printTicket(
         ticket: result.ticket!.copyWith(seatNumber: count),
         stationName: stationName,
+        l: l,
       );
     } else {
       CashierPrinter.printBooking(
         stationName: stationName,
-        lineName: '${_selectedLine!.origin} → ${_selectedLine!.destination}',
+        lineName: _selectedLine!.destination,//${_selectedLine!.origin} → ${_selectedLine!.destination}
         taxiNumber: taxi.plateNumber,
         seatCount: count,
         totalPrice: count * _selectedLine!.price.toDouble(),
-        paymentMethod: _paymentMethod == 'cash' ? 'Espèces' : 'NFC',
+        paymentMethod: _paymentMethod == 'cash' ? l.printCash : l.nfc,
+        l: l,
       );
     }
   }
