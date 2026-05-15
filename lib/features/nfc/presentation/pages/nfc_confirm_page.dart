@@ -275,6 +275,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
         await CashierPrinter.printTicket(
           ticket: ticket.copyWith(seatNumber: _selectedSeat!),
           stationName: authState.driver.station?.name ?? '',
+          l: AppLocalizations.of(context),
         );
       }
 

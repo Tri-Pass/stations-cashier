@@ -425,6 +425,23 @@ class AppLocalizations {
       'Payer $count ticket(s) au chauffeur pour un total de $amount MAD ?',
       'دفع $count رحلة للسائق بمجموع $amount درهم؟');
 
+  // ── Printer labels ────────────────────────────────────────────────────────
+  String get printStation        => _t('Station', 'المحطة');
+  String get printLine           => _t('Ligne', 'الخط');
+  String get printTaxi           => _t('Taxi', 'التاكسي');
+  String get printDriver         => _t('Chauffeur', 'السائق');
+  String get printSeats          => _t('Places', 'المقاعد');
+  String get printTotal          => _t('Total', 'المجموع');
+  String get printPayment        => _t('Paiement', 'طريقة الدفع');
+  String get printCash           => _t('Espèces', 'نقداً');
+  String get printThankYou       => _t('Merci pour votre confiance', 'شكراً لثقتكم');
+  String get printRechargeTitle  => _t('RECHARGE DE COMPTE', 'شحن الحساب');
+  String get printName           => _t('Nom', 'الاسم');
+  String get printPhone          => _t('Tél', 'الهاتف');
+  String get printAmount         => _t('Montant', 'المبلغ');
+  String get printBalanceBefore  => _t('Solde avant', 'الرصيد قبل');
+  String get printBalanceAfter   => _t('Solde après', 'الرصيد بعد');
+
   // ── Settings ──────────────────────────────────────────────────────────────
   String get language => _t('Langue', 'اللغة');
 
