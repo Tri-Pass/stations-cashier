@@ -30,7 +30,10 @@ class SuccessDialog extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(l.bookingConfirmed,
-                style: TextStyle(color: c.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: c.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 6),
             Text(l.seatsBookedSuccess(count),
                 textAlign: TextAlign.center,
@@ -44,10 +47,13 @@ class SuccessDialog extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.green,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                   elevation: 0,
                 ),
-                child: Text(l.ok, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                child: Text(l.ok,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15)),
               ),
             ),
           ],

@@ -24,7 +24,8 @@ class PaymentButton extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withValues(alpha: 0.1) : c.surface,
+          color:
+              selected ? AppColors.primary.withValues(alpha: 0.1) : c.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: selected ? AppColors.primary : c.border,
@@ -35,7 +36,8 @@ class PaymentButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon,
-                color: selected ? AppColors.primary : c.textSecondary, size: 22),
+                color: selected ? AppColors.primary : c.textSecondary,
+                size: 22),
             const SizedBox(width: 8),
             Text(
               label,

@@ -15,7 +15,8 @@ class StationLineModel {
     required this.activeTaxiCount,
   });
 
-  factory StationLineModel.fromJson(Map<String, dynamic> json) => StationLineModel(
+  factory StationLineModel.fromJson(Map<String, dynamic> json) =>
+      StationLineModel(
         id: (json['_id'] ?? json['id'] ?? '') as String,
         origin: (json['origin'] ?? '') as String,
         destination: (json['destination'] ?? '') as String,
@@ -47,7 +48,8 @@ class QueueDriverModel {
     required this.balance,
   });
 
-  factory QueueDriverModel.fromJson(Map<String, dynamic> json) => QueueDriverModel(
+  factory QueueDriverModel.fromJson(Map<String, dynamic> json) =>
+      QueueDriverModel(
         name: (json['name'] ?? '') as String,
         phone: (json['phone'] ?? '') as String,
         licenseNumber: (json['licenseNumber'] ?? '') as String,

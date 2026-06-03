@@ -4,15 +4,18 @@ class CashoutDriverModel {
   final String id;
   final String name;
   final String phone;
-  const CashoutDriverModel({required this.id, required this.name, required this.phone});
+  const CashoutDriverModel(
+      {required this.id, required this.name, required this.phone});
 
-  factory CashoutDriverModel.fromJson(Map<String, dynamic> json) => CashoutDriverModel(
+  factory CashoutDriverModel.fromJson(Map<String, dynamic> json) =>
+      CashoutDriverModel(
         id: (json['id'] ?? json['_id'] ?? '') as String,
         name: (json['name'] ?? '') as String,
         phone: (json['phone'] ?? '') as String,
       );
 
-  CashoutDriverEntity toEntity() => CashoutDriverEntity(id: id, name: name, phone: phone);
+  CashoutDriverEntity toEntity() =>
+      CashoutDriverEntity(id: id, name: name, phone: phone);
 }
 
 class CashoutTaxiModel {
@@ -20,12 +23,15 @@ class CashoutTaxiModel {
   final String plateNumber;
   const CashoutTaxiModel({required this.id, required this.plateNumber});
 
-  factory CashoutTaxiModel.fromJson(Map<String, dynamic> json) => CashoutTaxiModel(
+  factory CashoutTaxiModel.fromJson(Map<String, dynamic> json) =>
+      CashoutTaxiModel(
         id: (json['id'] ?? json['_id'] ?? '') as String,
-        plateNumber: (json['plate_number'] ?? json['plateNumber'] ?? '') as String,
+        plateNumber:
+            (json['plate_number'] ?? json['plateNumber'] ?? '') as String,
       );
 
-  CashoutTaxiEntity toEntity() => CashoutTaxiEntity(id: id, plateNumber: plateNumber);
+  CashoutTaxiEntity toEntity() =>
+      CashoutTaxiEntity(id: id, plateNumber: plateNumber);
 }
 
 class CashoutLineModel {
@@ -40,7 +46,8 @@ class CashoutLineModel {
     required this.price,
   });
 
-  factory CashoutLineModel.fromJson(Map<String, dynamic> json) => CashoutLineModel(
+  factory CashoutLineModel.fromJson(Map<String, dynamic> json) =>
+      CashoutLineModel(
         id: (json['id'] ?? json['_id'] ?? '') as String,
         origin: (json['origin'] ?? '') as String,
         destination: (json['destination'] ?? '') as String,
@@ -50,13 +57,17 @@ class CashoutLineModel {
   factory CashoutLineModel.fromLineString(String lineStr) {
     final parts = lineStr.split(' → ');
     if (parts.length == 2) {
-      return CashoutLineModel(id: '', origin: parts[0].trim(), destination: parts[1].trim(), price: 0);
+      return CashoutLineModel(
+          id: '',
+          origin: parts[0].trim(),
+          destination: parts[1].trim(),
+          price: 0);
     }
     return CashoutLineModel(id: '', origin: lineStr, destination: '', price: 0);
   }
 
-  CashoutLineEntity toEntity() =>
-      CashoutLineEntity(id: id, origin: origin, destination: destination, price: price);
+  CashoutLineEntity toEntity() => CashoutLineEntity(
+      id: id, origin: origin, destination: destination, price: price);
 }
 
 class CashoutSummaryModel {
@@ -89,20 +100,34 @@ class CashoutSummaryModel {
   factory CashoutSummaryModel.fromJson(Map<String, dynamic> json) {
     final driverRaw = json['driver'] as Map<String, dynamic>?;
     final taxiRaw = json['taxi'] as Map<String, dynamic>?;
-    final lineRaw = json['line'] is Map ? json['line'] as Map<String, dynamic> : null;
+    final lineRaw =
+        json['line'] is Map ? json['line'] as Map<String, dynamic> : null;
     final departedRaw = (json['departed_at'] ?? json['departedAt']) as String?;
 
     // API uses ticketsCount; fall back to snake/camel variants
-    final totalSeats =
-        ((json['ticketsCount'] ?? json['total_seats'] ?? json['totalSeats'] ?? 0) as num).toInt();
+    final totalSeats = ((json['ticketsCount'] ??
+            json['total_seats'] ??
+            json['totalSeats'] ??
+            0) as num)
+        .toInt();
     // API uses totalCollected as the amount due
-    final totalAmount =
-        ((json['totalCollected'] ?? json['remaining'] ?? json['total_amount'] ?? json['totalAmount'] ?? 0) as num).toDouble();
+    final totalAmount = ((json['totalCollected'] ??
+            json['remaining'] ??
+            json['total_amount'] ??
+            json['totalAmount'] ??
+            0) as num)
+        .toDouble();
     // API sends amounts directly (not seat counts)
-    final cashAmount =
-        ((json['totalCash'] ?? json['cash_amount'] ?? json['cashAmount'] ?? 0) as num).toDouble();
-    final nfcAmount =
-        ((json['totalNfc'] ?? json['nfc_amount'] ?? json['nfcAmount'] ?? 0) as num).toDouble();
+    final cashAmount = ((json['totalCash'] ??
+            json['cash_amount'] ??
+            json['cashAmount'] ??
+            0) as num)
+        .toDouble();
+    final nfcAmount = ((json['totalNfc'] ??
+            json['nfc_amount'] ??
+            json['nfcAmount'] ??
+            0) as num)
+        .toDouble();
 
     // Parse line: prefer explicit line object, then taxi.line string
     final CashoutLineModel line;
@@ -111,7 +136,8 @@ class CashoutSummaryModel {
     } else if (taxiRaw != null && taxiRaw['line'] is String) {
       line = CashoutLineModel.fromLineString(taxiRaw['line'] as String);
     } else {
-      line = const CashoutLineModel(id: '', origin: '', destination: '', price: 0);
+      line =
+          const CashoutLineModel(id: '', origin: '', destination: '', price: 0);
     }
 
     return CashoutSummaryModel(
@@ -146,7 +172,8 @@ class CashoutsResponseModel {
   final List<CashoutSummaryModel> cashouts;
   final double totalAmount;
 
-  const CashoutsResponseModel({required this.cashouts, required this.totalAmount});
+  const CashoutsResponseModel(
+      {required this.cashouts, required this.totalAmount});
 
   factory CashoutsResponseModel.fromJson(dynamic json) {
     if (json is List) {
@@ -158,7 +185,8 @@ class CashoutsResponseModel {
     }
     final map = json as Map<String, dynamic>;
     // API returns { status, data: { stats: {...}, driverRows: [...] } }
-    final dataMap = map['data'] is Map ? map['data'] as Map<String, dynamic> : null;
+    final dataMap =
+        map['data'] is Map ? map['data'] as Map<String, dynamic> : null;
     final statsMap = dataMap?['stats'] as Map<String, dynamic>?;
     final rawList = (dataMap?['driverRows'] ?? map['cashouts'] ?? []) as List;
     final items = rawList

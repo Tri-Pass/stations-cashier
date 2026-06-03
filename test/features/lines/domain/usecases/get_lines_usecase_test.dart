@@ -41,7 +41,8 @@ void main() {
   });
 
   test('propagates repository exception', () async {
-    when(() => repository.getLines(any())).thenThrow(Exception('network error'));
+    when(() => repository.getLines(any()))
+        .thenThrow(Exception('network error'));
     expect(() => useCase('s1'), throwsA(isA<Exception>()));
   });
 }

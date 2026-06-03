@@ -258,6 +258,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
       }
     }
 
+    final l = AppLocalizations.of(context);
     setState(() => _adding = true);
     try {
       final result = await sl<CreateBookingUseCase>()(CreateBookingParams(
@@ -275,7 +276,7 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
         await CashierPrinter.printTicket(
           ticket: ticket.copyWith(seatNumber: _selectedSeat!),
           stationName: authState.driver.station?.name ?? '',
-          l: AppLocalizations.of(context),
+          l: l,
         );
       }
 
@@ -370,11 +371,13 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                 _DriverCard(driver: _driver!, l: l),
                 const SizedBox(height: 20),
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
                   decoration: BoxDecoration(
                     color: AppColors.teal.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.teal.withValues(alpha: 0.3)),
+                    border: Border.all(
+                        color: AppColors.teal.withValues(alpha: 0.3)),
                   ),
                   child: Column(
                     children: [
@@ -431,7 +434,8 @@ class _NfcConfirmPageState extends State<NfcConfirmPage> {
                 elevation: 0,
               ),
               child: Text(l.close,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 15)),
             ),
           ),
         ),

@@ -10,6 +10,7 @@ enum SocketConnectionStatus { idle, connecting, connected, reconnecting, dead }
 enum SocketHandlerType {
   /// Server pushes a full payload — use it directly.
   data,
+
   /// Server fires a signal only — ignore payload, call the API instead.
   fetch,
 }
@@ -38,7 +39,7 @@ class ReconnectOptions {
   final int maxAttempts;
 
   const ReconnectOptions({
-    this.interval    = const Duration(seconds: 3),
+    this.interval = const Duration(seconds: 3),
     this.maxInterval = const Duration(seconds: 30),
     this.maxAttempts = 20,
   });
@@ -55,7 +56,7 @@ class SocketServiceOptions {
   SocketServiceOptions({
     required this.url,
     this.authToken,
-    this.reconnect       = const ReconnectOptions(),
+    this.reconnect = const ReconnectOptions(),
     this.onAuthResult,
     this.onMaxReconnectsReached,
   });
@@ -71,7 +72,6 @@ void _log(String msg) => debugPrint('[Socket] $msg');
 typedef WebSocketFactory = WebSocketChannel Function(Uri uri);
 
 class SocketService with WidgetsBindingObserver {
-
   // ── Singleton ────────────────────────────────────────────────────────────
   static SocketService? _instance;
   static SocketService getInstance() => _instance ??= SocketService._();
@@ -91,22 +91,23 @@ class SocketService with WidgetsBindingObserver {
 
   // ── State machine ─────────────────────────────────────────────────────────
   SocketConnectionStatus _status = SocketConnectionStatus.idle;
-  final _statusController = StreamController<SocketConnectionStatus>.broadcast();
+  final _statusController =
+      StreamController<SocketConnectionStatus>.broadcast();
 
   Stream<SocketConnectionStatus> get statusStream => _statusController.stream;
   SocketConnectionStatus get status => _status;
   bool get isConnected => _status == SocketConnectionStatus.connected;
 
   // ── Channels ──────────────────────────────────────────────────────────────
-  final _channels    = <String, SocketChannelConfig>{};
+  final _channels = <String, SocketChannelConfig>{};
   final _activeChans = <String>{};
 
   // ── Queue ─────────────────────────────────────────────────────────────────
   final _queue = <Map<String, dynamic>>[];
 
   // ── Reconnect ─────────────────────────────────────────────────────────────
-  int    _attempts  = 0;
-  bool   _destroyed = false;
+  int _attempts = 0;
+  bool _destroyed = false;
   Timer? _reconnectTimer;
 
   // ── App lifecycle ─────────────────────────────────────────────────────────
@@ -115,18 +116,19 @@ class SocketService with WidgetsBindingObserver {
   // ── Timers ────────────────────────────────────────────────────────────────
   Timer? _heartbeatTimer;
   Timer? _handshakeTimer;
-  int?   _pendingHandshakeCid;
+  int? _pendingHandshakeCid;
 
   // ═════════════════════════════════════════════════════════════════════════
   // PUBLIC API
   // ═════════════════════════════════════════════════════════════════════════
 
   void connect(SocketServiceOptions options) {
-    _log('🚀 connect() — url=${options.url} token=${options.authToken != null ? "present" : "NULL"}');
+    _log(
+        '🚀 connect() — url=${options.url} token=${options.authToken != null ? "present" : "NULL"}');
     WidgetsBinding.instance.removeObserver(this);
-    _options   = options;
+    _options = options;
     _destroyed = false;
-    _attempts  = 0;
+    _attempts = 0;
     WidgetsBinding.instance.addObserver(this);
     _openSocket();
   }
@@ -137,13 +139,15 @@ class SocketService with WidgetsBindingObserver {
   }
 
   void subscribe(SocketChannelConfig config) {
-    _log('📋 subscribe("${config.channel}") owner=${config.owner ?? "global"} type=${config.handlerType.name}');
+    _log(
+        '📋 subscribe("${config.channel}") owner=${config.owner ?? "global"} type=${config.handlerType.name}');
     _channels[config.channel] = config;
     if (isConnected) _sendSubscribe(config.channel);
   }
 
   void subscribeAll(List<SocketChannelConfig> configs) {
-    _log('📋 subscribeAll(${configs.length} channels): ${configs.map((c) => c.channel).toList()}');
+    _log(
+        '📋 subscribeAll(${configs.length} channels): ${configs.map((c) => c.channel).toList()}');
     for (final c in configs) {
       subscribe(c);
     }
@@ -161,7 +165,8 @@ class SocketService with WidgetsBindingObserver {
         .where((e) => e.value.owner == owner)
         .map((e) => e.key)
         .toList();
-    _log('🧹 unsubscribeByOwner("$owner") — removing ${toRemove.length} channels: $toRemove');
+    _log(
+        '🧹 unsubscribeByOwner("$owner") — removing ${toRemove.length} channels: $toRemove');
     for (final ch in toRemove) {
       unsubscribe(ch);
     }
@@ -207,7 +212,7 @@ class SocketService with WidgetsBindingObserver {
     disconnect();
     _channels.clear();
     _queue.clear();
-    _cid      = 0;
+    _cid = 0;
     _attempts = 0;
   }
 
@@ -221,7 +226,7 @@ class SocketService with WidgetsBindingObserver {
     if (_status == SocketConnectionStatus.dead ||
         _status == SocketConnectionStatus.idle) {
       _destroyed = false;
-      _attempts  = 0;
+      _attempts = 0;
       _setStatus(SocketConnectionStatus.reconnecting);
       _openSocket();
     }
@@ -267,7 +272,8 @@ class SocketService with WidgetsBindingObserver {
   Future<void> _openSocket() async {
     if (_options == null) return;
 
-    _log('🔌 _openSocket() — url=${_options!.url} attempt=$_attempts status=${_status.name}');
+    _log(
+        '🔌 _openSocket() — url=${_options!.url} attempt=$_attempts status=${_status.name}');
 
     _ws?.sink.close();
     _ws = null;
@@ -294,11 +300,12 @@ class SocketService with WidgetsBindingObserver {
       final handshakeCid = ++_cid;
       _pendingHandshakeCid = handshakeCid;
 
-      _log('🤝 sending #handshake — cid=$handshakeCid token=${_options!.authToken != null ? "present" : "NULL"}');
+      _log(
+          '🤝 sending #handshake — cid=$handshakeCid token=${_options!.authToken != null ? "present" : "NULL"}');
       _rawSend({
         'event': '#handshake',
-        'data' : {'authToken': _options!.authToken},
-        'cid'  : handshakeCid,
+        'data': {'authToken': _options!.authToken},
+        'cid': handshakeCid,
       });
 
       _resetHeartbeat();
@@ -318,7 +325,8 @@ class SocketService with WidgetsBindingObserver {
   }
 
   void _onDone() {
-    _log('🔴 WebSocket closed — status=${_status.name} attempts=$_attempts destroyed=$_destroyed');
+    _log(
+        '🔴 WebSocket closed — status=${_status.name} attempts=$_attempts destroyed=$_destroyed');
     _clearHeartbeat();
     _activeChans.clear();
 
@@ -366,10 +374,10 @@ class SocketService with WidgetsBindingObserver {
       return;
     }
 
-    final event  = frame['event']  as String?;
-    final data   = frame['data'];
-    final rid    = frame['rid']    as int?;
-    final cid    = frame['cid']    as int?;
+    final event = frame['event'] as String?;
+    final data = frame['data'];
+    final rid = frame['rid'] as int?;
+    final cid = frame['cid'] as int?;
     final action = frame['action'] as String?;
 
     // ── Custom action-based publish ────────────────────────────────────────
@@ -385,8 +393,8 @@ class SocketService with WidgetsBindingObserver {
       _clearHandshakeTimer();
       _pendingHandshakeCid = null;
       _attempts = 0;
-      final p        = data as Map<String, dynamic>?;
-      final isAuth   = p?['isAuthenticated'] as bool? ?? false;
+      final p = data as Map<String, dynamic>?;
+      final isAuth = p?['isAuthenticated'] as bool? ?? false;
       final socketId = p?['id'] as String?;
       _log('✅ handshake ACK — socketId=$socketId isAuthenticated=$isAuth');
       _options?.onAuthResult?.call(isAuth, socketId);
@@ -411,7 +419,7 @@ class SocketService with WidgetsBindingObserver {
         _resetHeartbeat();
 
       case '#publish':
-        final pub     = data as Map<String, dynamic>?;
+        final pub = data as Map<String, dynamic>?;
         final channel = pub?['channel'] as String?;
         _log('📨 #publish channel="$channel" data=${pub?['data']}');
         if (channel != null) _dispatchChannel(channel, pub?['data']);
@@ -423,8 +431,8 @@ class SocketService with WidgetsBindingObserver {
 
       case '#removeAuthToken':
         _log('🔑 #removeAuthToken (SC auth cleared — keeping local JWT)');
-    // Do NOT null _options?.authToken here.
-    // Nulling it causes every reconnect to send authToken=null.
+      // Do NOT null _options?.authToken here.
+      // Nulling it causes every reconnect to send authToken=null.
 
       default:
         if (event != null) {
@@ -433,7 +441,8 @@ class SocketService with WidgetsBindingObserver {
             _log('📩 generic event="$event" → dispatching to handler');
             _dispatchToHandler(cfg, data);
           } else {
-            _log('⚠️ generic event="$event" — no handler registered (known channels: ${_channels.keys.toList()})');
+            _log(
+                '⚠️ generic event="$event" — no handler registered (known channels: ${_channels.keys.toList()})');
           }
           if (cid != null) {
             _log('✉️ sending ACK for cid=$cid');
@@ -450,7 +459,8 @@ class SocketService with WidgetsBindingObserver {
   void _dispatchChannel(String channel, dynamic data) {
     final cfg = _channels[channel];
     if (cfg == null) {
-      _log('⚠️ no handler for channel="$channel" (registered: ${_channels.keys.toList()})');
+      _log(
+          '⚠️ no handler for channel="$channel" (registered: ${_channels.keys.toList()})');
       return;
     }
     _log('⚡ dispatching channel="$channel" type=${cfg.handlerType.name}');
@@ -463,7 +473,8 @@ class SocketService with WidgetsBindingObserver {
         _log('📦 DATA → channel="${cfg.channel}" data=$data');
         cfg.onData?.call(data);
       } else {
-        _log('🔄 FETCH → channel="${cfg.channel}" (payload ignored, triggering API)');
+        _log(
+            '🔄 FETCH → channel="${cfg.channel}" (payload ignored, triggering API)');
         cfg.onFetch?.call();
       }
     } catch (e) {
@@ -476,7 +487,8 @@ class SocketService with WidgetsBindingObserver {
   // ═════════════════════════════════════════════════════════════════════════
 
   void _resubscribeAll() {
-    final pending = _channels.keys.where((ch) => !_activeChans.contains(ch)).toList();
+    final pending =
+        _channels.keys.where((ch) => !_activeChans.contains(ch)).toList();
     _log('📡 resubscribeAll() — ${pending.length} channels: $pending');
     for (final ch in pending) {
       _sendSubscribe(ch);
@@ -487,8 +499,8 @@ class SocketService with WidgetsBindingObserver {
     _log('📤 → #subscribe channel="$channel"');
     _rawSend({
       'event': '#subscribe',
-      'data' : {'channel': channel},
-      'cid'  : ++_cid,
+      'data': {'channel': channel},
+      'cid': ++_cid,
     });
     _activeChans.add(channel);
   }
@@ -497,8 +509,8 @@ class SocketService with WidgetsBindingObserver {
     _log('📤 → #unsubscribe channel="$channel"');
     _rawSend({
       'event': '#unsubscribe',
-      'data' : channel,
-      'cid'  : ++_cid,
+      'data': channel,
+      'cid': ++_cid,
     });
   }
 
@@ -525,7 +537,8 @@ class SocketService with WidgetsBindingObserver {
 
   void _scheduleReconnect() {
     if (_destroyed || _inBackground) {
-      _log('⏸ reconnect skipped — destroyed=$_destroyed background=$_inBackground');
+      _log(
+          '⏸ reconnect skipped — destroyed=$_destroyed background=$_inBackground');
       return;
     }
 
@@ -538,11 +551,13 @@ class SocketService with WidgetsBindingObserver {
       return;
     }
 
-    final baseMs   = opts.interval.inMilliseconds * (1.5.pow(_attempts));
+    final baseMs = opts.interval.inMilliseconds * (1.5.pow(_attempts));
     final jitterMs = baseMs * 0.2 * (2 * _random() - 1);
-    final delayMs  = (baseMs + jitterMs).clamp(0, opts.maxInterval.inMilliseconds);
+    final delayMs =
+        (baseMs + jitterMs).clamp(0, opts.maxInterval.inMilliseconds);
 
-    _log('⏳ reconnect in ${delayMs.round()}ms — attempt=${_attempts + 1}/${opts.maxAttempts}');
+    _log(
+        '⏳ reconnect in ${delayMs.round()}ms — attempt=${_attempts + 1}/${opts.maxAttempts}');
 
     _attempts++;
     _clearReconnectTimer();
@@ -563,7 +578,8 @@ class SocketService with WidgetsBindingObserver {
   void _resetHeartbeat() {
     _clearHeartbeat();
     _heartbeatTimer = Timer(_kHeartbeatTimeout, () {
-      _log('⚠️ heartbeat watchdog (${_kHeartbeatTimeout.inMinutes}min silence) — forcing close');
+      _log(
+          '⚠️ heartbeat watchdog (${_kHeartbeatTimeout.inMinutes}min silence) — forcing close');
       _ws?.sink.close();
     });
   }

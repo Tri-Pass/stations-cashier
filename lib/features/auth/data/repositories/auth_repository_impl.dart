@@ -15,7 +15,8 @@ class AuthRepositoryImpl implements AuthRepository {
     final data = await _dataSource.login(phone, password);
     final token = data['token'] as String;
     await _storage.saveToken(token);
-    final model = CashierModel.fromJson(data['cashier'] as Map<String, dynamic>);
+    final model =
+        CashierModel.fromJson(data['cashier'] as Map<String, dynamic>);
     if (model.station != null) {
       await _storage.saveStationId(model.station!.id);
     }

@@ -26,7 +26,8 @@ void main() {
       await dataSource.getCashoutsSummary(
         const CashoutSummaryParams(dateFrom: '2024-01-01'),
       );
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('dateFrom=2024-01-01'));
     });
 
@@ -34,7 +35,8 @@ void main() {
       await dataSource.getCashoutsSummary(
         const CashoutSummaryParams(dateTo: '2024-01-31'),
       );
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('dateTo=2024-01-31'));
     });
 
@@ -42,7 +44,8 @@ void main() {
       await dataSource.getCashoutsSummary(
         const CashoutSummaryParams(driverName: 'Ahmed'),
       );
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('driverName=Ahmed'));
     });
 
@@ -56,7 +59,8 @@ void main() {
         line: 'l1',
         paymentMethod: 'cash',
       ));
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('dateFrom='));
       expect(path, contains('dateTo='));
       expect(path, contains('driverName='));
@@ -70,7 +74,8 @@ void main() {
       await dataSource.getCashoutsSummary(
         const CashoutSummaryParams(dateFrom: '2024-01-01', driverName: ''),
       );
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('dateFrom='));
       expect(path, isNot(contains('driverName=')));
     });
@@ -79,7 +84,8 @@ void main() {
       await dataSource.getCashoutsSummary(
         const CashoutSummaryParams(driverName: 'محمد علي'),
       );
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('driverName='));
       expect(path, isNot(contains(' ')));
     });

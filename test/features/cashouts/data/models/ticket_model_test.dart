@@ -18,7 +18,7 @@ void main() {
     });
 
     test('toEntity maps correctly', () {
-      final entity = TicketLineModel(
+      final entity = const TicketLineModel(
         id: 'l1',
         origin: 'Fes',
         destination: 'Rabat',
@@ -86,7 +86,8 @@ void main() {
   group('TicketEntity getters', () {
     const cashTicket = TicketEntity(
       id: 't1',
-      line: TicketLineEntity(id: 'l1', origin: 'A', destination: 'B', price: 10),
+      line:
+          TicketLineEntity(id: 'l1', origin: 'A', destination: 'B', price: 10),
       totalSeats: 1,
       paidMethod: 'cash',
       amount: 10,
@@ -95,7 +96,8 @@ void main() {
 
     const nfcTicket = TicketEntity(
       id: 't2',
-      line: TicketLineEntity(id: 'l1', origin: 'A', destination: 'B', price: 10),
+      line:
+          TicketLineEntity(id: 'l1', origin: 'A', destination: 'B', price: 10),
       totalSeats: 1,
       paidMethod: 'nfc',
       amount: 10,
@@ -127,13 +129,16 @@ void main() {
 
   group('DriverInfoModel', () {
     test('fromJson maps all fields', () {
-      final m = DriverInfoModel.fromJson({'_id': 'd1', 'name': 'Ahmed', 'phone': '0600'});
+      final m = DriverInfoModel.fromJson(
+          {'_id': 'd1', 'name': 'Ahmed', 'phone': '0600'});
       expect(m.id, 'd1');
       expect(m.name, 'Ahmed');
     });
 
     test('toEntity maps correctly', () {
-      final entity = DriverInfoModel(id: 'd1', name: 'Ahmed', phone: '0600').toEntity();
+      final entity =
+          const DriverInfoModel(id: 'd1', name: 'Ahmed', phone: '0600')
+              .toEntity();
       expect(entity.id, 'd1');
     });
   });
@@ -165,7 +170,12 @@ void main() {
       'tickets': [
         {
           '_id': 'tk1',
-          'line': {'id': 'l1', 'origin': 'Fes', 'destination': 'Rabat', 'price': 35.0},
+          'line': {
+            'id': 'l1',
+            'origin': 'Fes',
+            'destination': 'Rabat',
+            'price': 35.0
+          },
           'totalSeats': 2,
           'paidMethod': 'cash',
           'amount': 70.0,

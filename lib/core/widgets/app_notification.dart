@@ -110,7 +110,8 @@ class _AppNotificationOverlayState extends State<_AppNotificationOverlay>
             child: GestureDetector(
               onTap: _dismiss,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   color: color,
                   borderRadius: BorderRadius.circular(16),
@@ -154,7 +155,8 @@ class _AppNotificationOverlayState extends State<_AppNotificationOverlay>
                               fontSize: 15,
                             ),
                           ),
-                          if (widget.details != null && widget.details!.isNotEmpty) ...[
+                          if (widget.details != null &&
+                              widget.details!.isNotEmpty) ...[
                             const SizedBox(height: 6),
                             ...widget.details!.map(
                               (d) => Padding(

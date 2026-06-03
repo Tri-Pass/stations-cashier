@@ -27,7 +27,9 @@ void main() {
       expect(model.to, 'Agadir');
     });
 
-    test('fromJson when line is a String with no separator uses full string as from', () {
+    test(
+        'fromJson when line is a String with no separator uses full string as from',
+        () {
       final json = {'line': 'Marrakech'};
       final model = PassengerTripModel.fromJson(json);
       expect(model.from, 'Marrakech');
@@ -42,7 +44,7 @@ void main() {
     });
 
     test('toEntity maps correctly', () {
-      final entity = PassengerTripModel(from: 'A', to: 'B').toEntity();
+      final entity = const PassengerTripModel(from: 'A', to: 'B').toEntity();
       expect(entity, isA<PassengerTripEntity>());
       expect(entity.from, 'A');
     });
@@ -55,7 +57,9 @@ void main() {
       'phone': '0600000001',
       'balance': 150.0,
       'recentTrips': [
-        {'line': {'origin': 'Fes', 'destination': 'Rabat'}},
+        {
+          'line': {'origin': 'Fes', 'destination': 'Rabat'}
+        },
         {'line': 'Casablanca → Marrakech'},
       ],
     };
@@ -72,12 +76,14 @@ void main() {
     });
 
     test('fromJson maps id fallback key', () {
-      final model = PassengerModel.fromJson({'id': 'p2', 'name': 'X', 'phone': '0', 'balance': 0});
+      final model = PassengerModel.fromJson(
+          {'id': 'p2', 'name': 'X', 'phone': '0', 'balance': 0});
       expect(model.id, 'p2');
     });
 
     test('fromJson with empty recentTrips', () {
-      final model = PassengerModel.fromJson({'_id': 'p3', 'name': 'X', 'phone': '0', 'balance': 0});
+      final model = PassengerModel.fromJson(
+          {'_id': 'p3', 'name': 'X', 'phone': '0', 'balance': 0});
       expect(model.recentTrips, isEmpty);
     });
 
@@ -133,7 +139,8 @@ void main() {
 
   group('LinkNfcParams.toJson', () {
     test('includes all fields', () {
-      const params = LinkNfcParams(phone: '0600', nfcTagId: 'NFC1', name: 'Ali');
+      const params =
+          LinkNfcParams(phone: '0600', nfcTagId: 'NFC1', name: 'Ali');
       final json = params.toJson();
       expect(json['phone'], '0600');
       expect(json['nfcTagId'], 'NFC1');
@@ -148,7 +155,8 @@ void main() {
 
   group('NfcTopupParams.toJson', () {
     test('includes amount and note when provided', () {
-      const params = NfcTopupParams(nfcTagId: 'NFC1', amount: 50.0, note: 'recharge');
+      const params =
+          NfcTopupParams(nfcTagId: 'NFC1', amount: 50.0, note: 'recharge');
       final json = params.toJson();
       expect(json['amount'], 50.0);
       expect(json['note'], 'recharge');
@@ -162,7 +170,8 @@ void main() {
 
   group('PhoneTopupParams.toJson', () {
     test('includes note when provided', () {
-      const params = PhoneTopupParams(phone: '0600', amount: 100.0, note: 'gift');
+      const params =
+          PhoneTopupParams(phone: '0600', amount: 100.0, note: 'gift');
       final json = params.toJson();
       expect(json['amount'], 100.0);
       expect(json['note'], 'gift');

@@ -6,8 +6,7 @@ class SunmiNfcService {
   static const _methodChannel = MethodChannel('courtier/card_methods');
   static const _eventChannel = EventChannel('courtier/card_events');
 
-  static final _controller =
-      StreamController<Map<String, dynamic>>.broadcast();
+  static final _controller = StreamController<Map<String, dynamic>>.broadcast();
   static bool _initialized = false;
   static int _scanCount = 0;
   static DateTime? _lastCardTime;

@@ -15,24 +15,30 @@ void main() {
     });
 
     test('driverByNfc includes tagId as query param', () {
-      expect(ApiEndpoints.driverByNfc('TAG123'), '/api/courtier/drivers/nfc?tagId=TAG123');
+      expect(ApiEndpoints.driverByNfc('TAG123'),
+          '/api/courtier/drivers/nfc?tagId=TAG123');
     });
 
     test('passengerByNfc includes tagId as path segment', () {
-      expect(ApiEndpoints.passengerByNfc('NFC1'), '/api/cashier/passengers/nfc/NFC1');
+      expect(ApiEndpoints.passengerByNfc('NFC1'),
+          '/api/cashier/passengers/nfc/NFC1');
     });
 
     test('nfcTopup builds path with tagId', () {
-      expect(ApiEndpoints.nfcTopup('TAG1'), '/api/cashier/passengers/nfc/TAG1/topup');
+      expect(ApiEndpoints.nfcTopup('TAG1'),
+          '/api/cashier/passengers/nfc/TAG1/topup');
     });
 
     test('phoneTopup builds path with phone', () {
-      expect(ApiEndpoints.phoneTopup('0600000001'), '/api/cashier/passengers/phone/0600000001/topup');
+      expect(ApiEndpoints.phoneTopup('0600000001'),
+          '/api/cashier/passengers/phone/0600000001/topup');
     });
 
     test('walletOptions includes type param', () {
-      expect(ApiEndpoints.walletOptions('withdraw'), '/api/cashier/wallet/options?type=withdraw');
-      expect(ApiEndpoints.walletOptions('topup'), '/api/cashier/wallet/options?type=topup');
+      expect(ApiEndpoints.walletOptions('withdraw'),
+          '/api/cashier/wallet/options?type=withdraw');
+      expect(ApiEndpoints.walletOptions('topup'),
+          '/api/cashier/wallet/options?type=topup');
     });
 
     test('walletCandidates includes page=1 and search param', () {

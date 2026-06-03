@@ -24,8 +24,7 @@ class NfcConfirmTripsSection extends StatelessWidget {
         GestureDetector(
           onTap: onToggle,
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
               color: c.surface,
               borderRadius: expanded
@@ -97,8 +96,7 @@ class NfcConfirmTripsSection extends StatelessWidget {
                             width: 24,
                             height: 24,
                             decoration: BoxDecoration(
-                              color:
-                                  AppColors.primary.withValues(alpha: 0.15),
+                              color: AppColors.primary.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             alignment: Alignment.center,
@@ -120,15 +118,14 @@ class NfcConfirmTripsSection extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis),
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: Row(
                               children: [
                                 Container(
                                     width: 14,
                                     height: 1,
-                                    color: c.textSecondary
-                                        .withValues(alpha: 0.4)),
+                                    color:
+                                        c.textSecondary.withValues(alpha: 0.4)),
                                 const Icon(Icons.arrow_forward_ios,
                                     color: AppColors.primary, size: 9),
                               ],
@@ -147,8 +144,7 @@ class NfcConfirmTripsSection extends StatelessWidget {
                       ),
                     ),
                     if (!isLast)
-                      Divider(
-                          color: c.border, height: 1, thickness: 1),
+                      Divider(color: c.border, height: 1, thickness: 1),
                   ],
                 );
               }).toList(),

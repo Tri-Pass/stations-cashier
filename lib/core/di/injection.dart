@@ -72,11 +72,14 @@ Future<void> setupDependencies() async {
   sl.registerLazySingleton(() => ConnectivityService());
 
   // Auth feature
-  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSource(sl()));
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl(), sl()));
+  sl.registerLazySingleton<AuthRemoteDataSource>(
+      () => AuthRemoteDataSource(sl()));
+  sl.registerLazySingleton<AuthRepository>(
+      () => AuthRepositoryImpl(sl(), sl()));
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(
-    () => AuthBloc(loginUseCase: sl(), authRepository: sl(), socketService: sl()),
+    () =>
+        AuthBloc(loginUseCase: sl(), authRepository: sl(), socketService: sl()),
   );
 
   // Lines feature
@@ -87,7 +90,8 @@ Future<void> setupDependencies() async {
 
   // Booking feature
   sl.registerLazySingleton(() => BookingRemoteDataSource(sl()));
-  sl.registerLazySingleton<BookingRepository>(() => BookingRepositoryImpl(sl()));
+  sl.registerLazySingleton<BookingRepository>(
+      () => BookingRepositoryImpl(sl()));
   sl.registerLazySingleton(() => CreateBookingUseCase(sl()));
 
   // Drivers feature
@@ -95,7 +99,8 @@ Future<void> setupDependencies() async {
 
   // Cashouts feature
   sl.registerLazySingleton(() => CashoutRemoteDataSource(sl()));
-  sl.registerLazySingleton<CashoutRepository>(() => CashoutRepositoryImpl(sl()));
+  sl.registerLazySingleton<CashoutRepository>(
+      () => CashoutRepositoryImpl(sl()));
   sl.registerLazySingleton(() => GetCashoutsSummaryUseCase(sl()));
 
   // Tickets feature
@@ -106,7 +111,8 @@ Future<void> setupDependencies() async {
 
   // Passengers feature
   sl.registerLazySingleton(() => PassengerRemoteDataSource(sl()));
-  sl.registerLazySingleton<PassengerRepository>(() => PassengerRepositoryImpl(sl()));
+  sl.registerLazySingleton<PassengerRepository>(
+      () => PassengerRepositoryImpl(sl()));
   sl.registerLazySingleton(() => GetPassengerByNfcUseCase(sl()));
   sl.registerLazySingleton(() => LinkNfcUseCase(sl()));
   sl.registerLazySingleton(() => RechargeUseCase(sl()));

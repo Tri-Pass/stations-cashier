@@ -45,10 +45,13 @@ class _TopUpPageState extends State<TopUpPage> {
       _error = null;
     });
     try {
-      final res = await GetIt.instance<ApiClient>().get(ApiEndpoints.walletOptions('topup'));
+      final res = await GetIt.instance<ApiClient>()
+          .get(ApiEndpoints.walletOptions('topup'));
       final list = (res['data'] as List?) ?? [];
       setState(() {
-        _options = list.map((e) => WalletOption.fromJson(e as Map<String, dynamic>)).toList();
+        _options = list
+            .map((e) => WalletOption.fromJson(e as Map<String, dynamic>))
+            .toList();
         _loadingOptions = false;
       });
     } catch (e) {
@@ -65,7 +68,8 @@ class _TopUpPageState extends State<TopUpPage> {
       _error = null;
     });
     try {
-      final res = await GetIt.instance<ApiClient>().post(ApiEndpoints.walletIncrease, {
+      final res =
+          await GetIt.instance<ApiClient>().post(ApiEndpoints.walletIncrease, {
         'amount': _amount.toInt(),
         'option': _selectedMethod!.code,
         'code_pin': pin,
@@ -146,10 +150,9 @@ class _TopUpPageState extends State<TopUpPage> {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed:
-                        (_canProceed && !_loading && !_loadingOptions)
-                            ? _next
-                            : null,
+                    onPressed: (_canProceed && !_loading && !_loadingOptions)
+                        ? _next
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.teal,
                       disabledBackgroundColor: c.surface,
@@ -164,9 +167,7 @@ class _TopUpPageState extends State<TopUpPage> {
                             child: CircularProgressIndicator(
                                 color: Colors.white, strokeWidth: 2))
                         : Text(
-                            _step == 2
-                                ? l.confirmTopUpBtn
-                                : l.continueBtn,
+                            _step == 2 ? l.confirmTopUpBtn : l.continueBtn,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -222,9 +223,7 @@ class _TopUpPageState extends State<TopUpPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l.chooseTopUpMethod,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
       Text(l.howToTopUp,
           style: TextStyle(color: c.textSecondary, fontSize: 14)),
@@ -242,9 +241,7 @@ class _TopUpPageState extends State<TopUpPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l.topUpAmountTitle,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
       Text('${l.modeSubLabel}$methodName',
           style: TextStyle(color: c.textSecondary, fontSize: 14)),
@@ -278,8 +275,7 @@ class _TopUpPageState extends State<TopUpPage> {
         icon: Icons.payments_outlined,
         keyboardType: const TextInputType.numberWithOptions(decimal: false),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        onChanged: (v) =>
-            setState(() => _amount = double.tryParse(v) ?? 0),
+        onChanged: (v) => setState(() => _amount = double.tryParse(v) ?? 0),
       ),
     ]);
   }
@@ -314,8 +310,7 @@ class _TopUpPageState extends State<TopUpPage> {
     final methodKey =
         '${_selectedMethod?.code ?? ''} ${_selectedMethod?.label ?? ''}'
             .toLowerCase();
-    final isQr =
-        methodKey.contains('qr') || methodKey.contains('guichet');
+    final isQr = methodKey.contains('qr') || methodKey.contains('guichet');
     return WalletUrlResultCard(
       url: _resultUrl!,
       title: isQr ? l.qrTopUpTitle : l.paymentLinkTitle,
@@ -348,16 +343,14 @@ class _OptionCard extends StatelessWidget {
           color: selected ? color.withValues(alpha: 0.1) : c.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-              color: selected ? color : c.border,
-              width: selected ? 1.5 : 1),
+              color: selected ? color : c.border, width: selected ? 1.5 : 1),
         ),
         child: Row(children: [
           Container(
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                shape: BoxShape.circle),
+                color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
             child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(width: 14),

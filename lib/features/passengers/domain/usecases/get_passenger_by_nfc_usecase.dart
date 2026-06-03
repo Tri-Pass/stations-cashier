@@ -5,6 +5,5 @@ class GetPassengerByNfcUseCase {
   final PassengerRepository _repository;
   GetPassengerByNfcUseCase(this._repository);
 
-  Future<PassengerEntity> call(String tagId) =>
-      _repository.getByNfcTag(tagId);
+  Future<PassengerEntity> call(String tagId) => _repository.getByNfcTag(tagId);
 }

@@ -114,6 +114,6 @@ class LinkNfcParams {
   Map<String, dynamic> toJson() => {
         'phone': phone,
         'nfcTagId': nfcTagId,
-        'name': name??"",
+        'name': name ?? "",
       };
 }

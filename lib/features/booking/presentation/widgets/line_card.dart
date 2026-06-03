@@ -7,7 +7,11 @@ class LineCard extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const LineCard({super.key, required this.line, required this.selected, required this.onTap});
+  const LineCard(
+      {super.key,
+      required this.line,
+      required this.selected,
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +22,8 @@ class LineCard extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withValues(alpha: 0.1) : c.surface,
+          color:
+              selected ? AppColors.primary.withValues(alpha: 0.1) : c.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: selected ? AppColors.primary : c.border,
@@ -32,7 +37,8 @@ class LineCard extends StatelessWidget {
             Row(
               children: [
                 Icon(Icons.near_me,
-                    color: selected ? AppColors.primary : c.textSecondary, size: 12),
+                    color: selected ? AppColors.primary : c.textSecondary,
+                    size: 12),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
@@ -62,7 +68,8 @@ class LineCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                     color: line.taxiCount > 0
                         ? AppColors.teal.withValues(alpha: 0.12)
@@ -72,7 +79,8 @@ class LineCard extends StatelessWidget {
                   child: Text(
                     '${line.taxiCount}',
                     style: TextStyle(
-                      color: line.taxiCount > 0 ? AppColors.teal : AppColors.red,
+                      color:
+                          line.taxiCount > 0 ? AppColors.teal : AppColors.red,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),

@@ -65,8 +65,8 @@ class NfcLinkSection extends StatelessWidget {
           const SizedBox(height: 10),
           TextButton(
             onPressed: onReset,
-            child: Text(l.scanAnother,
-                style: TextStyle(color: c.textSecondary)),
+            child:
+                Text(l.scanAnother, style: TextStyle(color: c.textSecondary)),
           ),
         ] else
           const SizedBox(height: 8),
@@ -183,8 +183,8 @@ class NfcLinkSection extends StatelessWidget {
         const SizedBox(height: 8),
         Text(l.nfcApproachDetect,
             textAlign: TextAlign.center,
-            style: TextStyle(
-                color: c.textSecondary, fontSize: 13, height: 1.5)),
+            style:
+                TextStyle(color: c.textSecondary, fontSize: 13, height: 1.5)),
       ],
     );
   }
@@ -253,12 +253,13 @@ class NfcLinkSection extends StatelessWidget {
           onPressed: onCancelScan,
           icon: const Icon(Icons.close, size: 18),
           label: Text(l.cancel,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           style: OutlinedButton.styleFrom(
             foregroundColor: c.textSecondary,
             side: BorderSide(color: c.border),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
         ),
       );
@@ -277,13 +278,14 @@ class NfcLinkSection extends StatelessWidget {
                       strokeWidth: 2, color: Colors.white))
               : const Icon(Icons.link, size: 20),
           label: Text(l.linkPassenger,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.green,
             foregroundColor: Colors.white,
             disabledBackgroundColor: AppColors.green.withValues(alpha: 0.4),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
         ),
@@ -302,8 +304,8 @@ class NfcLinkSection extends StatelessWidget {
           foregroundColor: Colors.black,
           disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.25),
           disabledForegroundColor: Colors.black38,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
       ),

@@ -19,8 +19,10 @@ void main() {
 
   group('getDriverTickets', () {
     test('builds path with driverId only', () async {
-      await dataSource.getDriverTickets(const GetDriverTicketsParams(driverId: 'd1'));
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      await dataSource
+          .getDriverTickets(const GetDriverTicketsParams(driverId: 'd1'));
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('driverId=d1'));
       expect(path, isNot(contains('date=')));
       expect(path, isNot(contains('status=')));
@@ -30,7 +32,8 @@ void main() {
       await dataSource.getDriverTickets(
         const GetDriverTicketsParams(driverId: 'd1', date: '2024-06-01'),
       );
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('driverId=d1'));
       expect(path, contains('date=2024-06-01'));
     });
@@ -41,15 +44,18 @@ void main() {
         date: '2024-06-01',
         status: 'paid',
       ));
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, contains('driverId=d1'));
       expect(path, contains('date=2024-06-01'));
       expect(path, contains('status=paid'));
     });
 
     test('path starts with ticketsList endpoint', () async {
-      await dataSource.getDriverTickets(const GetDriverTicketsParams(driverId: 'd1'));
-      final path = verify(() => apiClient.get(captureAny())).captured.first as String;
+      await dataSource
+          .getDriverTickets(const GetDriverTicketsParams(driverId: 'd1'));
+      final path =
+          verify(() => apiClient.get(captureAny())).captured.first as String;
       expect(path, startsWith(ApiEndpoints.ticketsList));
     });
   });
@@ -60,11 +66,12 @@ void main() {
         const CashoutTicketParams(driverId: 'd1', all: true),
       );
       verify(() => apiClient.post(
-        ApiEndpoints.cashout,
-        any(that: predicate<Map<String, dynamic>>(
-          (m) => m['driverId'] == 'd1' && m['all'] == true,
-        )),
-      )).called(1);
+            ApiEndpoints.cashout,
+            any(
+                that: predicate<Map<String, dynamic>>(
+              (m) => m['driverId'] == 'd1' && m['all'] == true,
+            )),
+          )).called(1);
     });
 
     test('posts with specific ticketId when provided', () async {
@@ -72,9 +79,11 @@ void main() {
         const CashoutTicketParams(driverId: 'd1', ticketId: 'tk1'),
       );
       verify(() => apiClient.post(
-        any(),
-        any(that: predicate<Map<String, dynamic>>((m) => m['ticketId'] == 'tk1')),
-      )).called(1);
+            any(),
+            any(
+                that: predicate<Map<String, dynamic>>(
+                    (m) => m['ticketId'] == 'tk1')),
+          )).called(1);
     });
 
     test('all defaults to false when not specified', () async {
@@ -82,9 +91,11 @@ void main() {
         const CashoutTicketParams(driverId: 'd1'),
       );
       verify(() => apiClient.post(
-        any(),
-        any(that: predicate<Map<String, dynamic>>((m) => m['all'] == false)),
-      )).called(1);
+            any(),
+            any(
+                that:
+                    predicate<Map<String, dynamic>>((m) => m['all'] == false)),
+          )).called(1);
     });
   });
 }

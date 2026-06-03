@@ -12,6 +12,7 @@ class DriverRemoteDataSource {
   }
 
   Future<void> enqueue(String driverId, String lineId) async {
-    await _client.post(ApiEndpoints.queue, {'driverId': driverId, 'lineId': lineId});
+    await _client
+        .post(ApiEndpoints.queue, {'driverId': driverId, 'lineId': lineId});
   }
 }

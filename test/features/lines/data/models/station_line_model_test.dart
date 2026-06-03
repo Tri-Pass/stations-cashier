@@ -21,7 +21,13 @@ void main() {
     });
 
     test('fromJson maps id key fallback', () {
-      final model = StationLineModel.fromJson({'id': 'l2', 'origin': 'A', 'destination': 'B', 'price': 10.0, 'activeTaxiCount': 0});
+      final model = StationLineModel.fromJson({
+        'id': 'l2',
+        'origin': 'A',
+        'destination': 'B',
+        'price': 10.0,
+        'activeTaxiCount': 0
+      });
       expect(model.id, 'l2');
     });
 
@@ -34,7 +40,7 @@ void main() {
     });
 
     test('toEntity produces StationLineEntity', () {
-      final entity = StationLineModel(
+      final entity = const StationLineModel(
         id: 'l1',
         origin: 'Casablanca',
         destination: 'Marrakech',
@@ -65,12 +71,13 @@ void main() {
     });
 
     test('fromJson sets permitNumber to null when absent', () {
-      final model = QueueDriverModel.fromJson({'name': 'X', 'phone': '0', 'licenseNumber': 'L', 'balance': 0});
+      final model = QueueDriverModel.fromJson(
+          {'name': 'X', 'phone': '0', 'licenseNumber': 'L', 'balance': 0});
       expect(model.permitNumber, isNull);
     });
 
     test('toEntity maps correctly', () {
-      final entity = QueueDriverModel(
+      final entity = const QueueDriverModel(
         name: 'Ahmed',
         phone: '0600',
         licenseNumber: 'LIC',
@@ -111,7 +118,12 @@ void main() {
     });
 
     test('fromJson defaults totalSeats to 6 when absent', () {
-      final model = QueueTaxiModel.fromJson({'_id': 't2', 'plateNumber': 'P', 'isFirst': false, 'driver': <String, dynamic>{}});
+      final model = QueueTaxiModel.fromJson({
+        '_id': 't2',
+        'plateNumber': 'P',
+        'isFirst': false,
+        'driver': <String, dynamic>{}
+      });
       expect(model.totalSeats, 6);
     });
 

@@ -19,7 +19,8 @@ class WalletOption {
       {required this.reqType, required this.code, required this.label});
 
   factory WalletOption.fromJson(Map<String, dynamic> j) => WalletOption(
-        reqType: (j['req_type'] as String?) ?? (j['reqType'] as String?) ?? 'url',
+        reqType:
+            (j['req_type'] as String?) ?? (j['reqType'] as String?) ?? 'url',
         code: (j['code'] as String?) ?? '',
         label: (j['label'] as String?) ?? '',
       );
@@ -28,16 +29,19 @@ class WalletOption {
 IconData walletOptionIcon(WalletOption o) {
   final s = '${o.code} ${o.label}'.toLowerCase();
   if (s.contains('guichet') || s.contains('qr')) return Icons.qr_code_2;
-  if (s.contains('bank') || s.contains('virement')) return Icons.account_balance;
+  if (s.contains('bank') || s.contains('virement'))
+    return Icons.account_balance;
   if (s.contains('card') || s.contains('cmi')) return Icons.credit_card;
-  if (s.contains('cashplus') || s.contains('mobile')) return Icons.phone_android;
+  if (s.contains('cashplus') || s.contains('mobile'))
+    return Icons.phone_android;
   return Icons.payments_outlined;
 }
 
 Color walletOptionColor(WalletOption o) {
   final s = '${o.code} ${o.label}'.toLowerCase();
   if (s.contains('guichet') || s.contains('qr')) return AppColors.primary;
-  if (s.contains('bank') || s.contains('virement')) return const Color(0xFF4A90D9);
+  if (s.contains('bank') || s.contains('virement'))
+    return const Color(0xFF4A90D9);
   if (s.contains('card') || s.contains('cmi')) return AppColors.teal;
   if (s.contains('cashplus') || s.contains('mobile')) return AppColors.teal;
   return AppColors.primary;
@@ -61,7 +65,6 @@ class _PasswordSheet extends StatefulWidget {
   @override
   State<_PasswordSheet> createState() => _PasswordSheetState();
 }
-
 
 class _PasswordSheetState extends State<_PasswordSheet> {
   final _hiddenCtrl = TextEditingController();
@@ -280,8 +283,7 @@ class WalletPresetChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : c.surface,
           borderRadius: BorderRadius.circular(10),
-          border:
-              Border.all(color: selected ? AppColors.primary : c.border),
+          border: Border.all(color: selected ? AppColors.primary : c.border),
         ),
         child: Text(
           '$amount MAD',
@@ -318,18 +320,16 @@ Widget walletSummaryTile(
         ),
         const SizedBox(width: 12),
         Expanded(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-              Text(label,
-                  style: TextStyle(color: c.textSecondary, fontSize: 12)),
-              const SizedBox(height: 2),
-              Text(value,
-                  style: TextStyle(
-                      color: c.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14)),
-            ])),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(label, style: TextStyle(color: c.textSecondary, fontSize: 12)),
+          const SizedBox(height: 2),
+          Text(value,
+              style: TextStyle(
+                  color: c.textPrimary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14)),
+        ])),
       ]),
     );
   });
@@ -419,14 +419,11 @@ class WalletResultBanner extends StatelessWidget {
       const SizedBox(height: 24),
       Text(title,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 22,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
       const SizedBox(height: 12),
       Text(subtitle,
           textAlign: TextAlign.center,
-          style:
-              TextStyle(color: c.textSecondary, fontSize: 15, height: 1.5)),
+          style: TextStyle(color: c.textSecondary, fontSize: 15, height: 1.5)),
       const SizedBox(height: 40),
       SizedBox(
         width: double.infinity,
@@ -435,14 +432,16 @@ class WalletResultBanner extends StatelessWidget {
           onPressed: onDone,
           style: ElevatedButton.styleFrom(
             backgroundColor: color,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
           child: Text(
             l.backToWallet,
             style: TextStyle(
-              color: color == const Color(0xFF6C7FDE) ? Colors.white : Colors.black,
+              color: color == const Color(0xFF6C7FDE)
+                  ? Colors.white
+                  : Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
@@ -484,14 +483,11 @@ class WalletUrlResultCard extends StatelessWidget {
       const SizedBox(height: 20),
       Text(title,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 20, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
       Text(subtitle,
           textAlign: TextAlign.center,
-          style:
-              TextStyle(color: c.textSecondary, fontSize: 14, height: 1.5)),
+          style: TextStyle(color: c.textSecondary, fontSize: 14, height: 1.5)),
       const SizedBox(height: 24),
       Container(
         padding: const EdgeInsets.all(16),
@@ -523,8 +519,8 @@ class WalletUrlResultCard extends StatelessWidget {
           onPressed: onDone,
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
           child: Text(l.backToWallet,

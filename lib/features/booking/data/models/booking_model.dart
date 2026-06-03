@@ -23,7 +23,8 @@ class TicketModel {
     this.qrData,
   });
 
-  factory TicketModel.fromJson(Map<String, dynamic> json, {String fallbackPayment = 'cash'}) =>
+  factory TicketModel.fromJson(Map<String, dynamic> json,
+          {String fallbackPayment = 'cash'}) =>
       TicketModel(
         code: (json['code'] ?? '') as String,
         seatNumber: (json['seatNumber'] ?? 1) as int,
@@ -62,15 +63,19 @@ class BookingResultModel {
     this.ticket,
   });
 
-  factory BookingResultModel.fromJson(Map<String, dynamic> json, {String fallbackPayment = 'cash'}) {
+  factory BookingResultModel.fromJson(Map<String, dynamic> json,
+      {String fallbackPayment = 'cash'}) {
     final t = json['ticket'] as Map<String, dynamic>?;
     return BookingResultModel(
-      bookingId: (json['bookingId'] ?? json['_id'] ?? json['id'] ?? '') as String,
+      bookingId:
+          (json['bookingId'] ?? json['_id'] ?? json['id'] ?? '') as String,
       confirmedAt: (json['confirmedAt'] ?? '') as String,
       passengerBalanceAfter: json['passengerBalanceAfter'] != null
           ? (json['passengerBalanceAfter'] as num).toDouble()
           : null,
-      ticket: t != null ? TicketModel.fromJson(t, fallbackPayment: fallbackPayment) : null,
+      ticket: t != null
+          ? TicketModel.fromJson(t, fallbackPayment: fallbackPayment)
+          : null,
     );
   }
 

@@ -18,7 +18,8 @@ void main() {
     cashierId: 'c1',
   );
 
-  const result = BookingResultEntity(bookingId: 'b1', confirmedAt: '2024-01-01');
+  const result =
+      BookingResultEntity(bookingId: 'b1', confirmedAt: '2024-01-01');
 
   setUpAll(() {
     registerFallbackValue(params);
@@ -39,7 +40,8 @@ void main() {
   });
 
   test('propagates repository exception', () async {
-    when(() => repository.createBooking(any())).thenThrow(Exception('network error'));
+    when(() => repository.createBooking(any()))
+        .thenThrow(Exception('network error'));
 
     expect(() => useCase(params), throwsA(isA<Exception>()));
   });

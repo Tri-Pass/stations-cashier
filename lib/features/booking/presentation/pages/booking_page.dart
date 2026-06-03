@@ -20,7 +20,6 @@ import 'package:cashier/features/booking/presentation/widgets/taxi_card.dart';
 import 'package:cashier/core/widgets/app_notification.dart';
 import 'package:cashier/features/booking/presentation/widgets/success_dialog.dart';
 import 'package:cashier/features/booking/presentation/widgets/nfc_scan_dialog.dart';
-import 'package:cashier/features/booking/presentation/widgets/taxi_full_payment_dialog.dart';
 
 // ─── Main Booking Page ────────────────────────────────────────────────────────
 
@@ -85,53 +84,67 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
   Future<void> _loadLines() async {
     final stationId = _stationId;
     if (stationId == null) {
-      setState(() { _linesLoading = false; });
+      setState(() {
+        _linesLoading = false;
+      });
       return;
     }
     try {
       final entities = await sl<GetLinesUseCase>()(stationId);
       if (!mounted) return;
       setState(() {
-        _lines = entities.map((e) => LineInfo(
-          id: e.id,
-          origin: e.origin,
-          destination: e.destination,
-          price: e.price.toInt(),
-          taxiCount: e.activeTaxiCount,
-        )).toList();
+        _lines = entities
+            .map((e) => LineInfo(
+                  id: e.id,
+                  origin: e.origin,
+                  destination: e.destination,
+                  price: e.price.toInt(),
+                  taxiCount: e.activeTaxiCount,
+                ))
+            .toList();
         _linesLoading = false;
         _linesError = null;
       });
     } catch (e) {
-      if (mounted) setState(() { _linesLoading = false; _linesError = e.toString(); });
+      if (mounted)
+        setState(() {
+          _linesLoading = false;
+          _linesError = e.toString();
+        });
     }
   }
 
   Future<void> _loadQueue(String lineId, {bool silent = false}) async {
     final stationId = _stationId;
     if (stationId == null) return;
-    if (!silent) setState(() { _queueLoading = true; _queue = []; });
+    if (!silent)
+      setState(() {
+        _queueLoading = true;
+        _queue = [];
+      });
     try {
       final entities = await sl<GetLineQueueUseCase>()(stationId, lineId);
       if (!mounted) return;
       setState(() {
-        _queue = entities.map((e) => TaxiInfo(
-          id: e.id,
-          plateNumber: e.plateNumber,
-          totalSeats: e.totalSeats,
-          occupiedSeats: e.occupiedSeats,
-          status: 'En attente',
-          isFirst: e.isFirst,
-          color: e.color,
-          year: e.year,
-          driver: DriverInfo(
-            name: e.driver.name,
-            phone: e.driver.phone,
-            licenseNumber: e.driver.licenseNumber,
-            permitNumber: e.driver.permitNumber,
-            balance: e.driver.balance,
-          ),
-        )).toList();
+        _queue = entities
+            .map((e) => TaxiInfo(
+                  id: e.id,
+                  plateNumber: e.plateNumber,
+                  totalSeats: e.totalSeats,
+                  occupiedSeats: e.occupiedSeats,
+                  status: 'En attente',
+                  isFirst: e.isFirst,
+                  color: e.color,
+                  year: e.year,
+                  driver: DriverInfo(
+                    name: e.driver.name,
+                    phone: e.driver.phone,
+                    licenseNumber: e.driver.licenseNumber,
+                    permitNumber: e.driver.permitNumber,
+                    balance: e.driver.balance,
+                  ),
+                ))
+            .toList();
         // API data is now authoritative — drop optimistic session counts
         for (final e in entities) {
           _sessionBooked.remove(e.id);
@@ -139,7 +152,10 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         if (!silent) _queueLoading = false;
       });
     } catch (_) {
-      if (mounted && !silent) setState(() { _queueLoading = false; });
+      if (mounted && !silent)
+        setState(() {
+          _queueLoading = false;
+        });
     }
   }
 
@@ -170,19 +186,23 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         if (taxiId != null && seatsOccupied != null) {
           setState(() {
             _queue = _queue
-                .map((t) => t.id == taxiId ? t.copyWith(occupiedSeats: seatsOccupied) : t)
+                .map((t) => t.id == taxiId
+                    ? t.copyWith(occupiedSeats: seatsOccupied)
+                    : t)
                 .toList();
           });
         }
         // Silent reload to catch taxi removal when last seat is filled
         _loadLines();
-        if (_selectedLine != null && (_selectedLine!.id == lineId || lineId == null)) {
+        if (_selectedLine != null &&
+            (_selectedLine!.id == lineId || lineId == null)) {
           _loadQueue(_selectedLine!.id, silent: true);
         }
       case 'taxi_queued':
       case 'taxi_departed':
         _loadLines();
-        if (_selectedLine != null && (_selectedLine!.id == lineId || lineId == null)) {
+        if (_selectedLine != null &&
+            (_selectedLine!.id == lineId || lineId == null)) {
           _loadQueue(_selectedLine!.id, silent: true);
         }
       case 'taxi_line_changed':
@@ -204,17 +224,22 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
     if (firstEligible.id != taxi.id) {
       final l = AppLocalizations.of(context);
       final position = _queue.indexOf(firstEligible) + 1;
-      showAppError(context, message: l.cannotReserveBeforeFirstFull(position, _availableFor(firstEligible), firstEligible.plateNumber));
+      showAppError(context,
+          message: l.cannotReserveBeforeFirstFull(position,
+              _availableFor(firstEligible), firstEligible.plateNumber));
       return;
     }
 
     if (_paymentMethod == 'cash') {
       // Optimistically reserve seats so buttons disable immediately
-      setState(() => _sessionBooked[taxi.id] = (_sessionBooked[taxi.id] ?? 0) + count);
-      final result = await _callBookingApi(taxi: taxi, count: count, method: 'cash');
+      setState(() =>
+          _sessionBooked[taxi.id] = (_sessionBooked[taxi.id] ?? 0) + count);
+      final result =
+          await _callBookingApi(taxi: taxi, count: count, method: 'cash');
       if (result == null) {
         // API failed — roll back optimistic count
-        setState(() => _sessionBooked[taxi.id] = (_sessionBooked[taxi.id]! - count).clamp(0, 999));
+        setState(() => _sessionBooked[taxi.id] =
+            (_sessionBooked[taxi.id]! - count).clamp(0, 999));
         return;
       }
       _printWithTicket(result, taxi, count);
@@ -271,7 +296,8 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
     } else {
       CashierPrinter.printBooking(
         stationName: stationName,
-        lineName: _selectedLine!.destination,//${_selectedLine!.origin} → ${_selectedLine!.destination}
+        lineName: _selectedLine!
+            .destination, //${_selectedLine!.origin} → ${_selectedLine!.destination}
         taxiNumber: taxi.plateNumber,
         seatCount: count,
         totalPrice: count * _selectedLine!.price.toDouble(),
@@ -321,13 +347,15 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
           nfcTagId: tagId,
         ),
         onBooked: (result) async {
-          setState(() => _sessionBooked[taxi.id] = (_sessionBooked[taxi.id] ?? 0) + count);
+          setState(() =>
+              _sessionBooked[taxi.id] = (_sessionBooked[taxi.id] ?? 0) + count);
           _printWithTicket(result, taxi, count);
           await _showSuccessDialog(count);
           if (!mounted) return;
           _maybeShowTaxiFullDialog(taxi);
           _loadLines();
-          if (_selectedLine != null) _loadQueue(_selectedLine!.id, silent: true);
+          if (_selectedLine != null)
+            _loadQueue(_selectedLine!.id, silent: true);
         },
         onCancel: () => Navigator.of(ctx).pop(),
       ),
@@ -351,116 +379,116 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         }
       },
       child: Scaffold(
-      backgroundColor: c.background,
-      appBar: AppBar(
-        backgroundColor: c.surface,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        title: Text(
-          l.bookingTitle,
-          style: TextStyle(
-            color: c.textPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                  color: AppColors.of(context).iconBg,
-                  shape: BoxShape.rectangle,
-                  borderRadius: const BorderRadius.all(Radius.circular(12))),
-              child: const Icon(Icons.person_outline,
-                  color: AppColors.primary, size: 24),
+        backgroundColor: c.background,
+        appBar: AppBar(
+          backgroundColor: c.surface,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          title: Text(
+            l.bookingTitle,
+            style: TextStyle(
+              color: c.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
             ),
-            tooltip: l.profile,
-            onPressed: () => context.push('/profile'),
           ),
-        ],
-      ),
-      body: SafeArea(
-        child: _selectedLine == null
-          ? RefreshIndicator(
-              key: _refreshKey,
-              onRefresh: _refresh,
-              color: AppColors.primary,
-              backgroundColor: c.surface,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildStationCard(driver),
-                    const SizedBox(height: 16),
-                    _buildSectionLabel(l.sectionLines),
-                    const SizedBox(height: 8),
-                    _buildLinesGrid(l),
-                    const SizedBox(height: 16),
-                    _buildSectionLabel(l.sectionPayment),
-                    const SizedBox(height: 8),
-                    _buildPaymentRow(l),
-                    const SizedBox(height: 16),
-                    _buildHint(l),
-                  ],
-                ),
+          actions: [
+            IconButton(
+              icon: Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                    color: AppColors.of(context).iconBg,
+                    shape: BoxShape.rectangle,
+                    borderRadius: const BorderRadius.all(Radius.circular(12))),
+                child: const Icon(Icons.person_outline,
+                    color: AppColors.primary, size: 24),
               ),
-            )
-          : NestedScrollView(
-              headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                SliverToBoxAdapter(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onVerticalDragStart: (_) => _topDragDelta = 0,
-                    onVerticalDragUpdate: (d) {
-                      _topDragDelta += d.delta.dy;
-                      if (_topDragDelta > 60) {
-                        _topDragDelta = 0;
-                        _refreshKey.currentState?.show();
-                      }
-                    },
-                    onVerticalDragEnd: (_) => _topDragDelta = 0,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _buildStationCard(driver),
-                          const SizedBox(height: 16),
-                          _buildSectionLabel(l.sectionLines),
-                          const SizedBox(height: 8),
-                          _buildLinesGrid(l),
-                          const SizedBox(height: 16),
-                          _buildSectionLabel(l.sectionPayment),
-                          const SizedBox(height: 8),
-                          _buildPaymentRow(l),
-                          const SizedBox(height: 16),
-                          _buildSectionLabel(
-                            '${l.taxisInQueue} (${_selectedLine?.taxiCount})  ·  ${_selectedLine!.destination}'),
-                          const SizedBox(height: 8),
-                        ],
+              tooltip: l.profile,
+              onPressed: () => context.push('/profile'),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: _selectedLine == null
+              ? RefreshIndicator(
+                  key: _refreshKey,
+                  onRefresh: _refresh,
+                  color: AppColors.primary,
+                  backgroundColor: c.surface,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildStationCard(driver),
+                        const SizedBox(height: 16),
+                        _buildSectionLabel(l.sectionLines),
+                        const SizedBox(height: 8),
+                        _buildLinesGrid(l),
+                        const SizedBox(height: 16),
+                        _buildSectionLabel(l.sectionPayment),
+                        const SizedBox(height: 8),
+                        _buildPaymentRow(l),
+                        const SizedBox(height: 16),
+                        _buildHint(l),
+                      ],
+                    ),
+                  ),
+                )
+              : NestedScrollView(
+                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                    SliverToBoxAdapter(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onVerticalDragStart: (_) => _topDragDelta = 0,
+                        onVerticalDragUpdate: (d) {
+                          _topDragDelta += d.delta.dy;
+                          if (_topDragDelta > 60) {
+                            _topDragDelta = 0;
+                            _refreshKey.currentState?.show();
+                          }
+                        },
+                        onVerticalDragEnd: (_) => _topDragDelta = 0,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _buildStationCard(driver),
+                              const SizedBox(height: 16),
+                              _buildSectionLabel(l.sectionLines),
+                              const SizedBox(height: 8),
+                              _buildLinesGrid(l),
+                              const SizedBox(height: 16),
+                              _buildSectionLabel(l.sectionPayment),
+                              const SizedBox(height: 8),
+                              _buildPaymentRow(l),
+                              const SizedBox(height: 16),
+                              _buildSectionLabel(
+                                  '${l.taxisInQueue} (${_selectedLine?.taxiCount})  ·  ${_selectedLine!.destination}'),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
+                        ),
                       ),
+                    ),
+                  ],
+                  body: RefreshIndicator(
+                    key: _refreshKey,
+                    onRefresh: _refresh,
+                    color: AppColors.primary,
+                    backgroundColor: c.surface,
+                    child: ListView(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: _buildTaxiCards(),
                     ),
                   ),
                 ),
-              ],
-              body: RefreshIndicator(
-                key: _refreshKey,
-                onRefresh: _refresh,
-                color: AppColors.primary,
-                backgroundColor: c.surface,
-                child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 40),
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: _buildTaxiCards(),
-                ),
-              ),
-            ),
+        ),
       ),
-    ),
     );
   }
 
@@ -498,7 +526,8 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
               color: AppColors.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.location_city, color: AppColors.primary, size: 22),
+            child: const Icon(Icons.location_city,
+                color: AppColors.primary, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -530,7 +559,10 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
               ),
               child: Text(
                 stationCode,
-                style: const TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600),
               ),
             ),
         ],
@@ -542,13 +574,21 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
     if (_linesLoading) {
       return const SizedBox(
         height: 80,
-        child: Center(child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2)),
+        child: Center(
+            child: CircularProgressIndicator(
+                color: AppColors.primary, strokeWidth: 2)),
       );
     }
     if (_linesError != null) {
       final c = AppColors.of(context);
       return GestureDetector(
-        onTap: () { setState(() { _linesLoading = true; _linesError = null; }); _loadLines(); },
+        onTap: () {
+          setState(() {
+            _linesLoading = true;
+            _linesError = null;
+          });
+          _loadLines();
+        },
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -560,7 +600,8 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
             children: [
               Icon(Icons.refresh, color: c.textSecondary, size: 18),
               const SizedBox(width: 8),
-              Text(l.retry, style: TextStyle(color: c.textSecondary, fontSize: 13)),
+              Text(l.retry,
+                  style: TextStyle(color: c.textSecondary, fontSize: 13)),
             ],
           ),
         ),
@@ -584,7 +625,10 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
           selected: selected,
           onTap: () {
             if (selected) {
-              setState(() { _selectedLine = null; _queue = []; });
+              setState(() {
+                _selectedLine = null;
+                _queue = [];
+              });
             } else {
               setState(() => _selectedLine = line);
               _loadQueue(line.id);
@@ -647,7 +691,9 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
       return [
         const SizedBox(
           height: 80,
-          child: Center(child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 2)),
+          child: Center(
+              child: CircularProgressIndicator(
+                  color: AppColors.primary, strokeWidth: 2)),
         ),
       ];
     }
@@ -694,7 +740,11 @@ class NfcScanPage extends StatelessWidget {
   final LineInfo line;
   final TaxiInfo taxi;
   final int seatCount;
-  const NfcScanPage({super.key, required this.line, required this.taxi, required this.seatCount});
+  const NfcScanPage(
+      {super.key,
+      required this.line,
+      required this.taxi,
+      required this.seatCount});
 
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
@@ -704,7 +754,11 @@ class CashConfirmPage extends StatelessWidget {
   final LineInfo line;
   final TaxiInfo taxi;
   final int seatCount;
-  const CashConfirmPage({super.key, required this.line, required this.taxi, required this.seatCount});
+  const CashConfirmPage(
+      {super.key,
+      required this.line,
+      required this.taxi,
+      required this.seatCount});
 
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();

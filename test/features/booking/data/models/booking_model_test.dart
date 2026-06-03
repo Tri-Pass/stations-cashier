@@ -97,7 +97,11 @@ void main() {
     });
 
     test('toEntity converts to BookingResultEntity', () {
-      final json = {'bookingId': 'b5', 'confirmedAt': '2024-01-01', 'ticket': ticketJson};
+      final json = {
+        'bookingId': 'b5',
+        'confirmedAt': '2024-01-01',
+        'ticket': ticketJson
+      };
       final entity = BookingResultModel.fromJson(json).toEntity();
       expect(entity, isA<BookingResultEntity>());
       expect(entity.bookingId, 'b5');

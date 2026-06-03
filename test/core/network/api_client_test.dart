@@ -19,7 +19,8 @@ MockClient _respond(int status, dynamic body) => MockClient(
     );
 
 // Builds a MockClient that captures the request for inspection.
-MockClient _capture(void Function(http.Request) onRequest, [int status = 200, dynamic body = '{}']) =>
+MockClient _capture(void Function(http.Request) onRequest,
+        [int status = 200, dynamic body = '{}']) =>
     MockClient((req) async {
       onRequest(req);
       return http.Response(jsonEncode(body), status,
@@ -73,7 +74,9 @@ void main() {
       );
     });
 
-    test('throws ApiException with fallback message when body has no message/error', () async {
+    test(
+        'throws ApiException with fallback message when body has no message/error',
+        () async {
       client = make(http: _respond(500, 'internal error'));
       expect(
         () => client.get('/crash'),
@@ -172,8 +175,8 @@ void main() {
       client = make(http: _respond(422, {'message': 'Non traitable'}));
       expect(
         () => client.put('/bad', {}),
-        throwsA(isA<ApiException>()
-            .having((e) => e.statusCode, 'statusCode', 422)),
+        throwsA(
+            isA<ApiException>().having((e) => e.statusCode, 'statusCode', 422)),
       );
     });
 

@@ -133,9 +133,15 @@ class _TaxiFullPaymentDialogState extends State<TaxiFullPaymentDialog> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ── Static info (always visible immediately) ────────────
-                  _InfoRow(label: l.driverLabel, value: widget.taxi.driver.name, c: c),
+                  _InfoRow(
+                      label: l.driverLabel,
+                      value: widget.taxi.driver.name,
+                      c: c),
                   const SizedBox(height: 8),
-                  _InfoRow(label: l.taxiNumberLabel, value: widget.taxi.plateNumber, c: c),
+                  _InfoRow(
+                      label: l.taxiNumberLabel,
+                      value: widget.taxi.plateNumber,
+                      c: c),
                   const SizedBox(height: 8),
                   _InfoRow(
                     label: l.destination,
@@ -214,7 +220,8 @@ class _TaxiFullPaymentDialogState extends State<TaxiFullPaymentDialog> {
                     const SizedBox(height: 8),
                     Text(
                       l.cashoutLoadError,
-                      style: TextStyle(color: AppColors.red, fontSize: 11),
+                      style:
+                          const TextStyle(color: AppColors.red, fontSize: 11),
                     ),
                   ],
                 ],

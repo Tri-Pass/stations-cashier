@@ -20,7 +20,8 @@ class TicketCard extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final c = AppColors.of(context);
 
-    final bool canCashout = ticket.isCash && ticket.isUnpaid && onCashout != null;
+    final bool canCashout =
+        ticket.isCash && ticket.isUnpaid && onCashout != null;
     final bool isNfc = !ticket.isCash;
 
     return Container(
@@ -72,8 +73,8 @@ class TicketCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             '${ticket.totalSeats} ${l.seats.toLowerCase()}',
-                            style: TextStyle(
-                                color: c.textSecondary, fontSize: 12),
+                            style:
+                                TextStyle(color: c.textSecondary, fontSize: 12),
                           ),
                           if (ticket.departedAt != null) ...[
                             Text('  ·  ',
@@ -122,8 +123,8 @@ class TicketCard extends StatelessWidget {
               children: [
                 // Payment method pill
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 5),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: isNfc
                         ? const Color(0xFF1565C0).withValues(alpha: 0.10)
@@ -202,7 +203,7 @@ class TicketCard extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.check_circle,
+                      const Icon(Icons.check_circle,
                           size: 15, color: AppColors.green),
                       const SizedBox(width: 4),
                       Text(

@@ -5,19 +5,23 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('CashoutDriverModel', () {
     test('fromJson maps _id', () {
-      final m = CashoutDriverModel.fromJson({'_id': 'd1', 'name': 'Ahmed', 'phone': '0600'});
+      final m = CashoutDriverModel.fromJson(
+          {'_id': 'd1', 'name': 'Ahmed', 'phone': '0600'});
       expect(m.id, 'd1');
       expect(m.name, 'Ahmed');
       expect(m.phone, '0600');
     });
 
     test('fromJson maps id fallback', () {
-      final m = CashoutDriverModel.fromJson({'id': 'd2', 'name': 'Sara', 'phone': '0611'});
+      final m = CashoutDriverModel.fromJson(
+          {'id': 'd2', 'name': 'Sara', 'phone': '0611'});
       expect(m.id, 'd2');
     });
 
     test('toEntity maps correctly', () {
-      final entity = CashoutDriverModel(id: 'd1', name: 'Ahmed', phone: '0600').toEntity();
+      final entity =
+          const CashoutDriverModel(id: 'd1', name: 'Ahmed', phone: '0600')
+              .toEntity();
       expect(entity, isA<CashoutDriverEntity>());
       expect(entity.id, 'd1');
     });
@@ -25,19 +29,22 @@ void main() {
 
   group('CashoutTaxiModel', () {
     test('fromJson maps plate_number key', () {
-      final m = CashoutTaxiModel.fromJson({'_id': 't1', 'plate_number': 'ABC-123'});
+      final m =
+          CashoutTaxiModel.fromJson({'_id': 't1', 'plate_number': 'ABC-123'});
       expect(m.plateNumber, 'ABC-123');
     });
 
     test('fromJson maps plateNumber camelCase key', () {
-      final m = CashoutTaxiModel.fromJson({'id': 't2', 'plateNumber': 'XYZ-999'});
+      final m =
+          CashoutTaxiModel.fromJson({'id': 't2', 'plateNumber': 'XYZ-999'});
       expect(m.plateNumber, 'XYZ-999');
     });
   });
 
   group('CashoutLineModel', () {
     test('fromJson maps standard fields', () {
-      final m = CashoutLineModel.fromJson({'id': 'l1', 'origin': 'Fes', 'destination': 'Rabat', 'price': 40.0});
+      final m = CashoutLineModel.fromJson(
+          {'id': 'l1', 'origin': 'Fes', 'destination': 'Rabat', 'price': 40.0});
       expect(m.origin, 'Fes');
       expect(m.destination, 'Rabat');
       expect(m.price, 40.0);
@@ -61,7 +68,12 @@ void main() {
       '_id': 's1',
       'driver': {'id': 'd1', 'name': 'Ahmed', 'phone': '0600'},
       'taxi': {'id': 't1', 'plateNumber': 'ABC-123'},
-      'line': {'id': 'l1', 'origin': 'Fes', 'destination': 'Rabat', 'price': 40.0},
+      'line': {
+        'id': 'l1',
+        'origin': 'Fes',
+        'destination': 'Rabat',
+        'price': 40.0
+      },
       'ticketsCount': 5,
       'totalCollected': 200.0,
       'totalCash': 120.0,
@@ -98,7 +110,11 @@ void main() {
       final j = {
         '_id': 's3',
         'driver': <String, dynamic>{},
-        'taxi': <String, dynamic>{'id': 't1', 'plateNumber': 'P1', 'line': 'Oujda → Nador'},
+        'taxi': <String, dynamic>{
+          'id': 't1',
+          'plateNumber': 'P1',
+          'line': 'Oujda → Nador'
+        },
       };
       final model = CashoutSummaryModel.fromJson(j);
       expect(model.line.origin, 'Oujda');
@@ -140,7 +156,12 @@ void main() {
         'data': <String, dynamic>{
           'stats': <String, dynamic>{'totalCollected': 300.0},
           'driverRows': [
-            <String, dynamic>{'_id': 's1', 'driver': <String, dynamic>{}, 'taxi': <String, dynamic>{}, 'totalCollected': 300.0},
+            <String, dynamic>{
+              '_id': 's1',
+              'driver': <String, dynamic>{},
+              'taxi': <String, dynamic>{},
+              'totalCollected': 300.0
+            },
           ],
         },
       };
@@ -149,12 +170,23 @@ void main() {
       expect(model.totalAmount, 300.0);
     });
 
-    test('fromJson with envelope falls back to summing items when no apiTotal', () {
+    test('fromJson with envelope falls back to summing items when no apiTotal',
+        () {
       final json = <String, dynamic>{
         'data': <String, dynamic>{
           'driverRows': [
-            <String, dynamic>{'_id': 's1', 'driver': <String, dynamic>{}, 'taxi': <String, dynamic>{}, 'totalCollected': 75.0},
-            <String, dynamic>{'_id': 's2', 'driver': <String, dynamic>{}, 'taxi': <String, dynamic>{}, 'totalCollected': 25.0},
+            <String, dynamic>{
+              '_id': 's1',
+              'driver': <String, dynamic>{},
+              'taxi': <String, dynamic>{},
+              'totalCollected': 75.0
+            },
+            <String, dynamic>{
+              '_id': 's2',
+              'driver': <String, dynamic>{},
+              'taxi': <String, dynamic>{},
+              'totalCollected': 25.0
+            },
           ],
         },
       };

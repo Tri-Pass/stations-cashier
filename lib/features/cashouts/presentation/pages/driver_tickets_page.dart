@@ -101,8 +101,8 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
     final all = _data?.tickets ?? [];
     return switch (_filter) {
       'unpaid' => all.where((t) => t.isCash && t.isUnpaid).toList(),
-      'paid'   => all.where((t) => !t.isUnpaid || !t.isCash).toList(),
-      _        => all,
+      'paid' => all.where((t) => !t.isUnpaid || !t.isCash).toList(),
+      _ => all,
     };
   }
 
@@ -180,8 +180,8 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
           context: context,
           builder: (_) => AlertDialog(
             backgroundColor: c.surface,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             title: Text(title,
                 style: TextStyle(
                     color: c.textPrimary,
@@ -192,8 +192,7 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: Text(l.cancel,
-                    style: TextStyle(color: c.textSecondary)),
+                child: Text(l.cancel, style: TextStyle(color: c.textSecondary)),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
@@ -300,9 +299,8 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
           ),
         ),
       ),
-      bottomNavigationBar: showCashoutAll && !_loading
-          ? _buildCashoutAllBar(l, c)
-          : null,
+      bottomNavigationBar:
+          showCashoutAll && !_loading ? _buildCashoutAllBar(l, c) : null,
     );
   }
 
@@ -329,15 +327,15 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
           Text(
             l.totalCashToPay,
             style: const TextStyle(
-                color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w500),
+                color: Colors.white70,
+                fontSize: 12,
+                fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 4),
           Text(
             _loading ? '— MAD' : '${cashToPay.toStringAsFixed(0)} MAD',
             style: const TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold),
+                color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 14),
           Row(
@@ -377,7 +375,8 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
                 onTap: _pickDate,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
                     color: isToday
                         ? AppColors.primary.withValues(alpha: 0.07)
@@ -404,8 +403,7 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
                           ),
                         ),
                       ),
-                      Icon(Icons.expand_more,
-                          color: c.textSecondary, size: 16),
+                      Icon(Icons.expand_more, color: c.textSecondary, size: 16),
                     ],
                   ),
                 ),
@@ -512,8 +510,7 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
             decoration: BoxDecoration(
               color: c.surface,
               borderRadius: BorderRadius.circular(14),
@@ -574,8 +571,7 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
             icon: const Icon(Icons.arrow_circle_up_outlined, size: 20),
             label: Text(
               '${l.cashoutAll}  ·  ${_totalUnpaidCash.toStringAsFixed(0)} MAD',
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 15),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -635,12 +631,10 @@ class _FilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected
-              ? AppColors.primary.withValues(alpha: 0.15)
-              : c.surface,
+          color:
+              selected ? AppColors.primary.withValues(alpha: 0.15) : c.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-              color: selected ? AppColors.primary : c.border),
+          border: Border.all(color: selected ? AppColors.primary : c.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -650,15 +644,13 @@ class _FilterChip extends StatelessWidget {
               style: TextStyle(
                 color: selected ? AppColors.primary : c.textSecondary,
                 fontSize: 12,
-                fontWeight:
-                    selected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
             if (badge != null) ...[
               const SizedBox(width: 6),
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 6, vertical: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(10),

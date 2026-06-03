@@ -20,7 +20,8 @@ void main() {
     totalNfcAmount: 0,
     totalAmount: 0,
   );
-  const response = DriverTicketsEntity(driver: driverInfo, tickets: [], summary: summary);
+  const response =
+      DriverTicketsEntity(driver: driverInfo, tickets: [], summary: summary);
 
   setUpAll(() {
     registerFallbackValue(params);
@@ -32,7 +33,8 @@ void main() {
   });
 
   test('delegates to repository.getDriverTickets', () async {
-    when(() => repository.getDriverTickets(any())).thenAnswer((_) async => response);
+    when(() => repository.getDriverTickets(any()))
+        .thenAnswer((_) async => response);
 
     final result = await useCase(params);
 
@@ -41,7 +43,8 @@ void main() {
   });
 
   test('propagates repository exception', () async {
-    when(() => repository.getDriverTickets(any())).thenThrow(Exception('error'));
+    when(() => repository.getDriverTickets(any()))
+        .thenThrow(Exception('error'));
     expect(() => useCase(params), throwsA(isA<Exception>()));
   });
 }

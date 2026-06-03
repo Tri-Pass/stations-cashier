@@ -140,8 +140,7 @@ class AppLocalizations {
   String get passengerPhoneHint =>
       _t('N° de téléphone du passager', 'رقم هاتف الراكب');
 
-  String get passengerNameHint =>
-      _t('Nom du passager', 'اسم الراكب');
+  String get passengerNameHint => _t('Nom du passager', 'اسم الراكب');
 
   String get fieldNameRequired => _t('Nom requis', 'الاسم مطلوب');
 
@@ -149,7 +148,8 @@ class AppLocalizations {
 
   String get linkPassenger => _t('Lier le passager', 'ربط الراكب');
 
-  String get linkSuccess => _t('Passager lié avec succès', 'تم ربط الراكب بنجاح');
+  String get linkSuccess =>
+      _t('Passager lié avec succès', 'تم ربط الراكب بنجاح');
 
   String get retry => _t('Réessayer', 'إعادة المحاولة');
 
@@ -165,7 +165,8 @@ class AppLocalizations {
 
   String get confirmAndCharge => _t('Confirmer & Recharger', 'تأكيد الشحن');
 
-  String get rechargeSuccess => _t('Compte rechargé avec succès', 'تم شحن الحساب بنجاح');
+  String get rechargeSuccess =>
+      _t('Compte rechargé avec succès', 'تم شحن الحساب بنجاح');
 
   String get rechargePassenger => _t('Recharger', 'شحن');
 
@@ -182,7 +183,8 @@ class AppLocalizations {
   // ── Driver NFC confirm ────────────────────────────────────────────────────
   String get driverProfile => _t('Profil chauffeur', 'ملف تعريف السائق');
 
-  String get driverIdentified => _t('Chauffeur identifié', 'تم التعرف على السائق');
+  String get driverIdentified =>
+      _t('Chauffeur identifié', 'تم التعرف على السائق');
 
   String get taxiNumberLabel => _t('N° taxi', 'رقم التاكسي');
 
@@ -194,83 +196,102 @@ class AppLocalizations {
 
   String get addToQueue => _t('Ajouter à la file', 'إضافة للطابور');
 
-  String get lineRequired => _t('Veuillez sélectionner une ligne', 'يرجى اختيار الخط');
+  String get lineRequired =>
+      _t('Veuillez sélectionner une ligne', 'يرجى اختيار الخط');
 
-  String get alreadyInQueue => _t('Déjà dans la file d\'attente', 'موجود في الطابور');
+  String get alreadyInQueue =>
+      _t('Déjà dans la file d\'attente', 'موجود في الطابور');
 
-  String get alreadyInQueueSub => _t('Ce chauffeur est déjà enregistré dans la file d\'attente', 'هذا السائق مسجل بالفعل في قائمة الانتظار');
+  String get alreadyInQueueSub => _t(
+      'Ce chauffeur est déjà enregistré dans la file d\'attente',
+      'هذا السائق مسجل بالفعل في قائمة الانتظار');
 
   String get close => _t('Fermer', 'إغلاق');
 
   String get withdraw => _t('Retirer', 'سحب');
   String get transfer => _t('Transférer', 'تحويل');
-  String get topUp    => _t('Recharger', 'شحن');
+  String get topUp => _t('Recharger', 'شحن');
 
   // ── Wallet ────────────────────────────────────────────────────────────────
-  String get confirm            => _t('Confirmer', 'تأكيد');
+  String get confirm => _t('Confirmer', 'تأكيد');
 
   // PIN sheet
-  String get confirmOperation   => _t('Confirmer l\'opération', 'تأكيد العملية');
-  String get enterPinToValidate => _t('Entrez votre code PIN pour valider', 'أدخل رمز PIN للتأكيد');
-  String get pinIncorrect       => _t('Code PIN incorrect', 'رمز PIN غير صحيح');
-  String get backToWallet       => _t('Retour au portefeuille', 'العودة للمحفظة');
-  String get linkCopied         => _t('Lien copié', 'تم نسخ الرابط');
+  String get confirmOperation => _t('Confirmer l\'opération', 'تأكيد العملية');
+  String get enterPinToValidate =>
+      _t('Entrez votre code PIN pour valider', 'أدخل رمز PIN للتأكيد');
+  String get pinIncorrect => _t('Code PIN incorrect', 'رمز PIN غير صحيح');
+  String get backToWallet => _t('Retour au portefeuille', 'العودة للمحفظة');
+  String get linkCopied => _t('Lien copié', 'تم نسخ الرابط');
 
   // Transfer page
-  String get transferAmountTitle  => _t('Montant du transfert', 'مبلغ التحويل');
-  String get howMuchTransfer      => _t('Combien souhaitez-vous transférer ?', 'كم تريد أن تحوّل؟');
-  String get otherAmount          => _t('Autre montant', 'مبلغ آخر');
-  String get freeTransferNote     => _t('Les transferts sont gratuits', 'التحويلات مجانية');
-  String get chooseRecipient      => _t('Choisir le destinataire', 'اختر المستلم');
-  String get searchDriver         => _t('Rechercher un utilisateur', 'ابحث عن مستخدم');
-  String get searchPlaceholder    => _t('Nom ou téléphone...', 'اسم أو هاتف...');
-  String get noResults            => _t('Aucun résultat', 'لا توجد نتائج');
-  String get confirmTransferTitle => _t('Confirmer le transfert', 'تأكيد التحويل');
-  String get confirmTransferBtn   => _t('Confirmer', 'تأكيد');
-  String get continueBtn          => _t('Continuer', 'متابعة');
-  String get recipient            => _t('Destinataire', 'المستلم');
-  String get amountLabel          => _t('Montant', 'المبلغ');
-  String get fees                 => _t('Frais', 'الرسوم');
-  String get free                 => _t('Gratuit', 'مجاناً');
-  String get transferDoneTitle    => _t('Transfert envoyé !', 'تم إرسال التحويل!');
+  String get transferAmountTitle => _t('Montant du transfert', 'مبلغ التحويل');
+  String get howMuchTransfer =>
+      _t('Combien souhaitez-vous transférer ?', 'كم تريد أن تحوّل؟');
+  String get otherAmount => _t('Autre montant', 'مبلغ آخر');
+  String get freeTransferNote =>
+      _t('Les transferts sont gratuits', 'التحويلات مجانية');
+  String get chooseRecipient => _t('Choisir le destinataire', 'اختر المستلم');
+  String get searchDriver => _t('Rechercher un utilisateur', 'ابحث عن مستخدم');
+  String get searchPlaceholder => _t('Nom ou téléphone...', 'اسم أو هاتف...');
+  String get noResults => _t('Aucun résultat', 'لا توجد نتائج');
+  String get confirmTransferTitle =>
+      _t('Confirmer le transfert', 'تأكيد التحويل');
+  String get confirmTransferBtn => _t('Confirmer', 'تأكيد');
+  String get continueBtn => _t('Continuer', 'متابعة');
+  String get recipient => _t('Destinataire', 'المستلم');
+  String get amountLabel => _t('Montant', 'المبلغ');
+  String get fees => _t('Frais', 'الرسوم');
+  String get free => _t('Gratuit', 'مجاناً');
+  String get transferDoneTitle => _t('Transfert envoyé !', 'تم إرسال التحويل!');
   String transferDoneSub(String amount, String name) =>
       _t('$amount MAD envoyés à $name', 'تم إرسال $amount درهم إلى $name');
 
   // TopUp page
-  String get topUpWalletTitle   => _t('Recharger mon portefeuille', 'شحن محفظتي');
-  String get chooseTopUpMethod  => _t('Choisir la méthode', 'اختر الطريقة');
-  String get howToTopUp         => _t('Comment souhaitez-vous recharger ?', 'كيف تريد الشحن؟');
-  String get topUpAmountTitle   => _t('Montant à recharger', 'المبلغ المراد شحنه');
-  String get modeSubLabel       => _t('Via ', 'عبر ');
-  String get modeLabel          => _t('Méthode', 'الطريقة');
-  String get confirmTopUp       => _t('Confirmer la recharge', 'تأكيد الشحن');
-  String get confirmTopUpBtn    => _t('Confirmer', 'تأكيد');
-  String get topUpSentTitle     => _t('Demande envoyée !', 'تم إرسال الطلب!');
-  String get topUpSentSubtitle  => _t('Votre demande de recharge a été soumise', 'تم تقديم طلب الشحن');
-  String get qrTopUpTitle       => _t('Code QR généré', 'تم توليد رمز QR');
-  String get qrTopUpSubtitle    => _t('Scannez ce code au guichet', 'امسح هذا الرمز عند الشباك');
-  String get paymentLinkTitle   => _t('Lien de paiement', 'رابط الدفع');
-  String get cardLinkSubtitle   => _t('Utilisez ce lien pour effectuer le paiement', 'استخدم هذا الرابط للدفع');
+  String get topUpWalletTitle => _t('Recharger mon portefeuille', 'شحن محفظتي');
+  String get chooseTopUpMethod => _t('Choisir la méthode', 'اختر الطريقة');
+  String get howToTopUp =>
+      _t('Comment souhaitez-vous recharger ?', 'كيف تريد الشحن؟');
+  String get topUpAmountTitle =>
+      _t('Montant à recharger', 'المبلغ المراد شحنه');
+  String get modeSubLabel => _t('Via ', 'عبر ');
+  String get modeLabel => _t('Méthode', 'الطريقة');
+  String get confirmTopUp => _t('Confirmer la recharge', 'تأكيد الشحن');
+  String get confirmTopUpBtn => _t('Confirmer', 'تأكيد');
+  String get topUpSentTitle => _t('Demande envoyée !', 'تم إرسال الطلب!');
+  String get topUpSentSubtitle =>
+      _t('Votre demande de recharge a été soumise', 'تم تقديم طلب الشحن');
+  String get qrTopUpTitle => _t('Code QR généré', 'تم توليد رمز QR');
+  String get qrTopUpSubtitle =>
+      _t('Scannez ce code au guichet', 'امسح هذا الرمز عند الشباك');
+  String get paymentLinkTitle => _t('Lien de paiement', 'رابط الدفع');
+  String get cardLinkSubtitle => _t(
+      'Utilisez ce lien pour effectuer le paiement', 'استخدم هذا الرابط للدفع');
 
   // Withdraw page
-  String get withdrawMethod       => _t('Méthode de retrait', 'طريقة السحب');
-  String get howToWithdraw        => _t('Comment souhaitez-vous retirer ?', 'كيف تريد السحب؟');
-  String get withdrawAmountTitle  => _t('Montant à retirer', 'المبلغ المراد سحبه');
-  String get bankInfoTitle        => _t('Informations bancaires', 'معلومات بنكية');
-  String get enterBankInfo        => _t('Entrez vos coordonnées bancaires', 'أدخل بياناتك البنكية');
-  String get beneficiaryName      => _t('Nom du bénéficiaire', 'اسم المستفيد');
-  String get rib                  => _t('RIB', 'رقم الحساب (RIB)');
-  String get cashplusTitle        => _t('CashPlus', 'كاش بلاس');
-  String get cashplusRecipient    => _t('Numéro du bénéficiaire', 'رقم المستفيد');
-  String get cashplusPhoneLabel   => _t('Téléphone CashPlus', 'هاتف كاش بلاس');
-  String get motif                => _t('Motif', 'السبب');
-  String get motifHint            => _t('Optionnel', 'اختياري');
+  String get withdrawMethod => _t('Méthode de retrait', 'طريقة السحب');
+  String get howToWithdraw =>
+      _t('Comment souhaitez-vous retirer ?', 'كيف تريد السحب؟');
+  String get withdrawAmountTitle =>
+      _t('Montant à retirer', 'المبلغ المراد سحبه');
+  String get bankInfoTitle => _t('Informations bancaires', 'معلومات بنكية');
+  String get enterBankInfo =>
+      _t('Entrez vos coordonnées bancaires', 'أدخل بياناتك البنكية');
+  String get beneficiaryName => _t('Nom du bénéficiaire', 'اسم المستفيد');
+  String get rib => _t('RIB', 'رقم الحساب (RIB)');
+  String get cashplusTitle => _t('CashPlus', 'كاش بلاس');
+  String get cashplusRecipient => _t('Numéro du bénéficiaire', 'رقم المستفيد');
+  String get cashplusPhoneLabel => _t('Téléphone CashPlus', 'هاتف كاش بلاس');
+  String get motif => _t('Motif', 'السبب');
+  String get motifHint => _t('Optionnel', 'اختياري');
   String get confirmWithdrawTitle => _t('Confirmer le retrait', 'تأكيد السحب');
-  String get confirmWithdrawBtn   => _t('Confirmer', 'تأكيد');
-  String get qrWithdrawTitle      => _t('Code QR de retrait', 'رمز QR للسحب');
-  String get qrWithdrawSubtitle   => _t('Présentez ce code au guichet', 'أرِ هذا الرمز عند الشباك');
-  String get withdrawDoneTitle    => _t('Retrait en cours...', 'السحب قيد المعالجة...');
-  String get withdrawDoneSub      => _t('Votre demande de retrait a été traitée', 'تم معالجة طلب السحب');
+  String get confirmWithdrawBtn => _t('Confirmer', 'تأكيد');
+  String get qrWithdrawTitle => _t('Code QR de retrait', 'رمز QR للسحب');
+  String get qrWithdrawSubtitle =>
+      _t('Présentez ce code au guichet', 'أرِ هذا الرمز عند الشباك');
+  String get withdrawDoneTitle =>
+      _t('Retrait en cours...', 'السحب قيد المعالجة...');
+  String get withdrawDoneSub =>
+      _t('Votre demande de retrait a été traitée', 'تم معالجة طلب السحب');
 
   String get lineLabel => _t('ligne', 'خط');
 
@@ -292,7 +313,8 @@ class AppLocalizations {
 
   String get addSeat => _t('Ajouter un passager', 'إضافة راكب');
 
-  String get seatValidationTitle => _t('Places insuffisantes', 'مقاعد غير كافية');
+  String get seatValidationTitle =>
+      _t('Places insuffisantes', 'مقاعد غير كافية');
 
   String seatValidationHasNext(int available) => _t(
       'Le premier taxi n\'a que $available place(s) disponible(s).\nVoulez-vous réserver avec le taxi suivant ?',
@@ -304,7 +326,8 @@ class AppLocalizations {
 
   String get nextTaxi => _t('Taxi suivant', 'التاكسي التالي');
 
-  String get firstTaxiAvailableTitle => _t('Premier taxi disponible', 'التاكسي الأول متاح');
+  String get firstTaxiAvailableTitle =>
+      _t('Premier taxi disponible', 'التاكسي الأول متاح');
 
   String firstTaxiAvailableMsg(int available, String plate) => _t(
       'Le taxi $plate (1er) a $available place(s) disponible(s).\nVoulez-vous quand même réserver ce taxi ?',
@@ -323,7 +346,8 @@ class AppLocalizations {
   String get noConnectionBanner =>
       _t('Vérification de la connexion…', 'جارٍ التحقق من الاتصال…');
 
-  String get connectionRestored => _t('Connexion rétablie', 'تم استعادة الاتصال');
+  String get connectionRestored =>
+      _t('Connexion rétablie', 'تم استعادة الاتصال');
 
   // ── Profile ───────────────────────────────────────────────────────────────
   String get profile => _t('Profil', 'الملف الشخصي');
@@ -354,9 +378,11 @@ class AppLocalizations {
 
   String get cashoutsTitle => _t('Paiements chauffeurs', 'مدفوعات السائقين');
 
-  String get totalCashouts => _t('Total à payer aux chauffeurs', 'إجمالي المستحق للسائقين');
+  String get totalCashouts =>
+      _t('Total à payer aux chauffeurs', 'إجمالي المستحق للسائقين');
 
-  String get cashoutsListLabel => _t('DÉTAIL DES PAIEMENTS', 'تفاصيل المدفوعات');
+  String get cashoutsListLabel =>
+      _t('DÉTAIL DES PAIEMENTS', 'تفاصيل المدفوعات');
 
   String get noPayments => _t('Aucun paiement', 'لا توجد مدفوعات');
 
@@ -390,9 +416,8 @@ class AppLocalizations {
 
   String get taxiFullTitle => _t('Taxi complet !', 'اكتمل التاكسي!');
 
-  String get taxiFullSubtitle => _t(
-      'Payez le montant suivant au chauffeur',
-      'ادفع المبلغ التالي للسائق');
+  String get taxiFullSubtitle =>
+      _t('Payez le montant suivant au chauffeur', 'ادفع المبلغ التالي للسائق');
 
   String get cashSeatsLabel => _t('Places cash', 'مقاعد نقداً');
 
@@ -403,18 +428,19 @@ class AppLocalizations {
       'تعذّر تحميل البيانات — أعد المحاولة');
 
   // ── Driver tickets ────────────────────────────────────────────────────────
-  String get ticketsPageTitle  => _t('Tickets de course', 'تذاكر الرحلة');
-  String get ticketsListLabel  => _t('LISTE DES TICKETS', 'قائمة التذاكر');
-  String get cashout           => _t('Payer', 'دفع');
-  String get cashoutAll        => _t('Tout payer', 'دفع الكل');
-  String get confirmCashout    => _t('Confirmer', 'تأكيد');
+  String get ticketsPageTitle => _t('Tickets de course', 'تذاكر الرحلة');
+  String get ticketsListLabel => _t('LISTE DES TICKETS', 'قائمة التذاكر');
+  String get cashout => _t('Payer', 'دفع');
+  String get cashoutAll => _t('Tout payer', 'دفع الكل');
+  String get confirmCashout => _t('Confirmer', 'تأكيد');
   String get confirmCashoutTitle => _t('Confirmer le paiement', 'تأكيد الدفع');
-  String get cashoutSuccess    => _t('Paiement effectué', 'تم الدفع بنجاح');
-  String get unpaid            => _t('À payer', 'للدفع');
-  String get paid              => _t('Payé', 'مدفوع');
-  String get allTickets        => _t('Tous', 'الكل');
-  String get noTickets         => _t('Aucun ticket pour ce chauffeur', 'لا توجد تذاكر لهذا السائق');
-  String get totalCashToPay    => _t('À payer au chauffeur', 'للدفع للسائق');
+  String get cashoutSuccess => _t('Paiement effectué', 'تم الدفع بنجاح');
+  String get unpaid => _t('À payer', 'للدفع');
+  String get paid => _t('Payé', 'مدفوع');
+  String get allTickets => _t('Tous', 'الكل');
+  String get noTickets =>
+      _t('Aucun ticket pour ce chauffeur', 'لا توجد تذاكر لهذا السائق');
+  String get totalCashToPay => _t('À payer au chauffeur', 'للدفع للسائق');
   String get nfcAutoTransferred => _t('Transféré auto.', 'محوّل تلقائياً');
 
   String confirmCashoutMsg(String amount) => _t(
@@ -426,21 +452,21 @@ class AppLocalizations {
       'دفع $count رحلة للسائق بمجموع $amount درهم؟');
 
   // ── Printer labels ────────────────────────────────────────────────────────
-  String get printStation        => _t('Station', 'المحطة');
-  String get printLine           => _t('Ligne', 'الخط');
-  String get printTaxi           => _t('Taxi', 'التاكسي');
-  String get printDriver         => _t('Chauffeur', 'السائق');
-  String get printSeats          => _t('Places', 'المقاعد');
-  String get printTotal          => _t('Total', 'المجموع');
-  String get printPayment        => _t('Paiement', 'طريقة الدفع');
-  String get printCash           => _t('Espèces', 'نقداً');
-  String get printThankYou       => _t('Merci pour votre confiance', 'شكراً لثقتكم');
-  String get printRechargeTitle  => _t('RECHARGE DE COMPTE', 'شحن الحساب');
-  String get printName           => _t('Nom', 'الاسم');
-  String get printPhone          => _t('Tél', 'الهاتف');
-  String get printAmount         => _t('Montant', 'المبلغ');
-  String get printBalanceBefore  => _t('Solde avant', 'الرصيد قبل');
-  String get printBalanceAfter   => _t('Solde après', 'الرصيد بعد');
+  String get printStation => _t('Station', 'المحطة');
+  String get printLine => _t('Ligne', 'الخط');
+  String get printTaxi => _t('Taxi', 'التاكسي');
+  String get printDriver => _t('Chauffeur', 'السائق');
+  String get printSeats => _t('Places', 'المقاعد');
+  String get printTotal => _t('Total', 'المجموع');
+  String get printPayment => _t('Paiement', 'طريقة الدفع');
+  String get printCash => _t('Espèces', 'نقداً');
+  String get printThankYou => _t('Merci pour votre confiance', 'شكراً لثقتكم');
+  String get printRechargeTitle => _t('RECHARGE DE COMPTE', 'شحن الحساب');
+  String get printName => _t('Nom', 'الاسم');
+  String get printPhone => _t('Tél', 'الهاتف');
+  String get printAmount => _t('Montant', 'المبلغ');
+  String get printBalanceBefore => _t('Solde avant', 'الرصيد قبل');
+  String get printBalanceAfter => _t('Solde après', 'الرصيد بعد');
 
   // ── Settings ──────────────────────────────────────────────────────────────
   String get language => _t('Langue', 'اللغة');

@@ -41,7 +41,8 @@ class ProfilePage extends StatelessWidget {
                 // ── Profile card ────────────────────────────────────────────
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFFF5A300), Color(0xFFE08800)],
@@ -63,7 +64,8 @@ class ProfilePage extends StatelessWidget {
                             width: 2,
                           ),
                         ),
-                        child: const Icon(Icons.badge_outlined, color: Colors.black87, size: 44),
+                        child: const Icon(Icons.badge_outlined,
+                            color: Colors.black87, size: 44),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -77,7 +79,8 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         l.courtierRole,
-                        style: const TextStyle(color: Colors.black54, fontSize: 14),
+                        style: const TextStyle(
+                            color: Colors.black54, fontSize: 14),
                       ),
                     ],
                   ),
@@ -96,7 +99,10 @@ class ProfilePage extends StatelessWidget {
                 const SizedBox(height: 14),
 
                 _InfoRow(icon: Icons.phone, label: l.phone, value: phone),
-                _InfoRow(icon: Icons.location_on, label: l.stationLabel, value: station),
+                _InfoRow(
+                    icon: Icons.location_on,
+                    label: l.stationLabel,
+                    value: station),
                 _InfoRow(icon: Icons.badge, label: l.agentId, value: agentId),
                 const SizedBox(height: 28),
 
@@ -169,7 +175,8 @@ class ProfilePage extends StatelessWidget {
             },
             child: Text(
               l.disconnect,
-              style: const TextStyle(color: AppColors.red, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  color: AppColors.red, fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -185,7 +192,8 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow(
+      {required this.icon, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -214,11 +222,15 @@ class _InfoRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(color: c.textSecondary, fontSize: 11)),
+                Text(label,
+                    style: TextStyle(color: c.textSecondary, fontSize: 11)),
                 const SizedBox(height: 2),
                 Text(
                   value,
-                  style: TextStyle(color: c.textPrimary, fontSize: 14, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      color: c.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -416,14 +428,16 @@ class _LangOption extends StatelessWidget {
                   fontSize: 15,
                   fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
                 ),
-                textDirection: isRtlLabel ? TextDirection.rtl : TextDirection.ltr,
+                textDirection:
+                    isRtlLabel ? TextDirection.rtl : TextDirection.ltr,
               ),
             ),
             if (selected)
               Container(
                 width: 22,
                 height: 22,
-                decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                    color: AppColors.primary, shape: BoxShape.circle),
                 child: const Icon(Icons.check, color: Colors.black, size: 14),
               )
             else
@@ -461,8 +475,10 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = AppColors.of(context);
     final color = isDestructive ? AppColors.red : c.textPrimary;
-    final bgColor = isDestructive ? AppColors.red.withValues(alpha: 0.12) : c.surface;
-    final borderColor = isDestructive ? AppColors.red.withValues(alpha: 0.3) : c.border;
+    final bgColor =
+        isDestructive ? AppColors.red.withValues(alpha: 0.12) : c.surface;
+    final borderColor =
+        isDestructive ? AppColors.red.withValues(alpha: 0.3) : c.border;
 
     return GestureDetector(
       onTap: onTap,
@@ -478,7 +494,9 @@ class _ActionButton extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 14),
-            Text(label, style: TextStyle(color: color, fontSize: 15, fontWeight: FontWeight.w600)),
+            Text(label,
+                style: TextStyle(
+                    color: color, fontSize: 15, fontWeight: FontWeight.w600)),
           ],
         ),
       ),

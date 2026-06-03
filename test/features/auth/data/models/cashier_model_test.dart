@@ -5,7 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('StationModel', () {
     test('fromJson maps _id key', () {
-      final json = {'_id': 's1', 'name': 'Gare', 'code': 'G1', 'city': 'Casablanca'};
+      final json = {
+        '_id': 's1',
+        'name': 'Gare',
+        'code': 'G1',
+        'city': 'Casablanca'
+      };
       final model = StationModel.fromJson(json);
       expect(model.id, 's1');
       expect(model.name, 'Gare');
@@ -31,7 +36,8 @@ void main() {
     });
 
     test('toEntity produces StationEntity with same values', () {
-      final model = StationModel(id: 's1', name: 'Gare', code: 'G1', city: 'Casa');
+      const model =
+          StationModel(id: 's1', name: 'Gare', code: 'G1', city: 'Casa');
       final entity = model.toEntity();
       expect(entity, isA<StationEntity>());
       expect(entity.id, 's1');
@@ -70,13 +76,18 @@ void main() {
     });
 
     test('fromJson sets station to null when station is not a Map', () {
-      final json = {'_id': 'c4', 'name': 'Ali', 'phone': '0600', 'station': 'invalid'};
+      final json = {
+        '_id': 'c4',
+        'name': 'Ali',
+        'phone': '0600',
+        'station': 'invalid'
+      };
       final model = CashierModel.fromJson(json);
       expect(model.station, isNull);
     });
 
     test('toEntity produces DriverEntity', () {
-      final model = CashierModel(
+      const model = CashierModel(
         id: 'c1',
         name: 'Ahmed',
         phone: '0600000001',
@@ -94,8 +105,9 @@ void main() {
       expect(entity.station!.id, 's1');
     });
 
-    test('toEntity with no station produces DriverEntity with null station', () {
-      final model = CashierModel(id: 'c1', name: 'X', phone: '0600');
+    test('toEntity with no station produces DriverEntity with null station',
+        () {
+      const model = CashierModel(id: 'c1', name: 'X', phone: '0600');
       final entity = model.toEntity();
       expect(entity.station, isNull);
     });
