@@ -10,6 +10,8 @@ class BookingRepositoryImpl implements BookingRepository {
   @override
   Future<BookingResultEntity> createBooking(CreateBookingParams params) async {
     final data = await _dataSource.createBooking(params);
-    return BookingResultModel.fromJson(data, fallbackPayment: params.paymentMethod).toEntity();
+    return BookingResultModel.fromJson(data,
+            fallbackPayment: params.paymentMethod)
+        .toEntity();
   }
 }

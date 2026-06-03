@@ -3,8 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('StationEntity', () {
-    test('props contains only id — equal when ids match despite different names', () {
-      const s1 = StationEntity(id: 's1', name: 'Gare', code: 'G1', city: 'Casa');
+    test(
+        'props contains only id — equal when ids match despite different names',
+        () {
+      const s1 =
+          StationEntity(id: 's1', name: 'Gare', code: 'G1', city: 'Casa');
       const s2 = StationEntity(id: 's1', name: 'Other Name');
       expect(s1, equals(s2));
       expect(s1.props, ['s1']);
@@ -34,12 +37,17 @@ void main() {
     });
 
     test('equal when ids match regardless of other fields', () {
-      const same = LineEntity(id: 'l1', origin: 'X', destination: 'Y', price: 0);
+      const same =
+          LineEntity(id: 'l1', origin: 'X', destination: 'Y', price: 0);
       expect(line, equals(same));
     });
 
     test('not equal when ids differ', () {
-      const other = LineEntity(id: 'l2', origin: 'Casablanca', destination: 'Marrakech', price: 55.0);
+      const other = LineEntity(
+          id: 'l2',
+          origin: 'Casablanca',
+          destination: 'Marrakech',
+          price: 55.0);
       expect(line, isNot(equals(other)));
     });
   });

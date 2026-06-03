@@ -7,13 +7,13 @@ enum ConnectivityState { checking, online, offline }
 
 class ConnectivityService {
   // Socket check confirms real internet access, not just an adapter being up.
-  static const _host    = '8.8.8.8';
-  static const _port    = 53;
+  static const _host = '8.8.8.8';
+  static const _port = 53;
   static const _timeout = Duration(seconds: 3);
 
   // Poll slowly while online (battery-friendly), quickly while offline so
   // the banner disappears as soon as WiFi comes back.
-  static const _onlineInterval  = Duration(seconds: 15);
+  static const _onlineInterval = Duration(seconds: 15);
   static const _offlineInterval = Duration(seconds: 4);
 
   final _state = ValueNotifier<ConnectivityState>(ConnectivityState.checking);
@@ -27,9 +27,8 @@ class ConnectivityService {
   }
 
   Future<void> _init() async {
-    _subscription = Connectivity()
-        .onConnectivityChanged
-        .listen(_onConnectivityChanged);
+    _subscription =
+        Connectivity().onConnectivityChanged.listen(_onConnectivityChanged);
     await _check();
   }
 

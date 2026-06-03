@@ -20,8 +20,8 @@ class TicketLineModel {
         price: ((j['price'] ?? 0) as num).toDouble(),
       );
 
-  TicketLineEntity toEntity() =>
-      TicketLineEntity(id: id, origin: origin, destination: destination, price: price);
+  TicketLineEntity toEntity() => TicketLineEntity(
+      id: id, origin: origin, destination: destination, price: price);
 }
 
 class TicketModel {
@@ -73,7 +73,8 @@ class DriverInfoModel {
   final String name;
   final String phone;
 
-  const DriverInfoModel({required this.id, required this.name, required this.phone});
+  const DriverInfoModel(
+      {required this.id, required this.name, required this.phone});
 
   factory DriverInfoModel.fromJson(Map<String, dynamic> j) => DriverInfoModel(
         id: (j['id'] ?? j['_id'] ?? '') as String,
@@ -81,7 +82,8 @@ class DriverInfoModel {
         phone: (j['phone'] ?? '') as String,
       );
 
-  DriverInfoEntity toEntity() => DriverInfoEntity(id: id, name: name, phone: phone);
+  DriverInfoEntity toEntity() =>
+      DriverInfoEntity(id: id, name: name, phone: phone);
 }
 
 class TicketsSummaryModel {
@@ -97,7 +99,8 @@ class TicketsSummaryModel {
     required this.totalAmount,
   });
 
-  factory TicketsSummaryModel.fromJson(Map<String, dynamic> j) => TicketsSummaryModel(
+  factory TicketsSummaryModel.fromJson(Map<String, dynamic> j) =>
+      TicketsSummaryModel(
         totalTickets: ((j['totalTickets'] ?? 0) as num).toInt(),
         totalCashAmount: ((j['totalCashAmount'] ?? 0) as num).toDouble(),
         totalNfcAmount: ((j['totalNfcAmount'] ?? 0) as num).toDouble(),
@@ -124,8 +127,9 @@ class DriverTicketsModel {
   });
 
   factory DriverTicketsModel.fromJson(dynamic raw) {
-    final Map<String, dynamic> data =
-        raw is Map && raw['data'] is Map ? raw['data'] as Map<String, dynamic> : raw as Map<String, dynamic>;
+    final Map<String, dynamic> data = raw is Map && raw['data'] is Map
+        ? raw['data'] as Map<String, dynamic>
+        : raw as Map<String, dynamic>;
 
     final driverRaw = data['driver'] as Map<String, dynamic>? ?? {};
     final ticketsRaw = (data['tickets'] as List?) ?? [];

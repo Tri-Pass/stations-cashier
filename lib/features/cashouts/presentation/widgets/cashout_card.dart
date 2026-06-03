@@ -9,7 +9,8 @@ class CashoutCard extends StatelessWidget {
   final String? filter;
   final VoidCallback? onTap;
 
-  const CashoutCard({super.key, required this.cashout, this.filter, this.onTap});
+  const CashoutCard(
+      {super.key, required this.cashout, this.filter, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -22,143 +23,146 @@ class CashoutCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-      decoration: BoxDecoration(
-        color: c.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: c.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── Header ─────────────────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
+        decoration: BoxDecoration(
+          color: c.surface,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: c.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Header ─────────────────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+              child: Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(Icons.local_taxi,
+                        color: AppColors.primary, size: 20),
                   ),
-                  child: const Icon(Icons.local_taxi,
-                      color: AppColors.primary, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          cashout.driver.name,
+                          style: TextStyle(
+                            color: c.textPrimary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Text(
+                          cashout.driver.phone,
+                          style:
+                              TextStyle(color: c.textSecondary, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        cashout.driver.name,
-                        style: TextStyle(
-                          color: c.textPrimary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                        '${cashout.totalAmount.toStringAsFixed(0)} MAD',
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        cashout.driver.phone,
-                        style: TextStyle(color: c.textSecondary, fontSize: 12),
+                        '${cashout.totalSeats} ${l.seats.toLowerCase()}',
+                        style: TextStyle(color: c.textSecondary, fontSize: 11),
                       ),
                     ],
                   ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${cashout.totalAmount.toStringAsFixed(0)} MAD',
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                ],
+              ),
+            ),
+
+            Divider(color: c.border, height: 1),
+
+            // ── Payment breakdown ───────────────────────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              child: Row(
+                children: [
+                  if (filter != 'nfc') ...[
+                    Expanded(
+                      child: _AmountTile(
+                        icon: Icons.payments_outlined,
+                        label: l.cash,
+                        amount: cashout.cashAmount,
+                        color: const Color(0xFF2E7D32),
+                        bgColor:
+                            const Color(0xFF2E7D32).withValues(alpha: 0.10),
+                        c: c,
                       ),
                     ),
-                    Text(
-                      '${cashout.totalSeats} ${l.seats.toLowerCase()}',
-                      style: TextStyle(color: c.textSecondary, fontSize: 11),
+                  ],
+                  if (filter == null) const SizedBox(width: 8),
+                  if (filter != 'cash') ...[
+                    Expanded(
+                      child: _AmountTile(
+                        icon: Icons.nfc,
+                        label: l.nfc,
+                        amount: cashout.nfcAmount,
+                        color: const Color(0xFF1565C0),
+                        bgColor:
+                            const Color(0xFF1565C0).withValues(alpha: 0.10),
+                        c: c,
+                      ),
                     ),
                   ],
-                ),
-              ],
-            ),
-          ),
-
-          Divider(color: c.border, height: 1),
-
-          // ── Payment breakdown ───────────────────────────────────────────────
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            child: Row(
-              children: [
-                if (filter != 'nfc') ...[
-                  Expanded(
-                    child: _AmountTile(
-                      icon: Icons.payments_outlined,
-                      label: l.cash,
-                      amount: cashout.cashAmount,
-                      color: const Color(0xFF2E7D32),
-                      bgColor: const Color(0xFF2E7D32).withValues(alpha: 0.10),
-                      c: c,
-                    ),
-                  ),
                 ],
-                if (filter == null) const SizedBox(width: 8),
-                if (filter != 'cash') ...[
-                  Expanded(
-                    child: _AmountTile(
-                      icon: Icons.nfc,
-                      label: l.nfc,
-                      amount: cashout.nfcAmount,
-                      color: const Color(0xFF1565C0),
-                      bgColor: const Color(0xFF1565C0).withValues(alpha: 0.10),
-                      c: c,
-                    ),
-                  ),
-                ],
-              ],
+              ),
             ),
-          ),
 
-          // ── Footer: plate · route · time ───────────────────────────────────
-          Container(
-            padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
-            decoration: BoxDecoration(
-              color: c.background.withValues(alpha: 0.5),
-              borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(14)),
-            ),
-            child: Wrap(
-              spacing: 10,
-              runSpacing: 4,
-              children: [
-                _Tag(
-                  icon: Icons.confirmation_number_outlined,
-                  label: cashout.taxi.plateNumber,
-                  c: c,
-                ),
-                if (hasRoute)
+            // ── Footer: plate · route · time ───────────────────────────────────
+            Container(
+              padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
+              decoration: BoxDecoration(
+                color: c.background.withValues(alpha: 0.5),
+                borderRadius:
+                    const BorderRadius.vertical(bottom: Radius.circular(14)),
+              ),
+              child: Wrap(
+                spacing: 10,
+                runSpacing: 4,
+                children: [
                   _Tag(
-                    icon: Icons.route_outlined,
-                    label: cashout.line.destination.isEmpty
-                        ? cashout.line.origin
-                        : '${cashout.line.origin} → ${cashout.line.destination}',
+                    icon: Icons.confirmation_number_outlined,
+                    label: cashout.taxi.plateNumber,
                     c: c,
                   ),
-                if (cashout.departedAt != null)
-                  _Tag(
-                    icon: Icons.access_time,
-                    label: _formatTime(cashout.departedAt!),
-                    c: c,
-                  ),
-              ],
+                  if (hasRoute)
+                    _Tag(
+                      icon: Icons.route_outlined,
+                      label: cashout.line.destination.isEmpty
+                          ? cashout.line.origin
+                          : '${cashout.line.origin} → ${cashout.line.destination}',
+                      c: c,
+                    ),
+                  if (cashout.departedAt != null)
+                    _Tag(
+                      icon: Icons.access_time,
+                      label: _formatTime(cashout.departedAt!),
+                      c: c,
+                    ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 

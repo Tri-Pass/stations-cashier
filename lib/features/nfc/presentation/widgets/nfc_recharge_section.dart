@@ -128,8 +128,7 @@ class NfcRechargeSection extends StatelessWidget {
           const SizedBox(height: 10),
           TextField(
             controller: amountCtrl,
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             enabled: rechargeState == RechargeState.idle ||
                 rechargeState == RechargeState.ready,
             style: TextStyle(
@@ -143,8 +142,7 @@ class NfcRechargeSection extends StatelessWidget {
                   fontSize: 22,
                   fontWeight: FontWeight.bold),
               suffixText: 'MAD',
-              suffixStyle: TextStyle(
-                  color: c.textSecondary, fontSize: 14),
+              suffixStyle: TextStyle(color: c.textSecondary, fontSize: 14),
               filled: true,
               fillColor: c.inputBg,
               border: OutlineInputBorder(
@@ -192,8 +190,7 @@ class NfcRechargeSection extends StatelessWidget {
                 fontWeight: FontWeight.w600),
             decoration: InputDecoration(
               hintText: '06XXXXXXXX',
-              hintStyle: TextStyle(
-                  color: c.textSecondary, fontSize: 18),
+              hintStyle: TextStyle(color: c.textSecondary, fontSize: 18),
               prefixIcon: const Icon(Icons.phone_outlined,
                   color: AppColors.primary, size: 20),
               filled: true,
@@ -247,8 +244,7 @@ class NfcRechargeSection extends StatelessWidget {
           Text(
             l.nfcRechargeDesc,
             textAlign: TextAlign.center,
-            style: TextStyle(
-                color: c.textSecondary, fontSize: 13, height: 1.6),
+            style: TextStyle(color: c.textSecondary, fontSize: 13, height: 1.6),
           ),
         ],
       ),
@@ -290,8 +286,8 @@ class NfcRechargeSection extends StatelessWidget {
           const SizedBox(height: 6),
           Text(l.nfcApproachDetect,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                  color: c.textSecondary, fontSize: 13, height: 1.5)),
+              style:
+                  TextStyle(color: c.textSecondary, fontSize: 13, height: 1.5)),
         ],
       ),
     );
@@ -347,9 +343,8 @@ class NfcRechargeSection extends StatelessWidget {
                               fontWeight: FontWeight.bold)),
                       const SizedBox(height: 2),
                       Text(p.phone,
-                          style: TextStyle(
-                              color: c.textSecondary,
-                              fontSize: 12)),
+                          style:
+                              TextStyle(color: c.textSecondary, fontSize: 12)),
                     ],
                   ),
                 ),
@@ -358,33 +353,32 @@ class NfcRechargeSection extends StatelessWidget {
             const SizedBox(height: 14),
             Divider(color: c.border, height: 1),
             const SizedBox(height: 14),
-            _balanceRow(l.currentBalance,
-                '${p.balance.toStringAsFixed(2)} MAD', c.textPrimary, c),
+            _balanceRow(l.currentBalance, '${p.balance.toStringAsFixed(2)} MAD',
+                c.textPrimary, c),
             const SizedBox(height: 8),
             _balanceRow(l.rechargeAmountLabel,
                 '+${amount.toStringAsFixed(2)} MAD', AppColors.primary, c),
             const SizedBox(height: 8),
-            _balanceRow(l.balanceAfter,
+            _balanceRow(
+                l.balanceAfter,
                 '${(p.balance + amount).toStringAsFixed(2)} MAD',
-                AppColors.green, c),
+                AppColors.green,
+                c),
           ],
         ),
       ),
     );
   }
 
-  Widget _balanceRow(String label, String value, Color valueColor, AppColors c) {
+  Widget _balanceRow(
+      String label, String value, Color valueColor, AppColors c) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: TextStyle(
-                color: c.textSecondary, fontSize: 12)),
+        Text(label, style: TextStyle(color: c.textSecondary, fontSize: 12)),
         Text(value,
             style: TextStyle(
-                color: valueColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w600)),
+                color: valueColor, fontSize: 13, fontWeight: FontWeight.w600)),
       ],
     );
   }
@@ -400,22 +394,22 @@ class NfcRechargeSection extends StatelessWidget {
           onPressed: onCancel,
           icon: const Icon(Icons.close, size: 18),
           label: Text(l.cancel,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 15)),
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           style: OutlinedButton.styleFrom(
             foregroundColor: c.textSecondary,
             side: BorderSide(color: c.border),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
         ),
       );
     }
 
-    if (rechargeState == RechargeState.ready ||
-        input == RechargeInput.phone) {
-      final canConfirm =
-          _hasAmount && (input == RechargeInput.nfc || _phoneReady) && !recharging;
+    if (rechargeState == RechargeState.ready || input == RechargeInput.phone) {
+      final canConfirm = _hasAmount &&
+          (input == RechargeInput.nfc || _phoneReady) &&
+          !recharging;
       return SizedBox(
         height: 52,
         child: ElevatedButton.icon(
@@ -428,16 +422,15 @@ class NfcRechargeSection extends StatelessWidget {
                       strokeWidth: 2, color: Colors.black))
               : const Icon(Icons.bolt_rounded, size: 20),
           label: Text(l.confirmAndCharge,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 15)),
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.black,
-            disabledBackgroundColor:
-                AppColors.primary.withValues(alpha: 0.3),
+            disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.3),
             disabledForegroundColor: Colors.black38,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             elevation: 0,
           ),
         ),
@@ -450,16 +443,14 @@ class NfcRechargeSection extends StatelessWidget {
         onPressed: onScan,
         icon: const Icon(Icons.nfc, size: 22),
         label: Text(l.scanAndCharge,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 15)),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.black,
-          disabledBackgroundColor:
-              AppColors.primary.withValues(alpha: 0.3),
+          disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.3),
           disabledForegroundColor: Colors.black38,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
       ),
@@ -499,8 +490,7 @@ class _NfcSubTab extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon,
-                  size: 18,
-                  color: active ? Colors.black : c.textSecondary),
+                  size: 18, color: active ? Colors.black : c.textSecondary),
               const SizedBox(width: 8),
               Text(
                 label,

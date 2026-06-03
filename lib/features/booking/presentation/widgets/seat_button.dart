@@ -6,7 +6,8 @@ class SeatButton extends StatelessWidget {
   final bool isDisabled;
   final VoidCallback? onTap;
 
-  const SeatButton({super.key, required this.number, required this.isDisabled, this.onTap});
+  const SeatButton(
+      {super.key, required this.number, required this.isDisabled, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +40,8 @@ class SeatButton extends StatelessWidget {
         child: Center(
           child: Text(
             '$number',
-            style: TextStyle(color: text, fontSize: 13, fontWeight: FontWeight.w600),
+            style: TextStyle(
+                color: text, fontSize: 13, fontWeight: FontWeight.w600),
           ),
         ),
       ),

@@ -48,8 +48,7 @@ class NfcConfirmLineCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         margin: const EdgeInsets.only(bottom: 8),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary.withValues(alpha: 0.12)
@@ -69,13 +68,10 @@ class NfcConfirmLineCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected
-                      ? AppColors.primary
-                      : c.textSecondary,
+                  color: isSelected ? AppColors.primary : c.textSecondary,
                   width: 1.5,
                 ),
-                color:
-                    isSelected ? AppColors.primary : Colors.transparent,
+                color: isSelected ? AppColors.primary : Colors.transparent,
               ),
               child: isSelected
                   ? const Icon(Icons.check, color: Colors.black, size: 12)
@@ -92,9 +88,8 @@ class NfcConfirmLineCard extends StatelessWidget {
                         Text(
                           line.origin,
                           style: TextStyle(
-                            color: isSelected
-                                ? AppColors.primary
-                                : c.textPrimary,
+                            color:
+                                isSelected ? AppColors.primary : c.textPrimary,
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                           ),
@@ -102,14 +97,13 @@ class NfcConfirmLineCard extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text('→ ${line.destination}',
                             style: TextStyle(
-                                color: c.textSecondary,
-                                fontSize: 12)),
+                                color: c.textSecondary, fontSize: 12)),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary.withValues(alpha: 0.2)
@@ -119,9 +113,7 @@ class NfcConfirmLineCard extends StatelessWidget {
                     child: Text(
                       '${line.price} MAD',
                       style: TextStyle(
-                        color: isSelected
-                            ? AppColors.primary
-                            : c.textSecondary,
+                        color: isSelected ? AppColors.primary : c.textSecondary,
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                       ),

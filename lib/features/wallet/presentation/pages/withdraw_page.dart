@@ -60,10 +60,13 @@ class _WithdrawPageState extends State<WithdrawPage> {
       _error = null;
     });
     try {
-      final res = await GetIt.instance<ApiClient>().get(ApiEndpoints.walletOptions('withdraw'));
+      final res = await GetIt.instance<ApiClient>()
+          .get(ApiEndpoints.walletOptions('withdraw'));
       final list = (res['data'] as List?) ?? [];
       setState(() {
-        _options = list.map((e) => WalletOption.fromJson(e as Map<String, dynamic>)).toList();
+        _options = list
+            .map((e) => WalletOption.fromJson(e as Map<String, dynamic>))
+            .toList();
         _loadingOptions = false;
       });
     } catch (e) {
@@ -138,7 +141,8 @@ class _WithdrawPageState extends State<WithdrawPage> {
           body['motif'] = _motifCtrl.text.trim();
         }
       }
-      final res = await GetIt.instance<ApiClient>().post(ApiEndpoints.walletWithdraw, body);
+      final res = await GetIt.instance<ApiClient>()
+          .post(ApiEndpoints.walletWithdraw, body);
       final url = (res['data'] as Map?)?['url'] as String?;
       setState(() {
         _resultUrl = url;
@@ -162,8 +166,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: c.textPrimary, size: 18),
-          onPressed:
-              _step == _resultStep ? () => context.pop(true) : _back,
+          onPressed: _step == _resultStep ? () => context.pop(true) : _back,
         ),
         title: Text(l.withdraw,
             style: TextStyle(
@@ -190,10 +193,9 @@ class _WithdrawPageState extends State<WithdrawPage> {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed:
-                        (_canProceed && !_loading && !_loadingOptions)
-                            ? _next
-                            : null,
+                    onPressed: (_canProceed && !_loading && !_loadingOptions)
+                        ? _next
+                        : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       disabledBackgroundColor: c.surface,
@@ -259,9 +261,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l.withdrawMethod,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
       Text(l.howToWithdraw,
           style: TextStyle(color: c.textSecondary, fontSize: 14)),
@@ -279,9 +279,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l.withdrawAmountTitle,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
       Text('${l.modeSubLabel}$name',
           style: TextStyle(color: c.textSecondary, fontSize: 14)),
@@ -313,11 +311,9 @@ class _WithdrawPageState extends State<WithdrawPage> {
           controller: _amountCtrl,
           hint: l.otherAmount,
           icon: Icons.payments_outlined,
-          keyboardType:
-              const TextInputType.numberWithOptions(decimal: false),
+          keyboardType: const TextInputType.numberWithOptions(decimal: false),
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          onChanged: (v) =>
-              setState(() => _amount = double.tryParse(v) ?? 0)),
+          onChanged: (v) => setState(() => _amount = double.tryParse(v) ?? 0)),
     ]);
   }
 
@@ -342,8 +338,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
             icon: Icons.person_outline,
             onChanged: (_) => setState(() {})),
         const SizedBox(height: 16),
-        Text(l.rib,
-            style: TextStyle(color: c.textSecondary, fontSize: 13)),
+        Text(l.rib, style: TextStyle(color: c.textSecondary, fontSize: 13)),
         const SizedBox(height: 8),
         walletInputField(
             controller: _ribCtrl,
@@ -356,9 +351,7 @@ class _WithdrawPageState extends State<WithdrawPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l.cashplusTitle,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
       Text(l.cashplusRecipient,
           style: TextStyle(color: c.textSecondary, fontSize: 14)),
@@ -373,13 +366,10 @@ class _WithdrawPageState extends State<WithdrawPage> {
           keyboardType: TextInputType.phone,
           onChanged: (_) => setState(() {})),
       const SizedBox(height: 16),
-      Text(l.motif,
-          style: TextStyle(color: c.textSecondary, fontSize: 13)),
+      Text(l.motif, style: TextStyle(color: c.textSecondary, fontSize: 13)),
       const SizedBox(height: 8),
       walletInputField(
-          controller: _motifCtrl,
-          hint: l.motifHint,
-          icon: Icons.note_outlined),
+          controller: _motifCtrl, hint: l.motifHint, icon: Icons.note_outlined),
     ]);
   }
 
@@ -393,8 +383,8 @@ class _WithdrawPageState extends State<WithdrawPage> {
               fontSize: 18,
               fontWeight: FontWeight.bold)),
       const SizedBox(height: 24),
-      walletSummaryTile(l.modeLabel, name, walletOptionIcon(opt),
-          walletOptionColor(opt)),
+      walletSummaryTile(
+          l.modeLabel, name, walletOptionIcon(opt), walletOptionColor(opt)),
       const SizedBox(height: 12),
       walletSummaryTile(l.amountLabel, '${_amount.toStringAsFixed(0)} MAD',
           Icons.north_east, AppColors.red),
@@ -408,8 +398,8 @@ class _WithdrawPageState extends State<WithdrawPage> {
       ],
       if (_flow == _WithdrawFlow.cashplus) ...[
         const SizedBox(height: 12),
-        walletSummaryTile(l.cashplusPhoneLabel, _phoneCtrl.text, Icons.phone,
-            AppColors.teal),
+        walletSummaryTile(
+            l.cashplusPhoneLabel, _phoneCtrl.text, Icons.phone, AppColors.teal),
       ],
     ]);
   }
@@ -456,16 +446,14 @@ class _OptionCard extends StatelessWidget {
           color: selected ? color.withValues(alpha: 0.1) : c.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-              color: selected ? color : c.border,
-              width: selected ? 1.5 : 1),
+              color: selected ? color : c.border, width: selected ? 1.5 : 1),
         ),
         child: Row(children: [
           Container(
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                shape: BoxShape.circle),
+                color: color.withValues(alpha: 0.15), shape: BoxShape.circle),
             child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(width: 14),

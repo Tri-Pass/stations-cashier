@@ -5,6 +5,5 @@ class LinkNfcUseCase {
   final PassengerRepository _repository;
   LinkNfcUseCase(this._repository);
 
-  Future<void> call(LinkNfcParams params) =>
-      _repository.linkNfc(params);
+  Future<void> call(LinkNfcParams params) => _repository.linkNfc(params);
 }

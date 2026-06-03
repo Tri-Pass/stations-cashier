@@ -25,7 +25,8 @@ void main() {
   });
 
   test('delegates to repository.getCashoutsSummary', () async {
-    when(() => repository.getCashoutsSummary(any())).thenAnswer((_) async => response);
+    when(() => repository.getCashoutsSummary(any()))
+        .thenAnswer((_) async => response);
 
     final result = await useCase(params);
 
@@ -34,7 +35,8 @@ void main() {
   });
 
   test('propagates repository exception', () async {
-    when(() => repository.getCashoutsSummary(any())).thenThrow(Exception('error'));
+    when(() => repository.getCashoutsSummary(any()))
+        .thenThrow(Exception('error'));
     expect(() => useCase(params), throwsA(isA<Exception>()));
   });
 }

@@ -15,7 +15,8 @@ class CashierPrinter {
     await SunmiPrinter.lineWrap(20);
     await SunmiPrinter.printText(
       ' wetaxi.station — test ',
-      style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 20, bold: true),
+      style: SunmiTextStyle(
+          align: SunmiPrintAlign.CENTER, fontSize: 20, bold: true),
     );
     await SunmiPrinter.lineWrap(20);
     await SunmiPrinter.cutPaper();
@@ -38,32 +39,46 @@ class CashierPrinter {
 
       await SunmiPrinter.printText(
         ticket.code,
-        style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: _fs(24, 20, l), bold: true),
+        style: SunmiTextStyle(
+            align: SunmiPrintAlign.CENTER,
+            fontSize: _fs(24, 20, l),
+            bold: true),
       );
       await _gap(l);
 
-      await _printLine(_field(l.printStation, stationName), l, fontSize: _fs(28, 21, l), bold: true);
+      await _printLine(_field(l.printStation, stationName), l,
+          fontSize: _fs(28, 21, l), bold: true);
       await _gap(l);
-      await _printLine(_field(l.printLine, ticket.destination), l, fontSize: _fs(28, 21, l));//'${ticket.origin} - ${ticket.destination}'
+      await _printLine(_field(l.printLine, ticket.destination), l,
+          fontSize:
+              _fs(28, 21, l)); //'${ticket.origin} - ${ticket.destination}'
       await _gap(l);
-      await _printLine(_field(l.printTaxi, ticket.plateNumber), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printTaxi, ticket.plateNumber), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
-      await _printLine(_field(l.printDriver, ticket.driverName), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printDriver, ticket.driverName), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
-      await _printLine(_field(l.printSeats, '${ticket.seatNumber}'), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printSeats, '${ticket.seatNumber}'), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
 
       await _separator();
       await _gap(l);
 
       await _printLine(
-        _field(l.printTotal, '${(ticket.price * ticket.seatNumber).toStringAsFixed(2)} MAD'),
-        l, fontSize: _fs(34, 24, l), bold: true,
+        _field(l.printTotal,
+            '${(ticket.price * ticket.seatNumber).toStringAsFixed(2)} MAD'),
+        l,
+        fontSize: _fs(34, 24, l),
+        bold: true,
       );
       await _gap(l);
       await _printLine(
-        _field(l.printPayment, ticket.paymentMethod == 'cash' ? l.printCash : l.nfc),
-        l, fontSize: _fs(28, 21, l),
+        _field(l.printPayment,
+            ticket.paymentMethod == 'cash' ? l.printCash : l.nfc),
+        l,
+        fontSize: _fs(28, 21, l),
       );
       await _gap(l);
 
@@ -82,7 +97,8 @@ class CashierPrinter {
       //   );
       // }
 
-      await _printLine(l.printThankYou, l, fontSize: _fs(22, 18, l), bold: true, center: true);
+      await _printLine(l.printThankYou, l,
+          fontSize: _fs(22, 18, l), bold: true, center: true);
       await SunmiPrinter.lineWrap(30);
       await SunmiPrinter.cutPaper();
       return true;
@@ -109,25 +125,32 @@ class CashierPrinter {
           style: SunmiTextStyle(align: SunmiPrintAlign.CENTER, fontSize: 22));
       await _separator();
       await _gap(l);
-      await _printLine(_field(l.printStation, stationName), l, fontSize: _fs(28, 21, l), bold: true);
+      await _printLine(_field(l.printStation, stationName), l,
+          fontSize: _fs(28, 21, l), bold: true);
       await _gap(l);
-      await _printLine(_field(l.printLine, lineName), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printLine, lineName), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
-      await _printLine(_field(l.printTaxi, taxiNumber), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printTaxi, taxiNumber), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
-      await _printLine(_field(l.printSeats, '$seatCount'), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printSeats, '$seatCount'), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
       await _separator();
       await _gap(l);
-      await _printLine(_field(l.printTotal, '${totalPrice.toStringAsFixed(2)} MAD'), l,
+      await _printLine(
+          _field(l.printTotal, '${totalPrice.toStringAsFixed(2)} MAD'), l,
           fontSize: _fs(34, 24, l), bold: true);
       await _gap(l);
-      await _printLine(_field(l.printPayment, paymentMethod), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printPayment, paymentMethod), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
       //Todo: remove the QR code
       // await SunmiPrinter.printQRCode('www.wetaxi.ma',
       //     style: SunmiQrcodeStyle(qrcodeSize: 8, errorLevel: SunmiQrcodeLevel.LEVEL_H));
-      await _printLine(l.printThankYou, l, fontSize: _fs(22, 18, l), bold: true, center: true);
+      await _printLine(l.printThankYou, l,
+          fontSize: _fs(22, 18, l), bold: true, center: true);
       await SunmiPrinter.lineWrap(30);
       await SunmiPrinter.cutPaper();
       return true;
@@ -156,31 +179,42 @@ class CashierPrinter {
       );
       await _separator();
 
-      await _printLine(l.printRechargeTitle, l, fontSize: _fs(28, 22, l), bold: true, center: true);
+      await _printLine(l.printRechargeTitle, l,
+          fontSize: _fs(28, 22, l), bold: true, center: true);
       await _gap(l);
 
-      await _printLine(_field(l.printName, passengerName), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printName, passengerName), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
-      await _printLine(_field(l.printPhone, passengerPhone), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printPhone, passengerPhone), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
 
       await _separator();
       await _gap(l);
 
-      await _printLine(_field(l.printAmount, '+${amount.toStringAsFixed(2)} MAD'), l,
+      await _printLine(
+          _field(l.printAmount, '+${amount.toStringAsFixed(2)} MAD'), l,
           fontSize: _fs(34, 24, l), bold: true);
       await _gap(l);
       await _printLine(
-          _field(l.printBalanceBefore, '${balanceBefore.toStringAsFixed(2)} MAD'), l, fontSize: _fs(28, 21, l));
+          _field(
+              l.printBalanceBefore, '${balanceBefore.toStringAsFixed(2)} MAD'),
+          l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
       await _printLine(
-          _field(l.printBalanceAfter, '${balanceAfter.toStringAsFixed(2)} MAD'), l,
-          fontSize: _fs(28, 21, l), bold: true);
+          _field(l.printBalanceAfter, '${balanceAfter.toStringAsFixed(2)} MAD'),
+          l,
+          fontSize: _fs(28, 21, l),
+          bold: true);
       await _gap(l);
-      await _printLine(_field(l.printPayment, method), l, fontSize: _fs(28, 21, l));
+      await _printLine(_field(l.printPayment, method), l,
+          fontSize: _fs(28, 21, l));
       await _gap(l);
 
-      await _printLine(l.printThankYou, l, fontSize: _fs(22, 18, l), bold: true, center: true);
+      await _printLine(l.printThankYou, l,
+          fontSize: _fs(22, 18, l), bold: true, center: true);
       await SunmiPrinter.lineWrap(30);
       await SunmiPrinter.cutPaper();
       return true;
@@ -242,7 +276,8 @@ class CashierPrinter {
       ))
       ..addText(text);
 
-    final para = pb.build()..layout(const ui.ParagraphConstraints(width: _imgW));
+    final para = pb.build()
+      ..layout(const ui.ParagraphConstraints(width: _imgW));
     final imgH = para.height.ceil() + 4;
 
     final rec = ui.PictureRecorder();

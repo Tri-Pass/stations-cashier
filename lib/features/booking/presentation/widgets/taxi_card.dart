@@ -9,7 +9,11 @@ class TaxiCard extends StatelessWidget {
   final int available;
   final ValueChanged<int> onSeatCount;
 
-  const TaxiCard({super.key, required this.taxi, required this.available, required this.onSeatCount});
+  const TaxiCard(
+      {super.key,
+      required this.taxi,
+      required this.available,
+      required this.onSeatCount});
 
   bool get _isFull => available <= 0;
 
@@ -50,7 +54,8 @@ class TaxiCard extends StatelessWidget {
                       if (taxi.isFirst) ...[
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 2),
                           decoration: BoxDecoration(
                             color: AppColors.primary.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(4),
@@ -74,7 +79,8 @@ class TaxiCard extends StatelessWidget {
                       style: TextStyle(color: c.textSecondary, fontSize: 11)),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: _isFull
                           ? AppColors.red.withValues(alpha: 0.12)

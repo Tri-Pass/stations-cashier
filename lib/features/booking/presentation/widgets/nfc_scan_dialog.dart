@@ -53,7 +53,10 @@ class _NfcScanDialogState extends State<NfcScanDialog>
     SunmiNfcService.localHandlerActive = true;
     SunmiNfcService.startScanning();
     _nfcSub = SunmiNfcService.allEventsStream().listen((event) {
-      if (event['event'] == 'CARD_FOUND' && _scanning && !_processing && mounted) {
+      if (event['event'] == 'CARD_FOUND' &&
+          _scanning &&
+          !_processing &&
+          mounted) {
         _onCardDetected(event['details']?.toString() ?? '');
       }
     });
@@ -103,7 +106,9 @@ class _NfcScanDialogState extends State<NfcScanDialog>
         ? const SizedBox(
             width: 100,
             height: 100,
-            child: Center(child: CircularProgressIndicator(color: AppColors.primary, strokeWidth: 3)),
+            child: Center(
+                child: CircularProgressIndicator(
+                    color: AppColors.primary, strokeWidth: 3)),
           )
         : ScaleTransition(
             scale: _pulseAnim,
@@ -116,12 +121,15 @@ class _NfcScanDialogState extends State<NfcScanDialog>
                     : AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: _errorMessage != null ? AppColors.red : AppColors.primary,
+                  color:
+                      _errorMessage != null ? AppColors.red : AppColors.primary,
                   width: 2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: (_errorMessage != null ? AppColors.red : AppColors.primary)
+                    color: (_errorMessage != null
+                            ? AppColors.red
+                            : AppColors.primary)
                         .withValues(alpha: 0.2),
                     blurRadius: 24,
                     spreadRadius: 6,
@@ -130,7 +138,8 @@ class _NfcScanDialogState extends State<NfcScanDialog>
               ),
               child: Icon(
                 _errorMessage != null ? Icons.error_outline : Icons.nfc,
-                color: _errorMessage != null ? AppColors.red : AppColors.primary,
+                color:
+                    _errorMessage != null ? AppColors.red : AppColors.primary,
                 size: 50,
               ),
             ),
@@ -152,12 +161,18 @@ class _NfcScanDialogState extends State<NfcScanDialog>
                   : _errorMessage != null
                       ? l.nfcError
                       : l.nfcReading,
-              style: TextStyle(color: c.textPrimary, fontSize: 17, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: c.textPrimary,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 6),
             Text(
               '${widget.seatCount} ${l.seats}  ·  $_total DH',
-              style: const TextStyle(color: AppColors.primary, fontSize: 14, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
             Text(

@@ -111,7 +111,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _connectSocket() async {
     if (_socketService.status == SocketConnectionStatus.connected ||
-        _socketService.status == SocketConnectionStatus.connecting) return;
+        _socketService.status == SocketConnectionStatus.connecting) {
+      return;
+    }
     final token = await _authRepository.getToken();
     if (token == null) return;
     _socketService.connect(SocketServiceOptions(

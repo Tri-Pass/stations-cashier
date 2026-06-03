@@ -5,7 +5,8 @@ class GetDriverTicketsParams {
   final String driverId;
   final String? date;
   final String? status;
-  const GetDriverTicketsParams({required this.driverId, this.date, this.status});
+  const GetDriverTicketsParams(
+      {required this.driverId, this.date, this.status});
 }
 
 class CashoutTicketParams {

@@ -65,8 +65,9 @@ class FakeWebSocketChannel extends StreamChannelMixin<dynamic>
   String? get protocol => null;
 
   /// All messages sent to this channel (raw JSON strings).
-  List<Map<String, dynamic>> get decoded =>
-      _sent.map((m) => jsonDecode(m as String) as Map<String, dynamic>).toList();
+  List<Map<String, dynamic>> get decoded => _sent
+      .map((m) => jsonDecode(m as String) as Map<String, dynamic>)
+      .toList();
 
   /// Last decoded message sent.
   Map<String, dynamic> get last => decoded.last;
@@ -161,7 +162,8 @@ void main() {
     });
 
     test('sends #handshake with authToken after ready', () async {
-      socket.connect(SocketServiceOptions(url: 'wss://test.local', authToken: 'tok'));
+      socket.connect(
+          SocketServiceOptions(url: 'wss://test.local', authToken: 'tok'));
       await Future.delayed(Duration.zero);
 
       final msg = fake.decoded.first;
@@ -207,7 +209,9 @@ void main() {
       expect(emitted, contains(SocketConnectionStatus.connected));
     });
 
-    test('reconnecting status is preserved through _openSocket (no extra connecting emit)', () async {
+    test(
+        'reconnecting status is preserved through _openSocket (no extra connecting emit)',
+        () async {
       // Simulate: was reconnecting (e.g. after disconnect) → _openSocket should NOT emit connecting
       socket.forceReconnect(); // sets status to reconnecting
       await Future.delayed(Duration.zero);
@@ -324,12 +328,14 @@ void main() {
       socket.destroy();
     });
 
-    test('ignores action=publish for unknown channel without throwing', () async {
+    test('ignores action=publish for unknown channel without throwing',
+        () async {
       final (socket, fake) = _makeSocket();
       await _doHandshake(socket, fake);
 
       expect(
-        () => fake.pushJson({'action': 'publish', 'channel': 'ghost', 'data': {}}),
+        () => fake
+            .pushJson({'action': 'publish', 'channel': 'ghost', 'data': {}}),
         returnsNormally,
       );
       socket.destroy();
@@ -351,7 +357,10 @@ void main() {
 
       fake.pushJson({
         'event': '#publish',
-        'data': {'channel': 'booking-updates', 'data': {'id': 'b1'}},
+        'data': {
+          'channel': 'booking-updates',
+          'data': {'id': 'b1'}
+        },
       });
 
       expect(received, {'id': 'b1'});
@@ -394,12 +403,16 @@ void main() {
   group('_onMessage — #setAuthToken', () {
     test('updates options.authToken', () async {
       final (socket, fake) = _makeSocket();
-      final opts = SocketServiceOptions(url: 'wss://test.local', authToken: 'old');
+      final opts =
+          SocketServiceOptions(url: 'wss://test.local', authToken: 'old');
       socket.connect(opts);
       await Future.delayed(Duration.zero);
 
       final cid = fake.decoded.first['cid'] as int;
-      fake.pushJson({'rid': cid, 'data': {'isAuthenticated': true, 'id': 's1'}});
+      fake.pushJson({
+        'rid': cid,
+        'data': {'isAuthenticated': true, 'id': 's1'}
+      });
 
       fake.pushJson({
         'event': '#setAuthToken',
@@ -416,12 +429,16 @@ void main() {
   group('_onMessage — #removeAuthToken', () {
     test('does NOT clear authToken (preserves local JWT)', () async {
       final (socket, fake) = _makeSocket();
-      final opts = SocketServiceOptions(url: 'wss://test.local', authToken: 'keep-me');
+      final opts =
+          SocketServiceOptions(url: 'wss://test.local', authToken: 'keep-me');
       socket.connect(opts);
       await Future.delayed(Duration.zero);
 
       final cid = fake.decoded.first['cid'] as int;
-      fake.pushJson({'rid': cid, 'data': {'isAuthenticated': true, 'id': 's1'}});
+      fake.pushJson({
+        'rid': cid,
+        'data': {'isAuthenticated': true, 'id': 's1'}
+      });
 
       fake.pushJson({'event': '#removeAuthToken'});
 
@@ -443,7 +460,10 @@ void main() {
       ));
       await _doHandshake(socket, fake);
 
-      fake.pushJson({'event': 'my-event', 'data': {'val': 42}});
+      fake.pushJson({
+        'event': 'my-event',
+        'data': {'val': 42}
+      });
 
       expect(received, {'val': 42});
       socket.destroy();
@@ -467,7 +487,7 @@ void main() {
 
     test('sends ACK when generic event has a cid', () async {
       final (socket, fake) = _makeSocket();
-      socket.subscribe(SocketChannelConfig(
+      socket.subscribe(const SocketChannelConfig(
         channel: 'ev',
         handlerType: SocketHandlerType.data,
       ));
@@ -523,7 +543,8 @@ void main() {
       socket.destroy();
     });
 
-    test('max attempts=0 immediately sets status to dead and calls callback', () async {
+    test('max attempts=0 immediately sets status to dead and calls callback',
+        () async {
       var deadCalled = false;
       final (socket, fake) = _makeSocket();
       socket.connect(SocketServiceOptions(
@@ -534,7 +555,10 @@ void main() {
       await Future.delayed(Duration.zero);
 
       final cid = fake.decoded.first['cid'] as int;
-      fake.pushJson({'rid': cid, 'data': {'isAuthenticated': true}});
+      fake.pushJson({
+        'rid': cid,
+        'data': {'isAuthenticated': true}
+      });
 
       fake.serverClose(); // triggers _onDone → _scheduleReconnect with maxAttempts=0
 
@@ -543,7 +567,8 @@ void main() {
       socket.destroy();
     });
 
-    test('no reconnect when socket was destroyed before server close', () async {
+    test('no reconnect when socket was destroyed before server close',
+        () async {
       final (socket, fake) = _makeSocket();
       await _doHandshake(socket, fake);
 
@@ -601,7 +626,7 @@ void main() {
     tearDown(() => socket.destroy());
 
     test('subscribe while connected sends #subscribe message', () {
-      socket.subscribe(SocketChannelConfig(
+      socket.subscribe(const SocketChannelConfig(
         channel: 'live-ch',
         handlerType: SocketHandlerType.data,
       ));
@@ -611,22 +636,29 @@ void main() {
     });
 
     test('unsubscribe while connected sends #unsubscribe message', () {
-      socket.subscribe(SocketChannelConfig(channel: 'live-ch', handlerType: SocketHandlerType.data));
+      socket.subscribe(const SocketChannelConfig(
+          channel: 'live-ch', handlerType: SocketHandlerType.data));
       fake._sent.clear();
       socket.unsubscribe('live-ch');
 
-      final unsub = fake.decoded.firstWhere((m) => m['event'] == '#unsubscribe');
+      final unsub =
+          fake.decoded.firstWhere((m) => m['event'] == '#unsubscribe');
       expect(unsub['data'], 'live-ch');
     });
 
-    test('unsubscribeAll while connected sends #unsubscribe for each active channel', () {
-      socket.subscribe(SocketChannelConfig(channel: 'ch1', handlerType: SocketHandlerType.data));
-      socket.subscribe(SocketChannelConfig(channel: 'ch2', handlerType: SocketHandlerType.data));
+    test(
+        'unsubscribeAll while connected sends #unsubscribe for each active channel',
+        () {
+      socket.subscribe(const SocketChannelConfig(
+          channel: 'ch1', handlerType: SocketHandlerType.data));
+      socket.subscribe(const SocketChannelConfig(
+          channel: 'ch2', handlerType: SocketHandlerType.data));
       fake._sent.clear();
 
       socket.unsubscribeAll();
 
-      final unsubEvents = fake.decoded.where((m) => m['event'] == '#unsubscribe').toList();
+      final unsubEvents =
+          fake.decoded.where((m) => m['event'] == '#unsubscribe').toList();
       expect(unsubEvents.length, 2);
     });
   });
@@ -634,17 +666,20 @@ void main() {
   // ── resubscribe on reconnect ─────────────────────────────────────────────
 
   group('resubscribe on connect', () {
-    test('pre-subscribed channels get #subscribe after handshake ACK', () async {
+    test('pre-subscribed channels get #subscribe after handshake ACK',
+        () async {
       final (socket, fake) = _makeSocket();
-      socket.subscribe(SocketChannelConfig(
+      socket.subscribe(const SocketChannelConfig(
         channel: 'pre-sub-ch',
         handlerType: SocketHandlerType.data,
       ));
 
       await _doHandshake(socket, fake);
 
-      final subs = fake.decoded.where((m) => m['event'] == '#subscribe').toList();
-      expect(subs.any((m) => (m['data'] as Map)['channel'] == 'pre-sub-ch'), isTrue);
+      final subs =
+          fake.decoded.where((m) => m['event'] == '#subscribe').toList();
+      expect(subs.any((m) => (m['data'] as Map)['channel'] == 'pre-sub-ch'),
+          isTrue);
       socket.destroy();
     });
   });
@@ -674,7 +709,8 @@ void main() {
       socket.destroy();
     });
 
-    test('resumed when connected resets heartbeat without reconnecting', () async {
+    test('resumed when connected resets heartbeat without reconnecting',
+        () async {
       final (socket, fake) = _makeSocket();
       await _doHandshake(socket, fake);
       fake._sent.clear();
@@ -698,7 +734,10 @@ void main() {
       socket.connect(SocketServiceOptions(url: 'wss://test.local'));
       await Future.delayed(Duration.zero);
       final cid = channels[0].decoded.first['cid'] as int;
-      channels[0].pushJson({'rid': cid, 'data': {'isAuthenticated': true}});
+      channels[0].pushJson({
+        'rid': cid,
+        'data': {'isAuthenticated': true}
+      });
       expect(socket.status, SocketConnectionStatus.connected);
 
       // Go to background — this prevents auto-reconnect scheduling
@@ -710,7 +749,8 @@ void main() {
 
       // Resume while not connected → should trigger immediate _openSocket
       socket.didChangeAppLifecycleState(AppLifecycleState.resumed);
-      await Future.delayed(Duration.zero); // let new _openSocket create channel[1]
+      await Future.delayed(
+          Duration.zero); // let new _openSocket create channel[1]
 
       expect(channels.length, greaterThan(1));
       socket.destroy();
@@ -742,12 +782,16 @@ void main() {
         final fake = FakeWebSocketChannel();
         final socket = SocketService.createForTesting(wsFactory: (_) => fake);
 
-        socket.connect(SocketServiceOptions(url: 'wss://test.local', authToken: 'tok'));
+        socket.connect(
+            SocketServiceOptions(url: 'wss://test.local', authToken: 'tok'));
         async.flushMicrotasks();
 
         // Complete handshake to start heartbeat timer
         final cid = fake.decoded.first['cid'] as int;
-        fake.pushJson({'rid': cid, 'data': {'isAuthenticated': true}});
+        fake.pushJson({
+          'rid': cid,
+          'data': {'isAuthenticated': true}
+        });
         async.flushMicrotasks();
 
         expect(socket.status, SocketConnectionStatus.connected);
@@ -780,7 +824,10 @@ void main() {
 
         // Complete handshake
         final cid = channels[0].decoded.first['cid'] as int;
-        channels[0].pushJson({'rid': cid, 'data': {'isAuthenticated': true}});
+        channels[0].pushJson({
+          'rid': cid,
+          'data': {'isAuthenticated': true}
+        });
         expect(socket.status, SocketConnectionStatus.connected);
 
         // Server closes → triggers reconnect scheduling
@@ -804,7 +851,8 @@ void main() {
   group('updateToken', () {
     test('updates authToken in existing options', () async {
       final (socket, fake) = _makeSocket();
-      final opts = SocketServiceOptions(url: 'wss://test.local', authToken: 'old');
+      final opts =
+          SocketServiceOptions(url: 'wss://test.local', authToken: 'old');
       socket.connect(opts);
       await Future.delayed(Duration.zero);
 

@@ -61,14 +61,13 @@ class _CompactDatePickerSheetState extends State<CompactDatePickerSheet> {
 
   bool get _canGoPrev {
     final prev = DateTime(_viewMonth.year, _viewMonth.month - 1);
-    return !prev.isBefore(
-        DateTime(widget.firstDate.year, widget.firstDate.month));
+    return !prev
+        .isBefore(DateTime(widget.firstDate.year, widget.firstDate.month));
   }
 
   bool get _canGoNext {
     final next = DateTime(_viewMonth.year, _viewMonth.month + 1);
-    return !next
-        .isAfter(DateTime(widget.lastDate.year, widget.lastDate.month));
+    return !next.isAfter(DateTime(widget.lastDate.year, widget.lastDate.month));
   }
 
   bool _isSelected(int day) =>
@@ -93,8 +92,7 @@ class _CompactDatePickerSheetState extends State<CompactDatePickerSheet> {
   }
 
   Widget _buildGrid(AppColors c) {
-    final daysInMonth =
-        DateTime(_viewMonth.year, _viewMonth.month + 1, 0).day;
+    final daysInMonth = DateTime(_viewMonth.year, _viewMonth.month + 1, 0).day;
     final startOffset = _viewMonth.weekday - 1;
 
     final cells = <Widget>[
@@ -243,8 +241,7 @@ class _CompactDatePickerSheetState extends State<CompactDatePickerSheet> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
                   child: Text(l.ok,
-                      style:
-                          const TextStyle(fontWeight: FontWeight.bold)),
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -281,8 +278,8 @@ class DatePickerDayCell extends StatelessWidget {
     final Decoration? decoration;
 
     if (selected) {
-      decoration = const BoxDecoration(
-          color: AppColors.primary, shape: BoxShape.circle);
+      decoration =
+          const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle);
       textColor = Colors.white;
     } else if (isToday) {
       decoration = BoxDecoration(
@@ -353,9 +350,8 @@ class DatePickerNavButton extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: enabled
-              ? c.textPrimary
-              : c.textSecondary.withValues(alpha: 0.3),
+          color:
+              enabled ? c.textPrimary : c.textSecondary.withValues(alpha: 0.3),
           size: 20,
         ),
       ),

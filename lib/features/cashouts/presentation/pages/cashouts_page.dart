@@ -94,10 +94,12 @@ class _CashoutsPageState extends State<CashoutsPage> {
     setState(() {
       if (isFrom) {
         _dateFrom = picked;
-        if (_dateTo != null && _dateTo!.isBefore(_dateFrom!)) _dateTo = _dateFrom;
+        if (_dateTo != null && _dateTo!.isBefore(_dateFrom!))
+          _dateTo = _dateFrom;
       } else {
         _dateTo = picked;
-        if (_dateFrom != null && _dateFrom!.isAfter(_dateTo!)) _dateFrom = _dateTo;
+        if (_dateFrom != null && _dateFrom!.isAfter(_dateTo!))
+          _dateFrom = _dateTo;
       }
     });
     _load();
@@ -119,7 +121,8 @@ class _CashoutsPageState extends State<CashoutsPage> {
   }
 
   bool get _isSameDay =>
-      _dateFrom != null && _dateTo != null &&
+      _dateFrom != null &&
+      _dateTo != null &&
       _dateFrom!.year == _dateTo!.year &&
       _dateFrom!.month == _dateTo!.month &&
       _dateFrom!.day == _dateTo!.day;
@@ -201,9 +204,8 @@ class _CashoutsPageState extends State<CashoutsPage> {
               ),
               child: Icon(
                 Icons.tune,
-                color: _hasAdvancedFilters
-                    ? AppColors.primary
-                    : AppColors.primary,
+                color:
+                    _hasAdvancedFilters ? AppColors.primary : AppColors.primary,
                 size: 20,
               ),
             ),
@@ -218,7 +220,8 @@ class _CashoutsPageState extends State<CashoutsPage> {
                 color: AppColors.of(context).iconBg,
                 borderRadius: const BorderRadius.all(Radius.circular(12)),
               ),
-              child: const Icon(Icons.refresh, color: AppColors.primary, size: 20),
+              child:
+                  const Icon(Icons.refresh, color: AppColors.primary, size: 20),
             ),
             tooltip: l.retry,
             onPressed: _load,
@@ -352,56 +355,6 @@ class _CashoutsPageState extends State<CashoutsPage> {
     );
   }
 
-  Widget _buildSummaryCard(AppLocalizations l, AppColors c) {
-    final total = _data?.totalAmount ?? 0.0;
-    final tripsCount = _data?.cashouts.length ?? 0;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l.totalCashouts,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            _loading ? '— MAD' : '${total.toStringAsFixed(0)} MAD',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              const Icon(Icons.local_taxi, color: Colors.white70, size: 16),
-              const SizedBox(width: 6),
-              Text(
-                _loading ? '—' : '$tripsCount ${l.trips}',
-                style: const TextStyle(color: Colors.white70, fontSize: 13),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSectionLabel(String text, AppColors c) {
     return Text(
       text,
@@ -459,8 +412,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
             decoration: BoxDecoration(
               color: c.surface,
               borderRadius: BorderRadius.circular(14),
@@ -531,12 +483,12 @@ class _DateChip extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: isToday
-              ? AppColors.primary.withValues(alpha: 0.07)
-              : c.surface,
+          color:
+              isToday ? AppColors.primary.withValues(alpha: 0.07) : c.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isToday ? AppColors.primary.withValues(alpha: 0.4) : c.border,
+            color:
+                isToday ? AppColors.primary.withValues(alpha: 0.4) : c.border,
           ),
         ),
         child: Row(
@@ -592,9 +544,8 @@ class _MethodChip extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected
-              ? AppColors.primary.withValues(alpha: 0.15)
-              : c.surface,
+          color:
+              selected ? AppColors.primary.withValues(alpha: 0.15) : c.surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
             color: selected ? AppColors.primary : c.border,
@@ -669,8 +620,7 @@ class _AdvancedFilterSheet extends StatelessWidget {
               TextButton(
                 onPressed: onClear,
                 child: Text(l.clearFilters,
-                    style: const TextStyle(
-                        color: AppColors.red, fontSize: 13)),
+                    style: const TextStyle(color: AppColors.red, fontSize: 13)),
               ),
             ],
           ),
@@ -717,7 +667,6 @@ class _AdvancedFilterSheet extends StatelessWidget {
     );
   }
 }
-
 
 class _FilterField extends StatelessWidget {
   final TextEditingController controller;

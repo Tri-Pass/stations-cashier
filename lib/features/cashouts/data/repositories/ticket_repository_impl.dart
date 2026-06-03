@@ -8,7 +8,8 @@ class TicketRepositoryImpl implements TicketRepository {
   TicketRepositoryImpl(this._ds);
 
   @override
-  Future<DriverTicketsEntity> getDriverTickets(GetDriverTicketsParams params) async {
+  Future<DriverTicketsEntity> getDriverTickets(
+      GetDriverTicketsParams params) async {
     final json = await _ds.getDriverTickets(params);
     return DriverTicketsModel.fromJson(json).toEntity();
   }

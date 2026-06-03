@@ -23,7 +23,8 @@ void main() {
   });
 
   test('delegates to repository.getByNfcTag and returns passenger', () async {
-    when(() => repository.getByNfcTag('NFC123')).thenAnswer((_) async => passenger);
+    when(() => repository.getByNfcTag('NFC123'))
+        .thenAnswer((_) async => passenger);
 
     final result = await useCase('NFC123');
 

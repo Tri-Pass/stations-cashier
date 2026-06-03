@@ -53,7 +53,8 @@ class _TransferPageState extends State<TransferPage> {
       _candidates = [];
     });
     try {
-      final res = await GetIt.instance<ApiClient>().get(ApiEndpoints.walletCandidates(q));
+      final res = await GetIt.instance<ApiClient>()
+          .get(ApiEndpoints.walletCandidates(q));
       final list = (res['data'] as List?) ?? [];
       setState(() => _candidates = list
           .map((e) => _Candidate.fromJson(e as Map<String, dynamic>))
@@ -122,8 +123,7 @@ class _TransferPageState extends State<TransferPage> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: c.textPrimary, size: 18),
-          onPressed:
-              _step == 3 ? () => context.pop(true) : _back,
+          onPressed: _step == 3 ? () => context.pop(true) : _back,
         ),
         title: Text(l.transfer,
             style: TextStyle(
@@ -149,8 +149,7 @@ class _TransferPageState extends State<TransferPage> {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed:
-                        (_canProceed && !_loading) ? _next : null,
+                    onPressed: (_canProceed && !_loading) ? _next : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF6C7FDE),
                       disabledBackgroundColor: c.surface,
@@ -165,9 +164,7 @@ class _TransferPageState extends State<TransferPage> {
                             child: CircularProgressIndicator(
                                 color: Colors.white, strokeWidth: 2))
                         : Text(
-                            _step == 2
-                                ? l.confirmTransferBtn
-                                : l.continueBtn,
+                            _step == 2 ? l.confirmTransferBtn : l.continueBtn,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -201,9 +198,7 @@ class _TransferPageState extends State<TransferPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l.transferAmountTitle,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
       Text(l.howMuchTransfer,
           style: TextStyle(color: c.textSecondary, fontSize: 14)),
@@ -235,27 +230,23 @@ class _TransferPageState extends State<TransferPage> {
           controller: _amountCtrl,
           hint: l.otherAmount,
           icon: Icons.payments_outlined,
-          keyboardType:
-              const TextInputType.numberWithOptions(decimal: false),
+          keyboardType: const TextInputType.numberWithOptions(decimal: false),
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          onChanged: (v) =>
-              setState(() => _amount = double.tryParse(v) ?? 0)),
+          onChanged: (v) => setState(() => _amount = double.tryParse(v) ?? 0)),
       const SizedBox(height: 16),
       Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: const Color(0xFF6C7FDE).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-              color: const Color(0xFF6C7FDE).withValues(alpha: 0.3)),
+          border:
+              Border.all(color: const Color(0xFF6C7FDE).withValues(alpha: 0.3)),
         ),
         child: Row(children: [
-          const Icon(Icons.info_outline,
-              color: Color(0xFF6C7FDE), size: 16),
+          const Icon(Icons.info_outline, color: Color(0xFF6C7FDE), size: 16),
           const SizedBox(width: 8),
           Text(l.freeTransferNote,
-              style: const TextStyle(
-                  color: Color(0xFF6C7FDE), fontSize: 13)),
+              style: const TextStyle(color: Color(0xFF6C7FDE), fontSize: 13)),
         ]),
       ),
     ]);
@@ -265,9 +256,7 @@ class _TransferPageState extends State<TransferPage> {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text(l.chooseRecipient,
           style: TextStyle(
-              color: c.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold)),
+              color: c.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
       const SizedBox(height: 8),
       Text(l.searchDriver,
           style: TextStyle(color: c.textSecondary, fontSize: 14)),
@@ -283,8 +272,7 @@ class _TransferPageState extends State<TransferPage> {
           hintStyle: TextStyle(color: c.textSecondary),
           filled: true,
           fillColor: c.inputBg,
-          prefixIcon:
-              Icon(Icons.search, color: c.textSecondary, size: 20),
+          prefixIcon: Icon(Icons.search, color: c.textSecondary, size: 20),
           suffixIcon: _searching
               ? const Padding(
                   padding: EdgeInsets.all(12),
@@ -306,8 +294,7 @@ class _TransferPageState extends State<TransferPage> {
         Center(
             child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 32),
-          child: Text(l.noResults,
-              style: TextStyle(color: c.textSecondary)),
+          child: Text(l.noResults, style: TextStyle(color: c.textSecondary)),
         ))
       else
         ..._candidates.map((c) => _CandidateCard(
@@ -326,8 +313,8 @@ class _TransferPageState extends State<TransferPage> {
               fontSize: 18,
               fontWeight: FontWeight.bold)),
       const SizedBox(height: 24),
-      walletSummaryTile(l.recipient, _recipient!.fullName,
-          Icons.person_outline, const Color(0xFF6C7FDE)),
+      walletSummaryTile(l.recipient, _recipient!.fullName, Icons.person_outline,
+          const Color(0xFF6C7FDE)),
       const SizedBox(height: 12),
       walletSummaryTile(l.phoneNumber, _recipient!.phone, Icons.phone,
           const Color(0xFF6C7FDE)),
@@ -344,8 +331,8 @@ class _TransferPageState extends State<TransferPage> {
       icon: Icons.check_circle,
       color: const Color(0xFF6C7FDE),
       title: l.transferDoneTitle,
-      subtitle:
-          l.transferDoneSub(_amount.toStringAsFixed(0), _recipient?.fullName ?? ''),
+      subtitle: l.transferDoneSub(
+          _amount.toStringAsFixed(0), _recipient?.fullName ?? ''),
       onDone: () => context.pop(true),
     );
   }
@@ -378,8 +365,7 @@ class _CandidateCard extends StatelessWidget {
         ),
         child: Row(children: [
           CircleAvatar(
-            backgroundColor:
-                const Color(0xFF6C7FDE).withValues(alpha: 0.2),
+            backgroundColor: const Color(0xFF6C7FDE).withValues(alpha: 0.2),
             radius: 20,
             child: Text(
               candidate.fullName.isNotEmpty
@@ -394,17 +380,16 @@ class _CandidateCard extends StatelessWidget {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-            Text(candidate.fullName,
-                style: TextStyle(
-                    color: c.textPrimary,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14)),
-            Text(candidate.phone,
-                style: TextStyle(color: c.textSecondary, fontSize: 12)),
-          ])),
+                Text(candidate.fullName,
+                    style: TextStyle(
+                        color: c.textPrimary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14)),
+                Text(candidate.phone,
+                    style: TextStyle(color: c.textSecondary, fontSize: 12)),
+              ])),
           if (selected)
-            const Icon(Icons.check_circle,
-                color: Color(0xFF6C7FDE), size: 20),
+            const Icon(Icons.check_circle, color: Color(0xFF6C7FDE), size: 20),
         ]),
       ),
     );

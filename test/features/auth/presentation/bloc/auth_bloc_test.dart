@@ -53,7 +53,8 @@ void main() {
       'emits [Loading, Unauthenticated] when not authenticated',
       build: buildBloc,
       setUp: () {
-        when(() => authRepository.isAuthenticated()).thenAnswer((_) async => false);
+        when(() => authRepository.isAuthenticated())
+            .thenAnswer((_) async => false);
       },
       act: (b) => b.add(AuthCheckEvent()),
       expect: () => [isA<AuthLoading>(), isA<AuthUnauthenticated>()],
@@ -63,9 +64,12 @@ void main() {
       'emits [Loading, Authenticated] when authenticated with valid profile',
       build: buildBloc,
       setUp: () {
-        when(() => authRepository.isAuthenticated()).thenAnswer((_) async => true);
-        when(() => authRepository.getProfile()).thenAnswer((_) async => _driver);
-        when(() => authRepository.getToken()).thenAnswer((_) async => 'token123');
+        when(() => authRepository.isAuthenticated())
+            .thenAnswer((_) async => true);
+        when(() => authRepository.getProfile())
+            .thenAnswer((_) async => _driver);
+        when(() => authRepository.getToken())
+            .thenAnswer((_) async => 'token123');
       },
       act: (b) => b.add(AuthCheckEvent()),
       expect: () => [
@@ -82,9 +86,12 @@ void main() {
       'emits [Loading, Authenticated] and connects socket when token available',
       build: buildBloc,
       setUp: () {
-        when(() => authRepository.isAuthenticated()).thenAnswer((_) async => true);
-        when(() => authRepository.getProfile()).thenAnswer((_) async => _driver);
-        when(() => authRepository.getToken()).thenAnswer((_) async => 'mytoken');
+        when(() => authRepository.isAuthenticated())
+            .thenAnswer((_) async => true);
+        when(() => authRepository.getProfile())
+            .thenAnswer((_) async => _driver);
+        when(() => authRepository.getToken())
+            .thenAnswer((_) async => 'mytoken');
       },
       act: (b) => b.add(AuthCheckEvent()),
       verify: (_) {
@@ -96,8 +103,10 @@ void main() {
       'skips connect when socket already connected',
       build: buildBloc,
       setUp: () {
-        when(() => authRepository.isAuthenticated()).thenAnswer((_) async => true);
-        when(() => authRepository.getProfile()).thenAnswer((_) async => _driver);
+        when(() => authRepository.isAuthenticated())
+            .thenAnswer((_) async => true);
+        when(() => authRepository.getProfile())
+            .thenAnswer((_) async => _driver);
         when(() => socketService.status)
             .thenReturn(SocketConnectionStatus.connected);
       },
@@ -111,7 +120,8 @@ void main() {
       'emits [Loading, Unauthenticated] and calls logout on exception',
       build: buildBloc,
       setUp: () {
-        when(() => authRepository.isAuthenticated()).thenThrow(Exception('error'));
+        when(() => authRepository.isAuthenticated())
+            .thenThrow(Exception('error'));
         when(() => authRepository.logout()).thenAnswer((_) async {});
       },
       act: (b) => b.add(AuthCheckEvent()),
@@ -137,7 +147,8 @@ void main() {
       setUp: () {
         when(() => loginUseCase('0600000001', 'pass123'))
             .thenAnswer((_) async => _driver);
-        when(() => authRepository.getProfile()).thenAnswer((_) async => _driver);
+        when(() => authRepository.getProfile())
+            .thenAnswer((_) async => _driver);
         when(() => authRepository.getToken()).thenAnswer((_) async => 'token');
       },
       act: (b) => b.add(AuthLoginEvent('0600000001', 'pass123')),
@@ -154,7 +165,8 @@ void main() {
       act: (b) => b.add(AuthLoginEvent('bad', 'pass')),
       expect: () => [
         isA<AuthLoading>(),
-        isA<AuthError>().having((e) => e.message, 'message', 'Identifiants invalides'),
+        isA<AuthError>()
+            .having((e) => e.message, 'message', 'Identifiants invalides'),
       ],
     );
 
@@ -180,7 +192,8 @@ void main() {
       build: buildBloc,
       setUp: () {
         when(() => loginUseCase(any(), any())).thenAnswer((_) async => _driver);
-        when(() => authRepository.getProfile()).thenAnswer((_) async => _driver);
+        when(() => authRepository.getProfile())
+            .thenAnswer((_) async => _driver);
         when(() => authRepository.getToken()).thenAnswer((_) async => 'tok');
       },
       act: (b) => b.add(AuthLoginEvent('0600', 'pass')),

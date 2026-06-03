@@ -122,8 +122,10 @@ class _NfcLinkPageState extends State<NfcLinkPage>
     final phoneEmpty = _linkPhoneCtrl.text.trim().isEmpty;
     if (nameEmpty || phoneEmpty) {
       setState(() {
-        _linkNameError = nameEmpty ? AppLocalizations.of(context).fieldNameRequired : null;
-        _linkPhoneError = phoneEmpty ? AppLocalizations.of(context).fieldPhoneRequired : null;
+        _linkNameError =
+            nameEmpty ? AppLocalizations.of(context).fieldNameRequired : null;
+        _linkPhoneError =
+            phoneEmpty ? AppLocalizations.of(context).fieldPhoneRequired : null;
       });
       return;
     }
@@ -309,7 +311,8 @@ class _NfcLinkPageState extends State<NfcLinkPage>
                       if (_mode == _PageMode.recharge)
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
-                            if (state is! AuthAuthenticated) return const SizedBox.shrink();
+                            if (state is! AuthAuthenticated)
+                              return const SizedBox.shrink();
                             return _NfcBalanceCard(
                               driver: state.driver,
                               onWithdraw: () => context.push('/withdraw'),
@@ -318,7 +321,8 @@ class _NfcLinkPageState extends State<NfcLinkPage>
                             );
                           },
                         ),
-                      if (_mode == _PageMode.recharge) const SizedBox(height: 20),
+                      if (_mode == _PageMode.recharge)
+                        const SizedBox(height: 20),
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 250),
                         child: _mode == _PageMode.link
@@ -552,7 +556,10 @@ class _BalanceActionsSheet extends StatelessWidget {
             icon: Icons.north_east,
             label: l.withdraw,
             color: AppColors.red,
-            onTap: () { Navigator.pop(context); onWithdraw(); },
+            onTap: () {
+              Navigator.pop(context);
+              onWithdraw();
+            },
             c: c,
           ),
           const SizedBox(height: 10),
@@ -560,7 +567,10 @@ class _BalanceActionsSheet extends StatelessWidget {
             icon: Icons.send,
             label: l.transfer,
             color: AppColors.primary,
-            onTap: () { Navigator.pop(context); onTransfer(); },
+            onTap: () {
+              Navigator.pop(context);
+              onTransfer();
+            },
             c: c,
           ),
           const SizedBox(height: 10),
@@ -568,7 +578,10 @@ class _BalanceActionsSheet extends StatelessWidget {
             icon: Icons.south_west,
             label: l.topUp,
             color: AppColors.teal,
-            onTap: () { Navigator.pop(context); onTopUp(); },
+            onTap: () {
+              Navigator.pop(context);
+              onTopUp();
+            },
             c: c,
           ),
         ],

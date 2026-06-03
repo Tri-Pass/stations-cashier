@@ -112,7 +112,7 @@ class _ConnectivityBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final color = restored ? AppColors.green : AppColors.red;
-    final icon  = restored ? Icons.wifi_rounded : Icons.wifi_off_rounded;
+    final icon = restored ? Icons.wifi_rounded : Icons.wifi_off_rounded;
     final title = restored ? l.connectionRestored : l.noConnectionTitle;
 
     return Material(
