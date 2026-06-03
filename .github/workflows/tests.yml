@@ -1,15 +1,13 @@
 name: Tests
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
-# Cancel any in-progress run for the same PR or branch so only one run
-# executes at a time (prevents the push + pull_request double-trigger).
+# Cancel the previous in-progress run for the same PR when a new
+# commit is pushed — only the latest run matters.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 jobs:
