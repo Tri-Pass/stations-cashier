@@ -67,12 +67,22 @@ const _kHeartbeatTimeout = Duration(minutes: 11);
 // ─── Logger ───────────────────────────────────────────────────────────────────
 void _log(String msg) => debugPrint('[Socket] $msg');
 
+// ─── Injectable factory for testing ──────────────────────────────────────────
+typedef WebSocketFactory = WebSocketChannel Function(Uri uri);
+
 class SocketService with WidgetsBindingObserver {
 
   // ── Singleton ────────────────────────────────────────────────────────────
   static SocketService? _instance;
   static SocketService getInstance() => _instance ??= SocketService._();
-  SocketService._();
+
+  // Creates an isolated instance for testing (not the singleton).
+  static SocketService createForTesting({WebSocketFactory? wsFactory}) =>
+      SocketService._(wsFactory: wsFactory);
+
+  final WebSocketFactory _wsFactory;
+  SocketService._({WebSocketFactory? wsFactory})
+      : _wsFactory = wsFactory ?? WebSocketChannel.connect;
 
   // ── Core ─────────────────────────────────────────────────────────────────
   WebSocketChannel? _ws;
@@ -267,7 +277,7 @@ class SocketService with WidgetsBindingObserver {
     }
 
     try {
-      _ws = WebSocketChannel.connect(Uri.parse(_options!.url));
+      _ws = _wsFactory(Uri.parse(_options!.url));
       await _ws!.ready;
       _log('✅ TCP open — waiting for handshake ACK');
 

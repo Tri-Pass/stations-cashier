@@ -14,8 +14,10 @@ class ApiException implements Exception {
 class ApiClient {
   static const _baseUrl = Env.baseApiUrl;
   final LocalStorage _storage;
+  final http.Client _httpClient;
 
-  ApiClient(this._storage);
+  ApiClient(this._storage, {http.Client? httpClient})
+      : _httpClient = httpClient ?? http.Client();
 
   Future<Map<String, String>> _headers({bool auth = true}) async {
     final headers = {'Content-Type': 'application/json'};
@@ -27,7 +29,7 @@ class ApiClient {
   }
 
   Future<dynamic> get(String path) async {
-    final response = await http.get(
+    final response = await _httpClient.get(
       Uri.parse('$_baseUrl$path'),
       headers: await _headers(),
     );
@@ -39,7 +41,7 @@ class ApiClient {
     Map<String, dynamic> body, {
     bool auth = true,
   }) async {
-    final response = await http.post(
+    final response = await _httpClient.post(
       Uri.parse('$_baseUrl$path'),
       headers: await _headers(auth: auth),
       body: jsonEncode(body),
@@ -48,7 +50,7 @@ class ApiClient {
   }
 
   Future<dynamic> put(String path, Map<String, dynamic> body) async {
-    final response = await http.put(
+    final response = await _httpClient.put(
       Uri.parse('$_baseUrl$path'),
       headers: await _headers(),
       body: jsonEncode(body),
