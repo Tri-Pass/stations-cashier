@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cashier/core/di/injection.dart';
+import 'package:cashier/core/services/kiosk_mode_notifier.dart';
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/l10n/locale_notifier.dart';
 import 'package:cashier/core/theme/app_theme.dart';
@@ -8,8 +10,45 @@ import 'package:cashier/core/theme/theme_notifier.dart';
 import 'package:cashier/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  int _versionTapCount = 0;
+  Timer? _tapResetTimer;
+
+  void _onVersionTap() {
+    _tapResetTimer?.cancel();
+    _versionTapCount++;
+
+    if (_versionTapCount >= 5) {
+      _versionTapCount = 0;
+      final notifier = sl<KioskModeNotifier>();
+      final next = !notifier.value;
+      notifier.setKioskMode(next);
+      final l = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(next ? l.kioskModeActivate : l.kioskModeDeactivate),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } else {
+      _tapResetTimer = Timer(const Duration(seconds: 2), () {
+        _versionTapCount = 0;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _tapResetTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +178,26 @@ class ProfilePage extends StatelessWidget {
                   isDestructive: true,
                   onTap: () => _confirmLogout(context, l),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 32),
+
+                // ── Version (secret kiosk toggle: tap 5×) ───────────────────
+                GestureDetector(
+                  onTap: _onVersionTap,
+                  behavior: HitTestBehavior.opaque,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Center(
+                      child: Text(
+                        'v1.0.0',
+                        style: TextStyle(
+                          color: c.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
               ],
             ),
           ),

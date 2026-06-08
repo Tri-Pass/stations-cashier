@@ -373,6 +373,12 @@ class AppLocalizations {
 
   String get disconnect => _t('Déconnecter', 'خروج');
 
+  String get kioskMode => _t('Mode Kiosque', 'وضع الكشك');
+
+  String get kioskModeActivate => _t('Activer', 'تفعيل');
+
+  String get kioskModeDeactivate => _t('Désactiver', 'إلغاء التفعيل');
+
   // ── Cashouts ─────────────────────────────────────────────────────────────
   String get navCashouts => _t('Paiements', 'المدفوعات');
 

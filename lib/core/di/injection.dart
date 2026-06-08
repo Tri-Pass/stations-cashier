@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:cashier/core/l10n/locale_notifier.dart';
+import 'package:cashier/core/services/kiosk_mode_notifier.dart';
 import 'package:cashier/core/theme/theme_notifier.dart';
 import 'package:cashier/core/notifiers/booking_refresh_notifier.dart';
 import 'package:cashier/core/network/api_client.dart';
@@ -63,6 +64,11 @@ Future<void> setupDependencies() async {
   final themeNotifier = ThemeNotifier();
   await themeNotifier.init();
   sl.registerSingleton(themeNotifier);
+
+  // Kiosk mode
+  final kioskNotifier = KioskModeNotifier();
+  await kioskNotifier.init();
+  sl.registerSingleton(kioskNotifier);
 
   // Core infrastructure
   sl.registerLazySingleton(() => LocalStorage());
