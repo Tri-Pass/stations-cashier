@@ -45,7 +45,6 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
   final Map<String, int> _sessionBooked = {};
 
   final _refreshKey = GlobalKey<RefreshIndicatorState>();
-  double _topDragDelta = 0;
 
   static const _socketOwner = 'booking_page';
 
@@ -440,37 +439,25 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
               : NestedScrollView(
                   headerSliverBuilder: (context, innerBoxIsScrolled) => [
                     SliverToBoxAdapter(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onVerticalDragStart: (_) => _topDragDelta = 0,
-                        onVerticalDragUpdate: (d) {
-                          _topDragDelta += d.delta.dy;
-                          if (_topDragDelta > 60) {
-                            _topDragDelta = 0;
-                            _refreshKey.currentState?.show();
-                          }
-                        },
-                        onVerticalDragEnd: (_) => _topDragDelta = 0,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              _buildStationCard(driver),
-                              const SizedBox(height: 16),
-                              _buildSectionLabel(l.sectionLines),
-                              const SizedBox(height: 8),
-                              _buildLinesGrid(l),
-                              const SizedBox(height: 16),
-                              _buildSectionLabel(l.sectionPayment),
-                              const SizedBox(height: 8),
-                              _buildPaymentRow(l),
-                              const SizedBox(height: 16),
-                              _buildSectionLabel(
-                                  '${l.taxisInQueue} (${_selectedLine?.taxiCount})  ·  ${_selectedLine!.destination}'),
-                              const SizedBox(height: 8),
-                            ],
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _buildStationCard(driver),
+                            const SizedBox(height: 16),
+                            _buildSectionLabel(l.sectionLines),
+                            const SizedBox(height: 8),
+                            _buildLinesGrid(l),
+                            const SizedBox(height: 16),
+                            _buildSectionLabel(l.sectionPayment),
+                            const SizedBox(height: 8),
+                            _buildPaymentRow(l),
+                            const SizedBox(height: 16),
+                            _buildSectionLabel(
+                                '${l.taxisInQueue} (${_selectedLine?.taxiCount})  ·  ${_selectedLine!.destination}'),
+                            const SizedBox(height: 8),
+                          ],
                         ),
                       ),
                     ),
@@ -607,35 +594,41 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         ),
       );
     }
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 2.5,
-      ),
-      itemCount: _lines.length,
-      itemBuilder: (_, i) {
-        final line = _lines[i];
-        final selected = _selectedLine?.id == line.id;
-        return LineCard(
-          line: line,
-          selected: selected,
-          onTap: () {
-            if (selected) {
-              setState(() {
-                _selectedLine = null;
-                _queue = [];
-              });
-            } else {
-              setState(() => _selectedLine = line);
-              _loadQueue(line.id);
-            }
+    final maxHeight = MediaQuery.of(context).size.height / 4;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: maxHeight),
+      child: SingleChildScrollView(
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 2.5,
+          ),
+          itemCount: _lines.length,
+          itemBuilder: (_, i) {
+            final line = _lines[i];
+            final selected = _selectedLine?.id == line.id;
+            return LineCard(
+              line: line,
+              selected: selected,
+              onTap: () {
+                if (selected) {
+                  setState(() {
+                    _selectedLine = null;
+                    _queue = [];
+                  });
+                } else {
+                  setState(() => _selectedLine = line);
+                  _loadQueue(line.id);
+                }
+              },
+            );
           },
-        );
-      },
+        ),
+      ),
     );
   }
 
