@@ -17,6 +17,7 @@ class MainActivity : FlutterActivity() {
 
     private val METHOD_CHANNEL = "courtier/card_methods"
     private val EVENT_CHANNEL = "courtier/card_events"
+    private val KIOSK_CHANNEL = "courtier/kiosk"
 
     private var mSMPayKernel: SunmiPayKernel? = null
     private var mReadCardOptV2: ReadCardOptV2? = null
@@ -67,6 +68,29 @@ class MainActivity : FlutterActivity() {
                     "stopNfcScan" -> {
                         stopNfcScan()
                         result.success("OK")
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, KIOSK_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "startKioskMode" -> {
+                        try {
+                            startLockTask()
+                            result.success("OK")
+                        } catch (e: Exception) {
+                            result.error("KIOSK_ERROR", e.message, null)
+                        }
+                    }
+                    "stopKioskMode" -> {
+                        try {
+                            stopLockTask()
+                            result.success("OK")
+                        } catch (e: Exception) {
+                            result.error("KIOSK_ERROR", e.message, null)
+                        }
                     }
                     else -> result.notImplemented()
                 }
