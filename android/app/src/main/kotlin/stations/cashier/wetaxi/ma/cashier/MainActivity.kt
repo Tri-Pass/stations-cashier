@@ -1,5 +1,7 @@
 package stations.cashier.wetaxi.ma.cashier
 
+import android.content.Context
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,8 +18,9 @@ import sunmi.paylib.SunmiPayKernel
 class MainActivity : FlutterActivity() {
 
     private val METHOD_CHANNEL = "courtier/card_methods"
-    private val EVENT_CHANNEL = "courtier/card_events"
-    private val KIOSK_CHANNEL = "courtier/kiosk"
+    private val EVENT_CHANNEL  = "courtier/card_events"
+    private val KIOSK_CHANNEL  = "courtier/kiosk"
+    private val WIFI_CHANNEL   = "courtier/wifi"
 
     private var mSMPayKernel: SunmiPayKernel? = null
     private var mReadCardOptV2: ReadCardOptV2? = null
@@ -90,6 +93,24 @@ class MainActivity : FlutterActivity() {
                             result.success("OK")
                         } catch (e: Exception) {
                             result.error("KIOSK_ERROR", e.message, null)
+                        }
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, WIFI_CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "reconnect" -> {
+                        try {
+                            val wifi = applicationContext
+                                .getSystemService(Context.WIFI_SERVICE) as WifiManager
+                            wifi.disconnect()
+                            mainHandler.postDelayed({ wifi.reconnect() }, 1500)
+                            result.success(null)
+                        } catch (e: Exception) {
+                            result.error("WIFI", e.message, null)
                         }
                     }
                     else -> result.notImplemented()
