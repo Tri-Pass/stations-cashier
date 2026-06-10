@@ -116,17 +116,29 @@ class _TaxiDriverAppState extends State<TaxiDriverApp> {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 routerConfig: _router,
-                builder: (context, child) => PopScope(
-                  canPop: !isKiosk,
-                  child: ConnectivityWrapper(
-                    child: MediaQuery(
-                      data: MediaQuery.of(context).copyWith(
-                        textScaler: const TextScaler.linear(AppFontSizes.scale),
+                builder: (context, child) {
+                  final mq = MediaQuery.of(context);
+                  final padding = isKiosk
+                      ? mq.padding.copyWith(
+                          top: mq.padding.top < 16 ? 16.0 : mq.padding.top,
+                          bottom:
+                              mq.padding.bottom < 16 ? 16.0 : mq.padding.bottom,
+                        )
+                      : mq.padding;
+                  return PopScope(
+                    canPop: !isKiosk,
+                    child: ConnectivityWrapper(
+                      child: MediaQuery(
+                        data: mq.copyWith(
+                          textScaler:
+                              const TextScaler.linear(AppFontSizes.scale),
+                          padding: padding,
+                        ),
+                        child: child!,
                       ),
-                      child: child!,
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ),

@@ -10,7 +10,7 @@ class KioskModeNotifier extends ValueNotifier<bool> {
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
-    final enabled = prefs.getBool(_key) ?? true;
+    final enabled = prefs.getBool(_key) ?? false;
     value = enabled;
     await _apply(enabled);
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AppLocalizations {
@@ -349,6 +350,9 @@ class AppLocalizations {
   String get connectionRestored =>
       _t('Connexion rétablie', 'تم استعادة الاتصال');
 
+  String get retryConnection  => _t('Réessayer', 'إعادة المحاولة');
+  String get resetWifi        => _t('Réinitialiser WiFi', 'إعادة تشغيل الواي فاي');
+
   // ── Profile ───────────────────────────────────────────────────────────────
   String get profile => _t('Profil', 'الملف الشخصي');
 
@@ -506,8 +510,8 @@ class _AppLocalizationsDelegate
   bool isSupported(Locale locale) => ['fr', 'ar'].contains(locale.languageCode);
 
   @override
-  Future<AppLocalizations> load(Locale locale) async =>
-      AppLocalizations(locale);
+  Future<AppLocalizations> load(Locale locale) =>
+      SynchronousFuture(AppLocalizations(locale));
 
   @override
   bool shouldReload(_) => false;

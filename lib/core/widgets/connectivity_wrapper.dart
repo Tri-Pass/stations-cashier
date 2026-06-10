@@ -16,9 +16,10 @@ class ConnectivityWrapper extends StatefulWidget {
 
 class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
   final _service = sl<ConnectivityService>();
-  bool _wasOffline = false;
-  bool _retrying = false;
-  bool _restored = false;
+  bool _wasOffline    = false;
+  bool _retrying      = false;
+  bool _restored      = false;
+  int  _failedRetries = 0;
 
   @override
   void initState() {
@@ -41,8 +42,8 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
     } else if (current == ConnectivityState.online && _wasOffline) {
       _wasOffline = false;
       _restored = true;
+      _failedRetries = 0;
       sl<AuthBloc>().add(AuthCheckEvent());
-      // Wait briefly for the socket to reconnect, then reload page data.
       Future.delayed(const Duration(milliseconds: 800), () {
         sl<BookingRefreshNotifier>().refresh();
       });
@@ -53,9 +54,22 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
     setState(() {});
   }
 
-  Future<void> _handleReload() async {
+  Future<void> _handleRetry() async {
     setState(() => _retrying = true);
     await _service.recheck();
+    if (mounted) {
+      setState(() {
+        _retrying = false;
+        if (_service.state.value == ConnectivityState.offline) {
+          _failedRetries++;
+        }
+      });
+    }
+  }
+
+  Future<void> _handleResetWifi() async {
+    setState(() => _retrying = true);
+    await _service.reconnectWifi();
     if (mounted) setState(() => _retrying = false);
   }
 
@@ -82,9 +96,11 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                 opacity: show ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 280),
                 child: _ConnectivityBanner(
-                  retrying: _retrying,
-                  restored: _restored,
-                  onReload: _handleReload,
+                  retrying:    _retrying,
+                  restored:    _restored,
+                  showReset:   _failedRetries >= 3,
+                  onRetry:     _handleRetry,
+                  onResetWifi: _handleResetWifi,
                 ),
               ),
             ),
@@ -100,19 +116,23 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
 class _ConnectivityBanner extends StatelessWidget {
   final bool retrying;
   final bool restored;
-  final VoidCallback onReload;
+  final bool showReset;
+  final VoidCallback onRetry;
+  final VoidCallback onResetWifi;
 
   const _ConnectivityBanner({
     required this.retrying,
     required this.restored,
-    required this.onReload,
+    required this.showReset,
+    required this.onRetry,
+    required this.onResetWifi,
   });
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
+    final l     = AppLocalizations.of(context);
     final color = restored ? AppColors.green : AppColors.red;
-    final icon = restored ? Icons.wifi_rounded : Icons.wifi_off_rounded;
+    final icon  = restored ? Icons.wifi_rounded : Icons.wifi_off_rounded;
     final title = restored ? l.connectionRestored : l.noConnectionTitle;
 
     return Material(
@@ -169,37 +189,37 @@ class _ConnectivityBanner extends StatelessWidget {
                 ],
               ),
             ),
-            // if (!restored) ...[
-            //   const SizedBox(width: 8),
-            //   retrying
-            //       ? const SizedBox(
-            //     width: 20,
-            //     height: 20,
-            //     child: CircularProgressIndicator(
-            //       color: Colors.white,
-            //       strokeWidth: 2,
-            //     ),
-            //   )
-            //       : GestureDetector(
-            //     onTap: onReload,
-            //     child: Container(
-            //       padding: const EdgeInsets.symmetric(
-            //           horizontal: 12, vertical: 6),
-            //       decoration: BoxDecoration(
-            //         color: Colors.white.withValues(alpha: 0.2),
-            //         borderRadius: BorderRadius.circular(20),
-            //       ),
-            //       child: Text(
-            //         l.retry,
-            //         style: const TextStyle(
-            //           color: Colors.white,
-            //           fontSize: 12,
-            //           fontWeight: FontWeight.w600,
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ],
+            if (!restored) ...[
+              const SizedBox(width: 8),
+              retrying
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : GestureDetector(
+                      onTap: showReset ? onResetWifi : onRetry,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          showReset ? l.resetWifi : l.retryConnection,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+            ],
           ],
         ),
       ),
