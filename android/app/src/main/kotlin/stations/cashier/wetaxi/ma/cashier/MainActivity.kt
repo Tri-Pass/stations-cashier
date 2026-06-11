@@ -106,8 +106,23 @@ class MainActivity : FlutterActivity() {
                         try {
                             val wifi = applicationContext
                                 .getSystemService(Context.WIFI_SERVICE) as WifiManager
-                            wifi.disconnect()
-                            mainHandler.postDelayed({ wifi.reconnect() }, 1500)
+                            // Try the true adapter toggle (works on API < 29, and on
+                            // Android 10+ when the app is a device owner / system app).
+                            @Suppress("DEPRECATION")
+                            val toggled = wifi.setWifiEnabled(false)
+                            if (toggled) {
+                                // Adapter is turning off — re-enable after 2 s.
+                                mainHandler.postDelayed({
+                                    @Suppress("DEPRECATION")
+                                    wifi.setWifiEnabled(true)
+                                }, 2000)
+                            } else {
+                                // setWifiEnabled blocked (Android 10+ non-system app).
+                                // Fall back: drop the current association and force a
+                                // full re-association (stronger than reconnect()).
+                                wifi.disconnect()
+                                mainHandler.postDelayed({ wifi.reassociate() }, 2000)
+                            }
                             result.success(null)
                         } catch (e: Exception) {
                             result.error("WIFI", e.message, null)

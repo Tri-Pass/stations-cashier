@@ -51,13 +51,9 @@ class ConnectivityService {
 
   void _onConnectivityChanged(List<ConnectivityResult> results) {
     _timer?.cancel();
-    if (results.isEmpty || results.every((r) => r == ConnectivityResult.none)) {
-      _state.value = ConnectivityState.offline;
-      _scheduleNext();
-    } else {
-      // Adapter is up — verify actual internet with a socket probe.
-      _check();
-    }
+    // Always verify with a socket probe — never trust connectivity_plus alone.
+    // It can report false "none" results on Android, causing spurious offline banners.
+    _check();
   }
 
   Future<void> recheck() async {
@@ -66,15 +62,17 @@ class ConnectivityService {
     await _check();
   }
 
-  /// Disconnects then reconnects the WiFi adapter via a platform channel so
+  /// Toggles the WiFi adapter off then on via a platform channel so
   /// the app can recover without the user touching system settings (kiosk mode).
+  /// Waits 8 s before rechecking — a full off→on cycle with DHCP typically
+  /// takes 5–8 s on Android.
   Future<void> reconnectWifi() async {
     try {
       await _wifiChannel.invokeMethod<void>('reconnect');
     } catch (_) {
       // Platform may not support it; continue to recheck anyway.
     }
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 8));
     await recheck();
   }
 
