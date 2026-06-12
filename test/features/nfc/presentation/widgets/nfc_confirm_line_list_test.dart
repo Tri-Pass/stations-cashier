@@ -10,7 +10,8 @@ Widget _wrap(Widget child) => MaterialApp(
     );
 
 const _lines = [
-  NfcLineInfo(id: 'l1', origin: 'Marrakech', destination: 'Casablanca', price: 80),
+  NfcLineInfo(
+      id: 'l1', origin: 'Marrakech', destination: 'Casablanca', price: 80),
   NfcLineInfo(id: 'l2', origin: 'Agadir', destination: 'Tiznit', price: 40),
 ];
 

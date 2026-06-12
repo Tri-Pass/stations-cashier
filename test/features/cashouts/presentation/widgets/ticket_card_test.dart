@@ -47,13 +47,15 @@ const _paidNfcTicket = TicketEntity(
 void main() {
   group('TicketCard', () {
     testWidgets('renders route origin and destination', (tester) async {
-      await tester.pumpWidget(_wrap(TicketCard(ticket: _unpaidCashTicket)));
+      await tester
+          .pumpWidget(_wrap(const TicketCard(ticket: _unpaidCashTicket)));
       expect(find.textContaining('Marrakech'), findsOneWidget);
       expect(find.textContaining('Casablanca'), findsOneWidget);
     });
 
     testWidgets('renders amount', (tester) async {
-      await tester.pumpWidget(_wrap(TicketCard(ticket: _unpaidCashTicket)));
+      await tester
+          .pumpWidget(_wrap(const TicketCard(ticket: _unpaidCashTicket)));
       expect(find.textContaining('160'), findsWidgets);
     });
 
@@ -70,7 +72,7 @@ void main() {
     });
 
     testWidgets('no cashout button for nfc paid ticket', (tester) async {
-      await tester.pumpWidget(_wrap(TicketCard(
+      await tester.pumpWidget(_wrap(const TicketCard(
         ticket: _paidNfcTicket,
         onCashout: null,
       )));
@@ -81,7 +83,7 @@ void main() {
     });
 
     testWidgets('shows NFC icon for nfc ticket', (tester) async {
-      await tester.pumpWidget(_wrap(TicketCard(ticket: _paidNfcTicket)));
+      await tester.pumpWidget(_wrap(const TicketCard(ticket: _paidNfcTicket)));
       expect(find.byIcon(Icons.nfc), findsOneWidget);
     });
 
@@ -104,9 +106,10 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('shows nfcAutoTransferred text for paid nfc ticket without onCashout',
+    testWidgets(
+        'shows nfcAutoTransferred text for paid nfc ticket without onCashout',
         (tester) async {
-      await tester.pumpWidget(_wrap(TicketCard(
+      await tester.pumpWidget(_wrap(const TicketCard(
         ticket: _paidNfcTicket,
         onCashout: null,
       )));
@@ -126,7 +129,7 @@ void main() {
         amount: 80,
         status: 'paid',
       );
-      await tester.pumpWidget(_wrap(TicketCard(
+      await tester.pumpWidget(_wrap(const TicketCard(
         ticket: paidCashTicket,
         onCashout: null,
       )));
@@ -150,7 +153,8 @@ void main() {
       expect(find.textContaining('09:30'), findsOneWidget);
     });
 
-    testWidgets('shows access_time icon when departedAt is set', (tester) async {
+    testWidgets('shows access_time icon when departedAt is set',
+        (tester) async {
       final ticketWithTime = TicketEntity(
         id: 'tk5',
         line: _line,
@@ -168,7 +172,8 @@ void main() {
     });
 
     testWidgets('no access_time icon when departedAt is null', (tester) async {
-      await tester.pumpWidget(_wrap(TicketCard(ticket: _unpaidCashTicket)));
+      await tester
+          .pumpWidget(_wrap(const TicketCard(ticket: _unpaidCashTicket)));
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.access_time), findsNothing);
     });

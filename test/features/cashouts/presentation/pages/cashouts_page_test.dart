@@ -17,11 +17,11 @@ class MockGetCashoutsSummaryUseCase extends Mock
 
 class _FakeCashoutSummaryParams extends Fake implements CashoutSummaryParams {}
 
-final _emptyResponse =
-    const CashoutsResponseEntity(cashouts: [], totalAmount: 0);
+const _emptyResponse = CashoutsResponseEntity(cashouts: [], totalAmount: 0);
 
 CashoutsResponseEntity _responseWithOne() {
-  const driver = CashoutDriverEntity(id: 'd1', name: 'Mohamed Ali', phone: '0600000001');
+  const driver =
+      CashoutDriverEntity(id: 'd1', name: 'Mohamed Ali', phone: '0600000001');
   const taxi = CashoutTaxiEntity(id: 't1', plateNumber: 'A-1234');
   const line = CashoutLineEntity(
     id: 'l1',
@@ -41,7 +41,8 @@ CashoutsResponseEntity _responseWithOne() {
 }
 
 CashoutsResponseEntity _responseWithStats() {
-  const driver = CashoutDriverEntity(id: 'd1', name: 'Youssef Brahim', phone: '0600000002');
+  const driver = CashoutDriverEntity(
+      id: 'd1', name: 'Youssef Brahim', phone: '0600000002');
   const taxi = CashoutTaxiEntity(id: 't1', plateNumber: 'B-5678');
   const line = CashoutLineEntity(
     id: 'l2',
@@ -112,15 +113,15 @@ void main() {
       final completer = Completer<CashoutsResponseEntity>();
       when(() => mockUseCase(any())).thenAnswer((_) => completer.future);
       await tester.pumpWidget(_buildApp());
-      await tester.pump(); // allow localizations to load; _load starts but awaits completer
+      await tester
+          .pump(); // allow localizations to load; _load starts but awaits completer
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       completer.complete(_emptyResponse); // avoid pending future warnings
       await tester.pumpAndSettle();
     });
 
     testWidgets('shows empty state when no cashouts', (tester) async {
-      when(() => mockUseCase(any()))
-          .thenAnswer((_) async => _emptyResponse);
+      when(() => mockUseCase(any())).thenAnswer((_) async => _emptyResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.receipt_long_outlined), findsOneWidget);
@@ -135,8 +136,7 @@ void main() {
     });
 
     testWidgets('shows NFC and cash method chips', (tester) async {
-      when(() => mockUseCase(any()))
-          .thenAnswer((_) async => _emptyResponse);
+      when(() => mockUseCase(any())).thenAnswer((_) async => _emptyResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.nfc), findsOneWidget);
@@ -261,25 +261,23 @@ void main() {
     });
 
     testWidgets('shows filter icon (tune) in app bar', (tester) async {
-      when(() => mockUseCase(any()))
-          .thenAnswer((_) async => _emptyResponse);
+      when(() => mockUseCase(any())).thenAnswer((_) async => _emptyResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.tune), findsOneWidget);
     });
 
     testWidgets('shows cashouts page title', (tester) async {
-      when(() => mockUseCase(any()))
-          .thenAnswer((_) async => _emptyResponse);
+      when(() => mockUseCase(any())).thenAnswer((_) async => _emptyResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       // AppBar title should be visible
       expect(find.byType(AppBar), findsOneWidget);
     });
 
-    testWidgets('advanced filter sheet opens when tune icon tapped', (tester) async {
-      when(() => mockUseCase(any()))
-          .thenAnswer((_) async => _emptyResponse);
+    testWidgets('advanced filter sheet opens when tune icon tapped',
+        (tester) async {
+      when(() => mockUseCase(any())).thenAnswer((_) async => _emptyResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.tune));
@@ -289,8 +287,7 @@ void main() {
     });
 
     testWidgets('advanced filter sheet has apply button', (tester) async {
-      when(() => mockUseCase(any()))
-          .thenAnswer((_) async => _emptyResponse);
+      when(() => mockUseCase(any())).thenAnswer((_) async => _emptyResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.tune));
@@ -317,8 +314,7 @@ void main() {
     });
 
     testWidgets('date range widgets are displayed', (tester) async {
-      when(() => mockUseCase(any()))
-          .thenAnswer((_) async => _emptyResponse);
+      when(() => mockUseCase(any())).thenAnswer((_) async => _emptyResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       // Two calendar icons for date range
@@ -326,8 +322,7 @@ void main() {
     });
 
     testWidgets('confirmation number icon in summary card', (tester) async {
-      when(() => mockUseCase(any()))
-          .thenAnswer((_) async => _emptyResponse);
+      when(() => mockUseCase(any())).thenAnswer((_) async => _emptyResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.confirmation_number_outlined), findsOneWidget);

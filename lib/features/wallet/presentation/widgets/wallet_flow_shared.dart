@@ -29,19 +29,22 @@ class WalletOption {
 IconData walletOptionIcon(WalletOption o) {
   final s = '${o.code} ${o.label}'.toLowerCase();
   if (s.contains('guichet') || s.contains('qr')) return Icons.qr_code_2;
-  if (s.contains('bank') || s.contains('virement'))
+  if (s.contains('bank') || s.contains('virement')) {
     return Icons.account_balance;
+  }
   if (s.contains('card') || s.contains('cmi')) return Icons.credit_card;
-  if (s.contains('cashplus') || s.contains('mobile'))
+  if (s.contains('cashplus') || s.contains('mobile')) {
     return Icons.phone_android;
+  }
   return Icons.payments_outlined;
 }
 
 Color walletOptionColor(WalletOption o) {
   final s = '${o.code} ${o.label}'.toLowerCase();
   if (s.contains('guichet') || s.contains('qr')) return AppColors.primary;
-  if (s.contains('bank') || s.contains('virement'))
+  if (s.contains('bank') || s.contains('virement')) {
     return const Color(0xFF4A90D9);
+  }
   if (s.contains('card') || s.contains('cmi')) return AppColors.teal;
   if (s.contains('cashplus') || s.contains('mobile')) return AppColors.teal;
   return AppColors.primary;

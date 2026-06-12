@@ -89,7 +89,8 @@ void main() {
       expect(btn.onPressed, isNull);
     });
 
-    testWidgets('selecting preset amount enables continue button', (tester) async {
+    testWidgets('selecting preset amount enables continue button',
+        (tester) async {
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.text('100 MAD'));
@@ -98,8 +99,10 @@ void main() {
       expect(btn.onPressed, isNotNull);
     });
 
-    testWidgets('tapping continue moves to step 1 (recipient search)', (tester) async {
-      when(() => mockApi.get(any())).thenAnswer((_) async => _candidatesResponse);
+    testWidgets('tapping continue moves to step 1 (recipient search)',
+        (tester) async {
+      when(() => mockApi.get(any()))
+          .thenAnswer((_) async => _candidatesResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.text('200 MAD'));
@@ -111,7 +114,8 @@ void main() {
     });
 
     testWidgets('step 1 shows candidates from API', (tester) async {
-      when(() => mockApi.get(any())).thenAnswer((_) async => _candidatesResponse);
+      when(() => mockApi.get(any()))
+          .thenAnswer((_) async => _candidatesResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.text('100 MAD'));
@@ -122,7 +126,8 @@ void main() {
     });
 
     testWidgets('step 1 selecting candidate enables continue', (tester) async {
-      when(() => mockApi.get(any())).thenAnswer((_) async => _candidatesResponse);
+      when(() => mockApi.get(any()))
+          .thenAnswer((_) async => _candidatesResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.text('100 MAD'));
@@ -137,7 +142,8 @@ void main() {
     });
 
     testWidgets('back from step 1 returns to step 0', (tester) async {
-      when(() => mockApi.get(any())).thenAnswer((_) async => _candidatesResponse);
+      when(() => mockApi.get(any()))
+          .thenAnswer((_) async => _candidatesResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.text('100 MAD'));
@@ -152,7 +158,8 @@ void main() {
     });
 
     testWidgets('step 2 (confirm) shows recipient details', (tester) async {
-      when(() => mockApi.get(any())).thenAnswer((_) async => _candidatesResponse);
+      when(() => mockApi.get(any()))
+          .thenAnswer((_) async => _candidatesResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       // Step 0: select amount
@@ -196,7 +203,8 @@ void main() {
       expect(find.textContaining('150'), findsWidgets);
     });
 
-    testWidgets('search error path sets candidates to empty list', (tester) async {
+    testWidgets('search error path sets candidates to empty list',
+        (tester) async {
       when(() => mockApi.get(any())).thenThrow(Exception('network error'));
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
@@ -207,8 +215,10 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
     });
 
-    testWidgets('search field onChanged triggers search with 2+ chars', (tester) async {
-      when(() => mockApi.get(any())).thenAnswer((_) async => _candidatesResponse);
+    testWidgets('search field onChanged triggers search with 2+ chars',
+        (tester) async {
+      when(() => mockApi.get(any()))
+          .thenAnswer((_) async => _candidatesResponse);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.text('100 MAD'));

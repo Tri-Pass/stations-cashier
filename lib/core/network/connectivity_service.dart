@@ -10,10 +10,10 @@ class ConnectivityService {
   // Two DNS servers probed in parallel; either succeeding means we're online.
   // Using two targets avoids false-offline when 8.8.8.8 is blocked or slow.
   static const _probeTargets = [('8.8.8.8', 53), ('1.1.1.1', 53)];
-  static const _probeTimeout  = Duration(seconds: 4);
-  static const _raceTimeout   = Duration(seconds: 5);
+  static const _probeTimeout = Duration(seconds: 4);
+  static const _raceTimeout = Duration(seconds: 5);
 
-  static const _onlineInterval  = Duration(seconds: 15);
+  static const _onlineInterval = Duration(seconds: 15);
   static const _offlineInterval = Duration(seconds: 4);
 
   static const _wifiChannel = MethodChannel('courtier/wifi');
@@ -33,7 +33,8 @@ class ConnectivityService {
     try {
       return await Future.any(
         _probeTargets.map((t) async {
-          final socket = await Socket.connect(t.$1, t.$2, timeout: _probeTimeout);
+          final socket =
+              await Socket.connect(t.$1, t.$2, timeout: _probeTimeout);
           socket.destroy();
           return true;
         }),
@@ -81,7 +82,8 @@ class ConnectivityService {
     _checking = true;
     try {
       final online = await _defaultSocketCheck();
-      _state.value = online ? ConnectivityState.online : ConnectivityState.offline;
+      _state.value =
+          online ? ConnectivityState.online : ConnectivityState.offline;
     } finally {
       _checking = false;
       _scheduleNext();

@@ -32,10 +32,8 @@ void main() {
   setUp(() {
     apiClient = MockApiClient();
     dataSource = PassengerRemoteDataSource(apiClient);
-    when(() => apiClient.get(any()))
-        .thenAnswer((_) async => passengerJson);
-    when(() => apiClient.post(any(), any()))
-        .thenAnswer((_) async => topupJson);
+    when(() => apiClient.get(any())).thenAnswer((_) async => passengerJson);
+    when(() => apiClient.post(any(), any())).thenAnswer((_) async => topupJson);
   });
 
   group('getByNfcTag', () {
@@ -54,13 +52,15 @@ void main() {
   group('linkNfc', () {
     test('calls post with correct params', () async {
       when(() => apiClient.post(any(), any())).thenAnswer((_) async => {});
-      const params = LinkNfcParams(phone: '0600', nfcTagId: 'tag-1', name: 'Ali');
+      const params =
+          LinkNfcParams(phone: '0600', nfcTagId: 'tag-1', name: 'Ali');
 
       await dataSource.linkNfc(params);
 
       verify(() => apiClient.post(
             ApiEndpoints.linkNfc,
-            any(that: predicate<Map<String, dynamic>>(
+            any(
+                that: predicate<Map<String, dynamic>>(
               (m) => m['phone'] == '0600' && m['nfcTagId'] == 'tag-1',
             )),
           )).called(1);
@@ -80,29 +80,33 @@ void main() {
   });
 
   group('nfcTopup', () {
-    test('calls post to nfcTopup endpoint and returns NfcTopupResult', () async {
-      when(() => apiClient.post(any(), any())).thenAnswer((_) async => topupJson);
+    test('calls post to nfcTopup endpoint and returns NfcTopupResult',
+        () async {
+      when(() => apiClient.post(any(), any()))
+          .thenAnswer((_) async => topupJson);
       const params = NfcTopupParams(nfcTagId: 'tag-1', amount: 50);
 
       final result = await dataSource.nfcTopup(params);
 
       expect(result.balanceBefore, 100.0);
       expect(result.balanceAfter, 150.0);
-      verify(() =>
-              apiClient.post(ApiEndpoints.nfcTopup('tag-1'), any())).called(1);
+      verify(() => apiClient.post(ApiEndpoints.nfcTopup('tag-1'), any()))
+          .called(1);
     });
   });
 
   group('phoneTopup', () {
-    test('calls post to phoneTopup endpoint and returns NfcTopupResult', () async {
-      when(() => apiClient.post(any(), any())).thenAnswer((_) async => topupJson);
+    test('calls post to phoneTopup endpoint and returns NfcTopupResult',
+        () async {
+      when(() => apiClient.post(any(), any()))
+          .thenAnswer((_) async => topupJson);
       const params = PhoneTopupParams(phone: '0600', amount: 50);
 
       final result = await dataSource.phoneTopup(params);
 
       expect(result.balanceBefore, 100.0);
-      verify(() =>
-              apiClient.post(ApiEndpoints.phoneTopup('0600'), any())).called(1);
+      verify(() => apiClient.post(ApiEndpoints.phoneTopup('0600'), any()))
+          .called(1);
     });
   });
 }

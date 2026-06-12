@@ -179,8 +179,8 @@ class CashoutSummaryModel {
             json['nfcAmount'] ??
             0) as num)
         .toDouble();
-    final totalPaid = ((json['totalPaid'] ?? json['total_paid'] ?? 0) as num)
-        .toDouble();
+    final totalPaid =
+        ((json['totalPaid'] ?? json['total_paid'] ?? 0) as num).toDouble();
     final remaining =
         ((json['remaining'] ?? json['remainingAmount'] ?? 0) as num).toDouble();
 
@@ -266,7 +266,8 @@ class CashoutsResponseModel {
     final total = apiTotal > 0
         ? apiTotal
         : items.fold(0.0, (sum, item) => sum + item.totalAmount);
-    return CashoutsResponseModel(cashouts: items, totalAmount: total, stats: stats);
+    return CashoutsResponseModel(
+        cashouts: items, totalAmount: total, stats: stats);
   }
 
   CashoutsResponseEntity toEntity() => CashoutsResponseEntity(

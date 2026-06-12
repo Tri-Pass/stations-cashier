@@ -37,12 +37,13 @@ void main() {
       expect(result.id, 'd1');
       expect(result.name, 'Ahmed');
       expect(result.seatsTotal, 6);
-      verify(() => apiClient.get(ApiEndpoints.driverByNfc('tag-001'))).called(1);
+      verify(() => apiClient.get(ApiEndpoints.driverByNfc('tag-001')))
+          .called(1);
     });
 
     test('parses alreadyQueued flag', () async {
-      when(() => apiClient.get(any())).thenAnswer((_) async =>
-          {...driverJson, 'alreadyQueued': true});
+      when(() => apiClient.get(any()))
+          .thenAnswer((_) async => {...driverJson, 'alreadyQueued': true});
 
       final result = await dataSource.lookupByNfc('tag-001');
 

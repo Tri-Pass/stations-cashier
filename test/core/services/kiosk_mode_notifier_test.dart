@@ -27,7 +27,8 @@ void main() {
   });
 
   group('KioskModeNotifier.init', () {
-    test('defaults to true and calls startKioskMode when no saved value', () async {
+    test('defaults to true and calls startKioskMode when no saved value',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final notifier = KioskModeNotifier();
 
@@ -59,7 +60,8 @@ void main() {
   });
 
   group('KioskModeNotifier.setKioskMode', () {
-    test('enables kiosk: value=true, persisted=true, startKioskMode called', () async {
+    test('enables kiosk: value=true, persisted=true, startKioskMode called',
+        () async {
       SharedPreferences.setMockInitialValues({'kiosk_mode': false});
       final notifier = KioskModeNotifier();
       await notifier.init();
@@ -73,7 +75,8 @@ void main() {
       expect(calls, ['startKioskMode']);
     });
 
-    test('disables kiosk: value=false, persisted=false, stopKioskMode called', () async {
+    test('disables kiosk: value=false, persisted=false, stopKioskMode called',
+        () async {
       SharedPreferences.setMockInitialValues({'kiosk_mode': true});
       final notifier = KioskModeNotifier();
       await notifier.init();
@@ -148,7 +151,8 @@ void main() {
           throw PlatformException(code: 'KIOSK_ERROR', message: 'unsupported'));
     });
 
-    test('init does not throw when platform fails; value still reflects prefs', () async {
+    test('init does not throw when platform fails; value still reflects prefs',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final notifier = KioskModeNotifier();
 
@@ -156,7 +160,8 @@ void main() {
       expect(notifier.value, isFalse);
     });
 
-    test('init with false in prefs does not throw; value reflects prefs', () async {
+    test('init with false in prefs does not throw; value reflects prefs',
+        () async {
       SharedPreferences.setMockInitialValues({'kiosk_mode': false});
       final notifier = KioskModeNotifier();
 
@@ -164,7 +169,8 @@ void main() {
       expect(notifier.value, isFalse);
     });
 
-    test('setKioskMode does not throw when platform fails; value still updated', () async {
+    test('setKioskMode does not throw when platform fails; value still updated',
+        () async {
       SharedPreferences.setMockInitialValues({});
       final notifier = KioskModeNotifier();
       await notifier.init();

@@ -24,13 +24,13 @@ void main() {
 
   test('returns taxi list from repository', () async {
     final taxis = [
-      QueueTaxiEntity(
+      const QueueTaxiEntity(
         id: 't1',
         plateNumber: 'ABC-123',
         totalSeats: 6,
         occupiedSeats: 2,
         isFirst: true,
-        driver: const QueueDriverEntity(
+        driver: QueueDriverEntity(
           name: 'Ahmed',
           phone: '0600',
           licenseNumber: 'L1',

@@ -80,7 +80,8 @@ void main() {
     testWidgets('shows scan-and-charge button when idle', (tester) async {
       await tester.pumpWidget(_buildApp());
       await tester.pump();
-      expect(find.byWidgetPredicate((w) => w is ElevatedButton), findsOneWidget);
+      expect(
+          find.byWidgetPredicate((w) => w is ElevatedButton), findsOneWidget);
     });
 
     testWidgets('calls onScan when button tapped', (tester) async {
@@ -103,7 +104,8 @@ void main() {
     testWidgets('shows cancel button while scanning', (tester) async {
       await tester.pumpWidget(_buildApp(rechargeState: RechargeState.scanning));
       await tester.pump();
-      expect(find.byWidgetPredicate((w) => w is OutlinedButton), findsOneWidget);
+      expect(
+          find.byWidgetPredicate((w) => w is OutlinedButton), findsOneWidget);
     });
 
     testWidgets('calls onCancel when cancel tapped', (tester) async {

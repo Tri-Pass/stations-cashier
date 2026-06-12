@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cashier/core/l10n/app_localizations.dart';
 import 'package:cashier/core/network/api_client.dart';
 import 'package:cashier/core/theme/app_theme.dart';
@@ -28,7 +26,8 @@ Widget _wrap(Widget child) => MaterialApp(
 void main() {
   group('WalletOption', () {
     test('fromJson with req_type key', () {
-      final o = WalletOption.fromJson({'req_type': 'url', 'code': 'CMI', 'label': 'Carte'});
+      final o = WalletOption.fromJson(
+          {'req_type': 'url', 'code': 'CMI', 'label': 'Carte'});
       expect(o.reqType, 'url');
       expect(o.code, 'CMI');
       expect(o.label, 'Carte');
@@ -40,7 +39,8 @@ void main() {
     });
 
     test('fromJson with reqType (camelCase) fallback', () {
-      final o = WalletOption.fromJson({'reqType': 'rib', 'code': 'virement', 'label': 'Virement'});
+      final o = WalletOption.fromJson(
+          {'reqType': 'rib', 'code': 'virement', 'label': 'Virement'});
       expect(o.reqType, 'rib');
     });
 
@@ -54,69 +54,82 @@ void main() {
 
   group('walletOptionIcon', () {
     test('returns qr icon for guichet option', () {
-      final icon = walletOptionIcon(const WalletOption(reqType: 'url', code: 'guichet', label: 'Guichet'));
+      final icon = walletOptionIcon(const WalletOption(
+          reqType: 'url', code: 'guichet', label: 'Guichet'));
       expect(icon, Icons.qr_code_2);
     });
 
     test('returns qr icon for qr option', () {
-      final icon = walletOptionIcon(const WalletOption(reqType: 'url', code: 'qr', label: 'QR Code'));
+      final icon = walletOptionIcon(
+          const WalletOption(reqType: 'url', code: 'qr', label: 'QR Code'));
       expect(icon, Icons.qr_code_2);
     });
 
     test('returns bank icon for virement option', () {
-      final icon = walletOptionIcon(const WalletOption(reqType: 'rib', code: 'virement', label: 'Virement'));
+      final icon = walletOptionIcon(const WalletOption(
+          reqType: 'rib', code: 'virement', label: 'Virement'));
       expect(icon, Icons.account_balance);
     });
 
     test('returns bank icon for bank option', () {
-      final icon = walletOptionIcon(const WalletOption(reqType: 'rib', code: 'bank', label: 'Bank'));
+      final icon = walletOptionIcon(
+          const WalletOption(reqType: 'rib', code: 'bank', label: 'Bank'));
       expect(icon, Icons.account_balance);
     });
 
     test('returns credit_card icon for cmi option', () {
-      final icon = walletOptionIcon(const WalletOption(reqType: 'url', code: 'cmi', label: 'CMI'));
+      final icon = walletOptionIcon(
+          const WalletOption(reqType: 'url', code: 'cmi', label: 'CMI'));
       expect(icon, Icons.credit_card);
     });
 
     test('returns phone_android icon for cashplus option', () {
-      final icon = walletOptionIcon(const WalletOption(reqType: 'cashplus', code: 'cashplus', label: 'CashPlus'));
+      final icon = walletOptionIcon(const WalletOption(
+          reqType: 'cashplus', code: 'cashplus', label: 'CashPlus'));
       expect(icon, Icons.phone_android);
     });
 
     test('returns phone_android icon for mobile option', () {
-      final icon = walletOptionIcon(const WalletOption(reqType: 'url', code: 'mobile', label: 'Mobile'));
+      final icon = walletOptionIcon(
+          const WalletOption(reqType: 'url', code: 'mobile', label: 'Mobile'));
       expect(icon, Icons.phone_android);
     });
 
     test('returns default icon for unknown option', () {
-      final icon = walletOptionIcon(const WalletOption(reqType: 'url', code: 'unknown', label: 'Unknown'));
+      final icon = walletOptionIcon(const WalletOption(
+          reqType: 'url', code: 'unknown', label: 'Unknown'));
       expect(icon, Icons.payments_outlined);
     });
   });
 
   group('walletOptionColor', () {
     test('returns primary for guichet', () {
-      final color = walletOptionColor(const WalletOption(reqType: 'url', code: 'guichet', label: 'Guichet'));
+      final color = walletOptionColor(const WalletOption(
+          reqType: 'url', code: 'guichet', label: 'Guichet'));
       expect(color, AppColors.primary);
     });
 
     test('returns blue for virement', () {
-      final color = walletOptionColor(const WalletOption(reqType: 'rib', code: 'virement', label: 'Virement'));
+      final color = walletOptionColor(const WalletOption(
+          reqType: 'rib', code: 'virement', label: 'Virement'));
       expect(color, const Color(0xFF4A90D9));
     });
 
     test('returns teal for cmi', () {
-      final color = walletOptionColor(const WalletOption(reqType: 'url', code: 'cmi', label: 'CMI'));
+      final color = walletOptionColor(
+          const WalletOption(reqType: 'url', code: 'cmi', label: 'CMI'));
       expect(color, AppColors.teal);
     });
 
     test('returns teal for cashplus', () {
-      final color = walletOptionColor(const WalletOption(reqType: 'cashplus', code: 'cashplus', label: 'CashPlus'));
+      final color = walletOptionColor(const WalletOption(
+          reqType: 'cashplus', code: 'cashplus', label: 'CashPlus'));
       expect(color, AppColors.teal);
     });
 
     test('returns primary for unknown', () {
-      final color = walletOptionColor(const WalletOption(reqType: 'url', code: 'xyz', label: 'Other'));
+      final color = walletOptionColor(
+          const WalletOption(reqType: 'url', code: 'xyz', label: 'Other'));
       expect(color, AppColors.primary);
     });
   });
@@ -322,7 +335,8 @@ void main() {
   group('walletSummaryTile', () {
     testWidgets('renders label and value', (tester) async {
       await tester.pumpWidget(_wrap(
-        walletSummaryTile('Montant', '200 MAD', Icons.payments_outlined, AppColors.primary),
+        walletSummaryTile(
+            'Montant', '200 MAD', Icons.payments_outlined, AppColors.primary),
       ));
       expect(find.text('Montant'), findsOneWidget);
       expect(find.text('200 MAD'), findsOneWidget);
@@ -330,7 +344,8 @@ void main() {
 
     testWidgets('renders icon', (tester) async {
       await tester.pumpWidget(_wrap(
-        walletSummaryTile('Mode', 'Cash', Icons.payments_outlined, AppColors.teal),
+        walletSummaryTile(
+            'Mode', 'Cash', Icons.payments_outlined, AppColors.teal),
       ));
       expect(find.byIcon(Icons.payments_outlined), findsOneWidget);
     });

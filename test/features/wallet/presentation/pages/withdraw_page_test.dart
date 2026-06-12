@@ -92,7 +92,8 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
 
-    testWidgets('shows retry button when options list is empty', (tester) async {
+    testWidgets('shows retry button when options list is empty',
+        (tester) async {
       when(() => mockApi.get(any())).thenAnswer((_) async => {'data': []});
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
@@ -100,7 +101,8 @@ void main() {
       expect(find.byType(TextButton), findsOneWidget);
     });
 
-    testWidgets('continue button disabled when no option selected', (tester) async {
+    testWidgets('continue button disabled when no option selected',
+        (tester) async {
       when(() => mockApi.get(any())).thenAnswer((_) async => _deskOptions);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
@@ -118,7 +120,8 @@ void main() {
       expect(btn.onPressed, isNotNull);
     });
 
-    testWidgets('desk option: step 0 -> step 1 shows amount step (3 total steps)',
+    testWidgets(
+        'desk option: step 0 -> step 1 shows amount step (3 total steps)',
         (tester) async {
       when(() => mockApi.get(any())).thenAnswer((_) async => _deskOptions);
       await tester.pumpWidget(_buildApp());
@@ -180,7 +183,8 @@ void main() {
       expect(find.text('Retrait Guichet'), findsOneWidget);
     });
 
-    testWidgets('desk confirm step shows mode and amount summary', (tester) async {
+    testWidgets('desk confirm step shows mode and amount summary',
+        (tester) async {
       when(() => mockApi.get(any())).thenAnswer((_) async => _deskOptions);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();

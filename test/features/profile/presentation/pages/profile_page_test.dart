@@ -180,7 +180,8 @@ void main() {
       expect(kioskNotifier.setCallCount, 0);
     });
 
-    testWidgets('5 taps deactivate kiosk when currently active', (tester) async {
+    testWidgets('5 taps deactivate kiosk when currently active',
+        (tester) async {
       kioskNotifier.value = true;
       await tester.pumpWidget(_buildApp(AuthInitial()));
       await tester.pumpAndSettle();
@@ -191,7 +192,8 @@ void main() {
       expect(kioskNotifier.value, isFalse);
     });
 
-    testWidgets('5 taps activate kiosk when currently inactive', (tester) async {
+    testWidgets('5 taps activate kiosk when currently inactive',
+        (tester) async {
       kioskNotifier.value = false;
       await tester.pumpWidget(_buildApp(AuthInitial()));
       await tester.pumpAndSettle();
@@ -294,7 +296,8 @@ void main() {
       expect(find.byType(AlertDialog), findsNothing);
     });
 
-    testWidgets('disconnect button closes dialog and dispatches logout', (tester) async {
+    testWidgets('disconnect button closes dialog and dispatches logout',
+        (tester) async {
       await tester.pumpWidget(_buildApp(AuthAuthenticated(_driver)));
       await tester.pumpAndSettle();
 
@@ -313,7 +316,8 @@ void main() {
   // ── Theme selector ───────────────────────────────────────────────────────────
 
   group('ProfilePage theme selector', () {
-    testWidgets('tapping light mode option sets ThemeMode.light', (tester) async {
+    testWidgets('tapping light mode option sets ThemeMode.light',
+        (tester) async {
       await tester.pumpWidget(_buildApp(AuthInitial()));
       await tester.pumpAndSettle();
 
@@ -399,7 +403,8 @@ void main() {
       expect(find.text('Désactiver'), findsOneWidget);
     });
 
-    testWidgets('shows "Activer" snackbar when activating kiosk', (tester) async {
+    testWidgets('shows "Activer" snackbar when activating kiosk',
+        (tester) async {
       kioskNotifier.value = false;
       await tester.pumpWidget(_buildApp(AuthInitial()));
       await tester.pumpAndSettle();

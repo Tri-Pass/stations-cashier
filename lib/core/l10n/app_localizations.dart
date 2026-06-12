@@ -350,8 +350,8 @@ class AppLocalizations {
   String get connectionRestored =>
       _t('Connexion rétablie', 'تم استعادة الاتصال');
 
-  String get retryConnection  => _t('Réessayer', 'إعادة المحاولة');
-  String get resetWifi        => _t('Réinitialiser WiFi', 'إعادة تشغيل الواي فاي');
+  String get retryConnection => _t('Réessayer', 'إعادة المحاولة');
+  String get resetWifi => _t('Réinitialiser WiFi', 'إعادة تشغيل الواي فاي');
 
   // ── Profile ───────────────────────────────────────────────────────────────
   String get profile => _t('Profil', 'الملف الشخصي');

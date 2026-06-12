@@ -103,7 +103,8 @@ void main() {
     testWidgets('shows cancel button while scanning', (tester) async {
       await tester.pumpWidget(_buildApp(scanning: true));
       await tester.pump();
-      expect(find.byWidgetPredicate((w) => w is OutlinedButton), findsOneWidget);
+      expect(
+          find.byWidgetPredicate((w) => w is OutlinedButton), findsOneWidget);
     });
 
     testWidgets('calls onCancelScan when cancel tapped', (tester) async {
@@ -122,7 +123,8 @@ void main() {
     testWidgets('shows link button when tag detected', (tester) async {
       await tester.pumpWidget(_buildApp(tagId: 'TAG-001'));
       await tester.pump();
-      expect(find.byWidgetPredicate((w) => w is ElevatedButton), findsOneWidget);
+      expect(
+          find.byWidgetPredicate((w) => w is ElevatedButton), findsOneWidget);
     });
 
     testWidgets('shows reset button when tag detected', (tester) async {

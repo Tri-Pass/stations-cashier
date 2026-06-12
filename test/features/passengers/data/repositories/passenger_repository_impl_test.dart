@@ -24,7 +24,8 @@ void main() {
   setUp(() {
     dataSource = MockPassengerRemoteDataSource();
     repo = PassengerRepositoryImpl(dataSource);
-    registerFallbackValue(const LinkNfcParams(phone: '0600', nfcTagId: 'tag-1'));
+    registerFallbackValue(
+        const LinkNfcParams(phone: '0600', nfcTagId: 'tag-1'));
     registerFallbackValue(const RechargeParams(nfcTagId: 'tag-1', amount: 50));
     registerFallbackValue(const NfcTopupParams(nfcTagId: 'tag-1', amount: 50));
     registerFallbackValue(const PhoneTopupParams(phone: '0600', amount: 50));
