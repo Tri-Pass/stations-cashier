@@ -127,6 +127,58 @@ void main() {
       expect(entity.totalAmount, 200.0);
       expect(entity.driver.name, 'Ahmed');
     });
+
+    test('fromJson maps totalPaid and remaining', () {
+      final j = {
+        '_id': 's5',
+        'driver': {'id': 'd1', 'name': 'Ahmed', 'phone': '0600'},
+        'taxi': {'id': 't1', 'plateNumber': 'ABC-123'},
+        'ticketsCount': 3,
+        'totalCollected': 150.0,
+        'totalCash': 150.0,
+        'totalNfc': 0.0,
+        'totalPaid': 100.0,
+        'remaining': 50.0,
+      };
+      final model = CashoutSummaryModel.fromJson(j);
+      expect(model.totalPaid, 100.0);
+      expect(model.remaining, 50.0);
+    });
+  });
+
+  group('CashoutStatsModel', () {
+    final statsJson = <String, dynamic>{
+      'totalTickets': 32,
+      'totalCollected': 472.0,
+      'totalNfc': 0.0,
+      'totalCash': 472.0,
+      'totalPayouts': 226.0,
+      'totalRemaining': 246.0,
+    };
+
+    test('fromJson maps all fields', () {
+      final m = CashoutStatsModel.fromJson(statsJson);
+      expect(m.totalTickets, 32);
+      expect(m.totalCollected, 472.0);
+      expect(m.totalNfc, 0.0);
+      expect(m.totalCash, 472.0);
+      expect(m.totalPayouts, 226.0);
+      expect(m.totalRemaining, 246.0);
+    });
+
+    test('fromJson defaults missing fields to zero', () {
+      final m = CashoutStatsModel.fromJson(<String, dynamic>{});
+      expect(m.totalTickets, 0);
+      expect(m.totalCollected, 0.0);
+      expect(m.totalRemaining, 0.0);
+    });
+
+    test('toEntity maps to CashoutStatsEntity', () {
+      final entity = CashoutStatsModel.fromJson(statsJson).toEntity();
+      expect(entity, isA<CashoutStatsEntity>());
+      expect(entity.totalTickets, 32);
+      expect(entity.totalRemaining, 246.0);
+    });
   });
 
   group('CashoutsResponseModel', () {
@@ -199,6 +251,35 @@ void main() {
       expect(entity, isA<CashoutsResponseEntity>());
       expect(entity.cashouts, isEmpty);
       expect(entity.totalAmount, 0.0);
+    });
+
+    test('fromJson parses stats when present in envelope', () {
+      final json = <String, dynamic>{
+        'status': 200,
+        'data': <String, dynamic>{
+          'stats': <String, dynamic>{
+            'totalTickets': 32,
+            'totalCollected': 472.0,
+            'totalNfc': 0.0,
+            'totalCash': 472.0,
+            'totalPayouts': 226.0,
+            'totalRemaining': 246.0,
+          },
+          'driverRows': <dynamic>[],
+        },
+      };
+      final model = CashoutsResponseModel.fromJson(json);
+      expect(model.stats, isNotNull);
+      expect(model.stats!.totalTickets, 32);
+      expect(model.stats!.totalRemaining, 246.0);
+      final entity = model.toEntity();
+      expect(entity.stats, isNotNull);
+      expect(entity.stats!.totalPayouts, 226.0);
+    });
+
+    test('fromJson stats is null when not in JSON', () {
+      final model = CashoutsResponseModel.fromJson(<dynamic>[]);
+      expect(model.stats, isNull);
     });
   });
 }

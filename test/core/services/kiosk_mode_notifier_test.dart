@@ -33,8 +33,8 @@ void main() {
 
       await notifier.init();
 
-      expect(notifier.value, isTrue);
-      expect(calls, ['startKioskMode']);
+      expect(notifier.value, isFalse);
+      expect(calls, ['stopKioskMode']);
     });
 
     test('loads persisted true and calls startKioskMode', () async {
@@ -117,7 +117,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final notifier = KioskModeNotifier();
       await notifier.init();
-      expect(notifier.value, isTrue);
+      expect(notifier.value, isFalse);
 
       await notifier.setKioskMode(false);
       expect(notifier.value, isFalse);
@@ -153,7 +153,7 @@ void main() {
       final notifier = KioskModeNotifier();
 
       await expectLater(notifier.init(), completes);
-      expect(notifier.value, isTrue);
+      expect(notifier.value, isFalse);
     });
 
     test('init with false in prefs does not throw; value reflects prefs', () async {
