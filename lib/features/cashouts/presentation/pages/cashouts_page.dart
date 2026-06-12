@@ -501,6 +501,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
         _FilterChip(
           label: l.cash,
           selected: _paymentMethod == 'cash',
+          icon: Icons.payments_outlined,
           onTap: () {
             if (_paymentMethod != 'cash') {
               setState(() => _paymentMethod = 'cash');
@@ -513,6 +514,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
         _FilterChip(
           label: l.nfc,
           selected: _paymentMethod == 'nfc',
+          icon: Icons.nfc,
           onTap: () {
             if (_paymentMethod != 'nfc') {
               setState(() => _paymentMethod = 'nfc');
@@ -678,6 +680,7 @@ class _FilterChip extends StatelessWidget {
   final String label;
   final bool selected;
   final String? badge;
+  final IconData? icon;
   final VoidCallback onTap;
   final AppColors c;
 
@@ -687,6 +690,7 @@ class _FilterChip extends StatelessWidget {
     required this.onTap,
     required this.c,
     this.badge,
+    this.icon,
   });
 
   @override
@@ -706,6 +710,14 @@ class _FilterChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                size: 14,
+                color: selected ? AppColors.primary : c.textSecondary,
+              ),
+              const SizedBox(width: 5),
+            ],
             Text(
               label,
               style: TextStyle(

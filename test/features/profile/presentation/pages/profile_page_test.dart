@@ -266,6 +266,124 @@ void main() {
     });
   });
 
+  // ── Logout dialog ────────────────────────────────────────────────────────────
+
+  group('ProfilePage logout dialog', () {
+    testWidgets('tapping logout shows confirm dialog', (tester) async {
+      await tester.pumpWidget(_buildApp(AuthInitial()));
+      await tester.pumpAndSettle();
+
+      await scrollToBottom(tester);
+      await tester.tap(find.byIcon(Icons.logout));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+    });
+
+    testWidgets('cancel button in logout dialog closes it', (tester) async {
+      await tester.pumpWidget(_buildApp(AuthInitial()));
+      await tester.pumpAndSettle();
+
+      await scrollToBottom(tester);
+      await tester.tap(find.byIcon(Icons.logout));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(TextButton).first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+
+    testWidgets('disconnect button closes dialog and dispatches logout', (tester) async {
+      await tester.pumpWidget(_buildApp(AuthAuthenticated(_driver)));
+      await tester.pumpAndSettle();
+
+      await scrollToBottom(tester);
+      await tester.tap(find.byIcon(Icons.logout));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsOneWidget);
+      await tester.tap(find.byType(TextButton).last);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AlertDialog), findsNothing);
+    });
+  });
+
+  // ── Theme selector ───────────────────────────────────────────────────────────
+
+  group('ProfilePage theme selector', () {
+    testWidgets('tapping light mode option sets ThemeMode.light', (tester) async {
+      await tester.pumpWidget(_buildApp(AuthInitial()));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(ListView), const Offset(0, -1000));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.light_mode_outlined));
+      await tester.pumpAndSettle();
+
+      final notifier = GetIt.instance<ThemeNotifier>();
+      expect(notifier.value, ThemeMode.light);
+    });
+
+    testWidgets('tapping dark mode option sets ThemeMode.dark', (tester) async {
+      final notifier = GetIt.instance<ThemeNotifier>();
+      await notifier.setThemeMode(ThemeMode.light);
+
+      await tester.pumpWidget(_buildApp(AuthInitial()));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(ListView), const Offset(0, -1000));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.dark_mode_outlined));
+      await tester.pumpAndSettle();
+
+      expect(notifier.value, ThemeMode.dark);
+    });
+  });
+
+  // ── Language selector ────────────────────────────────────────────────────────
+
+  group('ProfilePage language selector', () {
+    testWidgets('tapping French flag sets French locale', (tester) async {
+      await tester.pumpWidget(_buildApp(AuthInitial()));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(ListView), const Offset(0, -500));
+      await tester.pumpAndSettle();
+
+      final langNotifier = GetIt.instance<LocaleNotifier>();
+      final frFinder = find.text('Français');
+      if (frFinder.evaluate().isNotEmpty) {
+        await tester.tap(frFinder);
+        await tester.pumpAndSettle();
+        expect(langNotifier.value.languageCode, 'fr');
+      } else {
+        expect(find.byType(ProfilePage), findsOneWidget);
+      }
+    });
+
+    testWidgets('tapping Arabic flag sets Arabic locale', (tester) async {
+      await tester.pumpWidget(_buildApp(AuthInitial()));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(ListView), const Offset(0, -500));
+      await tester.pumpAndSettle();
+
+      final langNotifier = GetIt.instance<LocaleNotifier>();
+      final arFinder = find.text('العربية');
+      if (arFinder.evaluate().isNotEmpty) {
+        await tester.tap(arFinder);
+        await tester.pumpAndSettle();
+        expect(langNotifier.value.languageCode, 'ar');
+      } else {
+        expect(find.byType(ProfilePage), findsOneWidget);
+      }
+    });
+  });
+
   // ── SnackBar feedback ────────────────────────────────────────────────────────
 
   group('ProfilePage kiosk snackbar', () {

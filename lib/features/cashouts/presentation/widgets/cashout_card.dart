@@ -77,6 +77,13 @@ class CashoutCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                        Text(
+                          cashout.driver.phone,
+                          style: TextStyle(
+                            color: c.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
                         const SizedBox(height: 3),
                         Row(
                           children: [

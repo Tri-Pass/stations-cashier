@@ -1,3 +1,4 @@
+import 'package:cashier/core/theme/app_theme.dart';
 import 'package:cashier/core/theme/theme_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -77,6 +78,13 @@ void main() {
       final notifier = ThemeNotifier();
       await notifier.init();
       expect(notifier.isLight, isFalse);
+    });
+  });
+
+  group('AppTheme', () {
+    test('darkTheme returns a valid dark ThemeData', () {
+      final theme = AppTheme.darkTheme;
+      expect(theme.brightness, Brightness.dark);
     });
   });
 }
