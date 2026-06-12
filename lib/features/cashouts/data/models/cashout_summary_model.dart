@@ -1,5 +1,52 @@
 import 'package:cashier/features/cashouts/domain/entities/cashout_summary_entity.dart';
 
+class CashoutStatsModel {
+  final int totalTickets;
+  final double totalCollected;
+  final double totalNfc;
+  final double totalCash;
+  final double totalPayouts;
+  final double totalRemaining;
+
+  const CashoutStatsModel({
+    required this.totalTickets,
+    required this.totalCollected,
+    required this.totalNfc,
+    required this.totalCash,
+    required this.totalPayouts,
+    required this.totalRemaining,
+  });
+
+  factory CashoutStatsModel.fromJson(Map<String, dynamic> json) =>
+      CashoutStatsModel(
+        totalTickets:
+            ((json['totalTickets'] ?? json['total_tickets'] ?? 0) as num)
+                .toInt(),
+        totalCollected:
+            ((json['totalCollected'] ?? json['total_collected'] ?? 0) as num)
+                .toDouble(),
+        totalNfc:
+            ((json['totalNfc'] ?? json['total_nfc'] ?? 0) as num).toDouble(),
+        totalCash:
+            ((json['totalCash'] ?? json['total_cash'] ?? 0) as num).toDouble(),
+        totalPayouts:
+            ((json['totalPayouts'] ?? json['total_payouts'] ?? 0) as num)
+                .toDouble(),
+        totalRemaining:
+            ((json['totalRemaining'] ?? json['total_remaining'] ?? 0) as num)
+                .toDouble(),
+      );
+
+  CashoutStatsEntity toEntity() => CashoutStatsEntity(
+        totalTickets: totalTickets,
+        totalCollected: totalCollected,
+        totalNfc: totalNfc,
+        totalCash: totalCash,
+        totalPayouts: totalPayouts,
+        totalRemaining: totalRemaining,
+      );
+}
+
 class CashoutDriverModel {
   final String id;
   final String name;
@@ -81,6 +128,8 @@ class CashoutSummaryModel {
   final int nfcSeats;
   final double cashAmount;
   final double nfcAmount;
+  final double totalPaid;
+  final double remaining;
   final DateTime? departedAt;
 
   const CashoutSummaryModel({
@@ -94,6 +143,8 @@ class CashoutSummaryModel {
     this.nfcSeats = 0,
     this.cashAmount = 0,
     this.nfcAmount = 0,
+    this.totalPaid = 0,
+    this.remaining = 0,
     this.departedAt,
   });
 
@@ -128,6 +179,10 @@ class CashoutSummaryModel {
             json['nfcAmount'] ??
             0) as num)
         .toDouble();
+    final totalPaid = ((json['totalPaid'] ?? json['total_paid'] ?? 0) as num)
+        .toDouble();
+    final remaining =
+        ((json['remaining'] ?? json['remainingAmount'] ?? 0) as num).toDouble();
 
     // Parse line: prefer explicit line object, then taxi.line string
     final CashoutLineModel line;
@@ -149,6 +204,8 @@ class CashoutSummaryModel {
       totalAmount: totalAmount,
       cashAmount: cashAmount,
       nfcAmount: nfcAmount,
+      totalPaid: totalPaid,
+      remaining: remaining,
       departedAt: departedRaw != null ? DateTime.tryParse(departedRaw) : null,
     );
   }
@@ -164,6 +221,8 @@ class CashoutSummaryModel {
         nfcSeats: nfcSeats,
         cashAmount: cashAmount,
         nfcAmount: nfcAmount,
+        totalPaid: totalPaid,
+        remaining: remaining,
         departedAt: departedAt,
       );
 }
@@ -171,9 +230,13 @@ class CashoutSummaryModel {
 class CashoutsResponseModel {
   final List<CashoutSummaryModel> cashouts;
   final double totalAmount;
+  final CashoutStatsModel? stats;
 
-  const CashoutsResponseModel(
-      {required this.cashouts, required this.totalAmount});
+  const CashoutsResponseModel({
+    required this.cashouts,
+    required this.totalAmount,
+    this.stats,
+  });
 
   factory CashoutsResponseModel.fromJson(dynamic json) {
     if (json is List) {
@@ -188,6 +251,8 @@ class CashoutsResponseModel {
     final dataMap =
         map['data'] is Map ? map['data'] as Map<String, dynamic> : null;
     final statsMap = dataMap?['stats'] as Map<String, dynamic>?;
+    final stats =
+        statsMap != null ? CashoutStatsModel.fromJson(statsMap) : null;
     final rawList = (dataMap?['driverRows'] ?? map['cashouts'] ?? []) as List;
     final items = rawList
         .map((e) => CashoutSummaryModel.fromJson(e as Map<String, dynamic>))
@@ -201,11 +266,12 @@ class CashoutsResponseModel {
     final total = apiTotal > 0
         ? apiTotal
         : items.fold(0.0, (sum, item) => sum + item.totalAmount);
-    return CashoutsResponseModel(cashouts: items, totalAmount: total);
+    return CashoutsResponseModel(cashouts: items, totalAmount: total, stats: stats);
   }
 
   CashoutsResponseEntity toEntity() => CashoutsResponseEntity(
         cashouts: cashouts.map((e) => e.toEntity()).toList(),
         totalAmount: totalAmount,
+        stats: stats?.toEntity(),
       );
 }
