@@ -311,8 +311,9 @@ class _NfcLinkPageState extends State<NfcLinkPage>
                       if (_mode == _PageMode.recharge)
                         BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
-                            if (state is! AuthAuthenticated)
+                            if (state is! AuthAuthenticated) {
                               return const SizedBox.shrink();
+                            }
                             return _NfcBalanceCard(
                               driver: state.driver,
                               onWithdraw: () => context.push('/withdraw'),

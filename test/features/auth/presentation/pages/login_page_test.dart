@@ -115,7 +115,8 @@ void main() {
       ));
       await tester.pump();
 
-      final fields = tester.widgetList<TextField>(find.byType(TextField)).toList();
+      final fields =
+          tester.widgetList<TextField>(find.byType(TextField)).toList();
       await tester.enterText(find.byWidget(fields[0]), '0600000000');
       await tester.enterText(find.byWidget(fields[1]), 'password123');
       await tester.tap(find.byType(ElevatedButton));

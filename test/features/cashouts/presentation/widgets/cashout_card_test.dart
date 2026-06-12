@@ -19,11 +19,12 @@ Widget _wrap(Widget child) => MaterialApp(
       home: Scaffold(body: SingleChildScrollView(child: child)),
     );
 
-final _cashout = CashoutSummaryEntity(
+const _cashout = CashoutSummaryEntity(
   id: 'c1',
-  driver: const CashoutDriverEntity(id: 'd1', name: 'Hassan', phone: '0601020304'),
-  taxi: const CashoutTaxiEntity(id: 't1', plateNumber: 'A-001-MA'),
-  line: const CashoutLineEntity(id: 'l1', origin: 'Marrakech', destination: 'Casablanca', price: 80),
+  driver: CashoutDriverEntity(id: 'd1', name: 'Hassan', phone: '0601020304'),
+  taxi: CashoutTaxiEntity(id: 't1', plateNumber: 'A-001-MA'),
+  line: CashoutLineEntity(
+      id: 'l1', origin: 'Marrakech', destination: 'Casablanca', price: 80),
   totalSeats: 4,
   totalAmount: 320,
   cashAmount: 240,
@@ -33,22 +34,22 @@ final _cashout = CashoutSummaryEntity(
 void main() {
   group('CashoutCard', () {
     testWidgets('renders driver name', (tester) async {
-      await tester.pumpWidget(_wrap(CashoutCard(cashout: _cashout)));
+      await tester.pumpWidget(_wrap(const CashoutCard(cashout: _cashout)));
       expect(find.text('Hassan'), findsOneWidget);
     });
 
     testWidgets('renders driver phone', (tester) async {
-      await tester.pumpWidget(_wrap(CashoutCard(cashout: _cashout)));
+      await tester.pumpWidget(_wrap(const CashoutCard(cashout: _cashout)));
       expect(find.text('0601020304'), findsOneWidget);
     });
 
     testWidgets('renders total amount', (tester) async {
-      await tester.pumpWidget(_wrap(CashoutCard(cashout: _cashout)));
+      await tester.pumpWidget(_wrap(const CashoutCard(cashout: _cashout)));
       expect(find.textContaining('320'), findsWidgets);
     });
 
     testWidgets('renders plate number', (tester) async {
-      await tester.pumpWidget(_wrap(CashoutCard(cashout: _cashout)));
+      await tester.pumpWidget(_wrap(const CashoutCard(cashout: _cashout)));
       expect(find.text('A-001-MA'), findsOneWidget);
     });
 
@@ -63,7 +64,7 @@ void main() {
     });
 
     testWidgets('cash-only filter hides NFC amount tile', (tester) async {
-      await tester.pumpWidget(_wrap(CashoutCard(
+      await tester.pumpWidget(_wrap(const CashoutCard(
         cashout: _cashout,
         filter: 'cash',
       )));
@@ -71,7 +72,7 @@ void main() {
     });
 
     testWidgets('nfc-only filter hides cash amount tile', (tester) async {
-      await tester.pumpWidget(_wrap(CashoutCard(
+      await tester.pumpWidget(_wrap(const CashoutCard(
         cashout: _cashout,
         filter: 'nfc',
       )));
@@ -79,11 +80,16 @@ void main() {
     });
 
     testWidgets('shows À payer badge when remaining > 0', (tester) async {
-      final cashout = CashoutSummaryEntity(
+      const cashout = CashoutSummaryEntity(
         id: 'c2',
-        driver: const CashoutDriverEntity(id: 'd1', name: 'Hassan', phone: '0601020304'),
-        taxi: const CashoutTaxiEntity(id: 't1', plateNumber: 'A-001-MA'),
-        line: const CashoutLineEntity(id: 'l1', origin: 'Marrakech', destination: 'Casablanca', price: 80),
+        driver:
+            CashoutDriverEntity(id: 'd1', name: 'Hassan', phone: '0601020304'),
+        taxi: CashoutTaxiEntity(id: 't1', plateNumber: 'A-001-MA'),
+        line: CashoutLineEntity(
+            id: 'l1',
+            origin: 'Marrakech',
+            destination: 'Casablanca',
+            price: 80),
         totalSeats: 4,
         totalAmount: 320,
         cashAmount: 240,
@@ -91,17 +97,22 @@ void main() {
         totalPaid: 100,
         remaining: 220,
       );
-      await tester.pumpWidget(_wrap(CashoutCard(cashout: cashout)));
+      await tester.pumpWidget(_wrap(const CashoutCard(cashout: cashout)));
       await tester.pumpAndSettle();
       expect(find.textContaining('220'), findsWidgets);
     });
 
     testWidgets('shows Payé badge when remaining is 0', (tester) async {
-      final cashout = CashoutSummaryEntity(
+      const cashout = CashoutSummaryEntity(
         id: 'c3',
-        driver: const CashoutDriverEntity(id: 'd1', name: 'Hassan', phone: '0601020304'),
-        taxi: const CashoutTaxiEntity(id: 't1', plateNumber: 'A-001-MA'),
-        line: const CashoutLineEntity(id: 'l1', origin: 'Marrakech', destination: 'Casablanca', price: 80),
+        driver:
+            CashoutDriverEntity(id: 'd1', name: 'Hassan', phone: '0601020304'),
+        taxi: CashoutTaxiEntity(id: 't1', plateNumber: 'A-001-MA'),
+        line: CashoutLineEntity(
+            id: 'l1',
+            origin: 'Marrakech',
+            destination: 'Casablanca',
+            price: 80),
         totalSeats: 4,
         totalAmount: 320,
         cashAmount: 240,
@@ -109,17 +120,22 @@ void main() {
         totalPaid: 320,
         remaining: 0,
       );
-      await tester.pumpWidget(_wrap(CashoutCard(cashout: cashout)));
+      await tester.pumpWidget(_wrap(const CashoutCard(cashout: cashout)));
       await tester.pumpAndSettle();
       expect(find.textContaining('320'), findsWidgets);
     });
 
     testWidgets('renders totalPaid amount when paid > 0', (tester) async {
-      final cashout = CashoutSummaryEntity(
+      const cashout = CashoutSummaryEntity(
         id: 'c4',
-        driver: const CashoutDriverEntity(id: 'd1', name: 'Hassan', phone: '0601020304'),
-        taxi: const CashoutTaxiEntity(id: 't1', plateNumber: 'A-001-MA'),
-        line: const CashoutLineEntity(id: 'l1', origin: 'Marrakech', destination: 'Casablanca', price: 80),
+        driver:
+            CashoutDriverEntity(id: 'd1', name: 'Hassan', phone: '0601020304'),
+        taxi: CashoutTaxiEntity(id: 't1', plateNumber: 'A-001-MA'),
+        line: CashoutLineEntity(
+            id: 'l1',
+            origin: 'Marrakech',
+            destination: 'Casablanca',
+            price: 80),
         totalSeats: 4,
         totalAmount: 320,
         cashAmount: 240,
@@ -127,7 +143,7 @@ void main() {
         totalPaid: 226,
         remaining: 94,
       );
-      await tester.pumpWidget(_wrap(CashoutCard(cashout: cashout)));
+      await tester.pumpWidget(_wrap(const CashoutCard(cashout: cashout)));
       await tester.pumpAndSettle();
       expect(find.textContaining('226'), findsWidgets);
     });

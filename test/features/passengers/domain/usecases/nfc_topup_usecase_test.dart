@@ -21,8 +21,7 @@ void main() {
 
   setUp(() {
     repo = MockPassengerRepository();
-    registerFallbackValue(
-        const NfcTopupParams(nfcTagId: 'tag-1', amount: 50));
+    registerFallbackValue(const NfcTopupParams(nfcTagId: 'tag-1', amount: 50));
   });
 
   test('delegates to repository.nfcTopup and returns result', () async {

@@ -22,7 +22,8 @@ void main() {
   });
 
   group('login', () {
-    test('calls post to login endpoint with credentials and auth:false', () async {
+    test('calls post to login endpoint with credentials and auth:false',
+        () async {
       final response = {'token': 'tok', 'cashier': {}};
       when(() => apiClient.post(any(), any(), auth: any(named: 'auth')))
           .thenAnswer((_) async => response);

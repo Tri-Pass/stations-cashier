@@ -59,7 +59,8 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('shows empty options when API returns empty list', (tester) async {
+    testWidgets('shows empty options when API returns empty list',
+        (tester) async {
       when(() => mockApi.get(any())).thenAnswer((_) async => {'data': []});
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
@@ -80,7 +81,8 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
 
-    testWidgets('shows retry button when options list is empty', (tester) async {
+    testWidgets('shows retry button when options list is empty',
+        (tester) async {
       when(() => mockApi.get(any())).thenAnswer((_) async => {'data': []});
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
@@ -95,7 +97,8 @@ void main() {
       expect(find.byType(AnimatedContainer), findsWidgets);
     });
 
-    testWidgets('continue button is disabled when no option selected', (tester) async {
+    testWidgets('continue button is disabled when no option selected',
+        (tester) async {
       when(() => mockApi.get(any())).thenAnswer((_) async => _options);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
@@ -171,7 +174,8 @@ void main() {
       expect(find.text('Carte bancaire'), findsOneWidget);
     });
 
-    testWidgets('amount step to confirm step shows summary tiles', (tester) async {
+    testWidgets('amount step to confirm step shows summary tiles',
+        (tester) async {
       when(() => mockApi.get(any())).thenAnswer((_) async => _options);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();

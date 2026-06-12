@@ -5,19 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Widget _wrap(Widget child) => MaterialApp(
-      theme: AppTheme.lightTheme,
-      locale: const Locale('fr'),
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: child),
-    );
-
 /// Helper to pump a CompactDatePickerSheet directly (without bottom sheet).
 Widget _buildSheet({
   DateTime? initialDate,
@@ -283,8 +270,6 @@ void main() {
     });
 
     testWidgets('cancel button pops without result', (tester) async {
-      late AppLocalizations l;
-      late AppColors c;
       DateTime? result;
 
       await tester.pumpWidget(MaterialApp(
@@ -298,8 +283,6 @@ void main() {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(builder: (context) {
-          l = AppLocalizations.of(context);
-          c = AppColors.of(context);
           return Scaffold(
             body: ElevatedButton(
               onPressed: () async {
@@ -323,8 +306,6 @@ void main() {
     });
 
     testWidgets('ok button pops with selected date', (tester) async {
-      late AppLocalizations l;
-      late AppColors c;
       DateTime? result;
 
       await tester.pumpWidget(MaterialApp(
@@ -338,8 +319,6 @@ void main() {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(builder: (context) {
-          l = AppLocalizations.of(context);
-          c = AppColors.of(context);
           return Scaffold(
             body: ElevatedButton(
               onPressed: () async {

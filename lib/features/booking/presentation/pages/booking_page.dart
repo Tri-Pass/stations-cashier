@@ -105,22 +105,24 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         _linesError = null;
       });
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           _linesLoading = false;
           _linesError = e.toString();
         });
+      }
     }
   }
 
   Future<void> _loadQueue(String lineId, {bool silent = false}) async {
     final stationId = _stationId;
     if (stationId == null) return;
-    if (!silent)
+    if (!silent) {
       setState(() {
         _queueLoading = true;
         _queue = [];
       });
+    }
     try {
       final entities = await sl<GetLineQueueUseCase>()(stationId, lineId);
       if (!mounted) return;
@@ -151,10 +153,11 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
         if (!silent) _queueLoading = false;
       });
     } catch (_) {
-      if (mounted && !silent)
+      if (mounted && !silent) {
         setState(() {
           _queueLoading = false;
         });
+      }
     }
   }
 
@@ -353,8 +356,9 @@ class _CashierBookingPageState extends State<CashierBookingPage> {
           if (!mounted) return;
           _maybeShowTaxiFullDialog(taxi);
           _loadLines();
-          if (_selectedLine != null)
+          if (_selectedLine != null) {
             _loadQueue(_selectedLine!.id, silent: true);
+          }
         },
         onCancel: () => Navigator.of(ctx).pop(),
       ),

@@ -48,10 +48,10 @@ const _paidNfcTicket = TicketEntity(
   status: 'paid',
 );
 
-final _emptyResult = DriverTicketsEntity(
-  driver: const DriverInfoEntity(id: 'd1', name: 'Mohamed Ali', phone: '0600000001'),
+const _emptyResult = DriverTicketsEntity(
+  driver: DriverInfoEntity(id: 'd1', name: 'Mohamed Ali', phone: '0600000001'),
   tickets: [],
-  summary: const TicketsSummaryEntity(
+  summary: TicketsSummaryEntity(
     totalTickets: 0,
     totalCashAmount: 0,
     totalNfcAmount: 0,
@@ -59,11 +59,11 @@ final _emptyResult = DriverTicketsEntity(
   ),
 );
 
-DriverTicketsEntity _resultWithUnpaidCash() => DriverTicketsEntity(
-      driver: const DriverInfoEntity(
-          id: 'd1', name: 'Mohamed Ali', phone: '0600000001'),
+DriverTicketsEntity _resultWithUnpaidCash() => const DriverTicketsEntity(
+      driver:
+          DriverInfoEntity(id: 'd1', name: 'Mohamed Ali', phone: '0600000001'),
       tickets: [_unpaidCashTicket],
-      summary: const TicketsSummaryEntity(
+      summary: TicketsSummaryEntity(
         totalTickets: 1,
         totalCashAmount: 160,
         totalNfcAmount: 0,
@@ -71,11 +71,11 @@ DriverTicketsEntity _resultWithUnpaidCash() => DriverTicketsEntity(
       ),
     );
 
-DriverTicketsEntity _resultWithNfc() => DriverTicketsEntity(
-      driver: const DriverInfoEntity(
-          id: 'd1', name: 'Mohamed Ali', phone: '0600000001'),
+DriverTicketsEntity _resultWithNfc() => const DriverTicketsEntity(
+      driver:
+          DriverInfoEntity(id: 'd1', name: 'Mohamed Ali', phone: '0600000001'),
       tickets: [_paidNfcTicket],
-      summary: const TicketsSummaryEntity(
+      summary: TicketsSummaryEntity(
         totalTickets: 1,
         totalCashAmount: 0,
         totalNfcAmount: 80,
@@ -136,23 +136,22 @@ void main() {
       final completer = Completer<DriverTicketsEntity>();
       when(() => mockGetTickets(any())).thenAnswer((_) => completer.future);
       await tester.pumpWidget(_buildApp());
-      await tester.pump(); // allow localizations to load; _load starts but awaits completer
+      await tester
+          .pump(); // allow localizations to load; _load starts but awaits completer
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       completer.complete(_emptyResult);
       await tester.pumpAndSettle();
     });
 
     testWidgets('shows driver name in app bar', (tester) async {
-      when(() => mockGetTickets(any()))
-          .thenAnswer((_) async => _emptyResult);
+      when(() => mockGetTickets(any())).thenAnswer((_) async => _emptyResult);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.text('Mohamed Ali'), findsOneWidget);
     });
 
     testWidgets('shows no loading after data loads', (tester) async {
-      when(() => mockGetTickets(any()))
-          .thenAnswer((_) async => _emptyResult);
+      when(() => mockGetTickets(any())).thenAnswer((_) async => _emptyResult);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -166,16 +165,15 @@ void main() {
     });
 
     testWidgets('renders filter chips for ticket status', (tester) async {
-      when(() => mockGetTickets(any()))
-          .thenAnswer((_) async => _emptyResult);
+      when(() => mockGetTickets(any())).thenAnswer((_) async => _emptyResult);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.byType(GestureDetector), findsWidgets);
     });
 
-    testWidgets('shows empty state when no tickets match filter', (tester) async {
-      when(() => mockGetTickets(any()))
-          .thenAnswer((_) async => _emptyResult);
+    testWidgets('shows empty state when no tickets match filter',
+        (tester) async {
+      when(() => mockGetTickets(any())).thenAnswer((_) async => _emptyResult);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.confirmation_number_outlined), findsOneWidget);
@@ -200,7 +198,8 @@ void main() {
       expect(find.byIcon(Icons.arrow_circle_up_outlined), findsWidgets);
     });
 
-    testWidgets('no cashout all bar when no unpaid cash tickets', (tester) async {
+    testWidgets('no cashout all bar when no unpaid cash tickets',
+        (tester) async {
       when(() => mockGetTickets(any()))
           .thenAnswer((_) async => _resultWithNfc());
       await tester.pumpWidget(_buildApp());
@@ -269,7 +268,8 @@ void main() {
       }
     });
 
-    testWidgets('cashout single confirm calls usecase and reloads', (tester) async {
+    testWidgets('cashout single confirm calls usecase and reloads',
+        (tester) async {
       int getTicketsCalls = 0;
       when(() => mockGetTickets(any())).thenAnswer((_) async {
         getTicketsCalls++;
@@ -346,8 +346,7 @@ void main() {
     });
 
     testWidgets('tapping back button pops the page', (tester) async {
-      when(() => mockGetTickets(any()))
-          .thenAnswer((_) async => _emptyResult);
+      when(() => mockGetTickets(any())).thenAnswer((_) async => _emptyResult);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.arrow_back_ios_new));
@@ -365,7 +364,8 @@ void main() {
       expect(find.byType(DriverTicketsPage), findsOneWidget);
     });
 
-    testWidgets('tapping unpaid filter chip covers unpaid case', (tester) async {
+    testWidgets('tapping unpaid filter chip covers unpaid case',
+        (tester) async {
       when(() => mockGetTickets(any()))
           .thenAnswer((_) async => _resultWithUnpaidCash());
       await tester.pumpWidget(_buildApp());
@@ -390,7 +390,8 @@ void main() {
     testWidgets('cashout single error shows snackbar', (tester) async {
       when(() => mockGetTickets(any()))
           .thenAnswer((_) async => _resultWithUnpaidCash());
-      when(() => mockCashoutTicket(any())).thenThrow(Exception('cashout failed'));
+      when(() => mockCashoutTicket(any()))
+          .thenThrow(Exception('cashout failed'));
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
 
@@ -413,12 +414,10 @@ void main() {
     });
 
     testWidgets('cashout all error shows snackbar', (tester) async {
-      int getCallCount = 0;
-      when(() => mockGetTickets(any())).thenAnswer((_) async {
-        getCallCount++;
-        return _resultWithUnpaidCash();
-      });
-      when(() => mockCashoutTicket(any())).thenThrow(Exception('all cashout failed'));
+      when(() => mockGetTickets(any()))
+          .thenAnswer((_) async => _resultWithUnpaidCash());
+      when(() => mockCashoutTicket(any()))
+          .thenThrow(Exception('all cashout failed'));
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
 
@@ -441,8 +440,7 @@ void main() {
     });
 
     testWidgets('shows driver phone in app bar subtitle', (tester) async {
-      when(() => mockGetTickets(any()))
-          .thenAnswer((_) async => _emptyResult);
+      when(() => mockGetTickets(any())).thenAnswer((_) async => _emptyResult);
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
       expect(find.text('0600000001'), findsOneWidget);

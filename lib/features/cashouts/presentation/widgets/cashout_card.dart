@@ -142,8 +142,9 @@ class CashoutCard extends StatelessWidget {
                       Text(
                         '${cashout.remaining.toStringAsFixed(0)} MAD',
                         style: TextStyle(
-                          color:
-                              hasRemaining ? AppColors.primary : c.textSecondary,
+                          color: hasRemaining
+                              ? AppColors.primary
+                              : c.textSecondary,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -172,7 +173,7 @@ class CashoutCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     _InfoChip(
                       icon: Icons.payments_outlined,
-                      label: '${cashout.cashAmount.toStringAsFixed(0)}',
+                      label: cashout.cashAmount.toStringAsFixed(0),
                       color: const Color(0xFF2E7D32),
                     ),
                   ],
@@ -180,7 +181,7 @@ class CashoutCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     _InfoChip(
                       icon: Icons.nfc,
-                      label: '${cashout.nfcAmount.toStringAsFixed(0)}',
+                      label: cashout.nfcAmount.toStringAsFixed(0),
                       color: const Color(0xFF1565C0),
                     ),
                   ],

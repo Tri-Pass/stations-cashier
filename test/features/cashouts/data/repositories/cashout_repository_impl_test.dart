@@ -21,7 +21,8 @@ void main() {
       when(() => dataSource.getCashoutsSummary(any()))
           .thenAnswer((_) async => <dynamic>[]);
 
-      final result = await repo.getCashoutsSummary(const CashoutSummaryParams());
+      final result =
+          await repo.getCashoutsSummary(const CashoutSummaryParams());
 
       expect(result.cashouts, isEmpty);
       expect(result.totalAmount, 0.0);
@@ -40,7 +41,8 @@ void main() {
       when(() => dataSource.getCashoutsSummary(any()))
           .thenAnswer((_) async => raw);
 
-      final result = await repo.getCashoutsSummary(const CashoutSummaryParams());
+      final result =
+          await repo.getCashoutsSummary(const CashoutSummaryParams());
 
       expect(result.cashouts.length, 1);
       expect(result.cashouts.first.id, 'c1');

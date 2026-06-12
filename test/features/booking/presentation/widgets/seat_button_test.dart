@@ -31,7 +31,7 @@ void main() {
     });
 
     testWidgets('disabled state renders without crashing', (tester) async {
-      await tester.pumpWidget(_wrap(SeatButton(
+      await tester.pumpWidget(_wrap(const SeatButton(
         number: 2,
         isDisabled: true,
         onTap: null,
@@ -41,7 +41,7 @@ void main() {
 
     testWidgets('tap on disabled button does nothing', (tester) async {
       bool tapped = false;
-      await tester.pumpWidget(_wrap(SeatButton(
+      await tester.pumpWidget(_wrap(const SeatButton(
         number: 1,
         isDisabled: true,
         onTap: null,

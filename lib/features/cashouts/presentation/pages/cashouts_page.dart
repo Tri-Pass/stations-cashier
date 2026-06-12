@@ -91,12 +91,14 @@ class _CashoutsPageState extends State<CashoutsPage> {
     setState(() {
       if (isFrom) {
         _dateFrom = picked;
-        if (_dateTo != null && _dateTo!.isBefore(_dateFrom!))
+        if (_dateTo != null && _dateTo!.isBefore(_dateFrom!)) {
           _dateTo = _dateFrom;
+        }
       } else {
         _dateTo = picked;
-        if (_dateFrom != null && _dateFrom!.isAfter(_dateTo!))
+        if (_dateFrom != null && _dateFrom!.isAfter(_dateTo!)) {
           _dateFrom = _dateTo;
+        }
       }
     });
     _load();
@@ -199,7 +201,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
                     ? Border.all(color: AppColors.primary)
                     : null,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.tune,
                 color: AppColors.primary,
                 size: 18,
@@ -333,9 +335,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
           Text(
             _loading ? '— MAD' : '${totalRemaining.toStringAsFixed(0)} MAD',
             style: const TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold),
+                color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 14),
           // Bottom: collected + paid chips
@@ -354,9 +354,8 @@ class _CashoutsPageState extends State<CashoutsPage> {
               Expanded(
                 child: _SummaryChip(
                   icon: Icons.check_circle_outline,
-                  value: _loading
-                      ? '—'
-                      : '${totalPayouts.toStringAsFixed(0)} MAD',
+                  value:
+                      _loading ? '—' : '${totalPayouts.toStringAsFixed(0)} MAD',
                   label: l.statsTotalPayouts,
                 ),
               ),
@@ -378,8 +377,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
             onTap: () => _pickDate(isFrom: true),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: _dateFrom != null && _isToday(_dateFrom!)
                     ? AppColors.primary.withValues(alpha: 0.07)
@@ -423,8 +421,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
             onTap: () => _pickDate(isFrom: false),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 color: _dateTo != null && _isToday(_dateTo!)
                     ? AppColors.primary.withValues(alpha: 0.07)
@@ -574,8 +571,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
             decoration: BoxDecoration(
               color: c.surface,
               borderRadius: BorderRadius.circular(14),
@@ -679,7 +675,6 @@ class _SummaryChip extends StatelessWidget {
 class _FilterChip extends StatelessWidget {
   final String label;
   final bool selected;
-  final String? badge;
   final IconData? icon;
   final VoidCallback onTap;
   final AppColors c;
@@ -689,7 +684,6 @@ class _FilterChip extends StatelessWidget {
     required this.selected,
     required this.onTap,
     required this.c,
-    this.badge,
     this.icon,
   });
 
@@ -704,8 +698,7 @@ class _FilterChip extends StatelessWidget {
           color:
               selected ? AppColors.primary.withValues(alpha: 0.15) : c.surface,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-              color: selected ? AppColors.primary : c.border),
+          border: Border.all(color: selected ? AppColors.primary : c.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -723,28 +716,9 @@ class _FilterChip extends StatelessWidget {
               style: TextStyle(
                 color: selected ? AppColors.primary : c.textSecondary,
                 fontSize: 12,
-                fontWeight:
-                    selected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
-            if (badge != null) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  badge!,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
           ],
         ),
       ),

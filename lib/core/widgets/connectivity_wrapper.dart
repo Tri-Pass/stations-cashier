@@ -16,10 +16,10 @@ class ConnectivityWrapper extends StatefulWidget {
 
 class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
   final _service = sl<ConnectivityService>();
-  bool _wasOffline    = false;
-  bool _retrying      = false;
-  bool _restored      = false;
-  int  _failedRetries = 0;
+  bool _wasOffline = false;
+  bool _retrying = false;
+  bool _restored = false;
+  int _failedRetries = 0;
 
   @override
   void initState() {
@@ -96,10 +96,10 @@ class _ConnectivityWrapperState extends State<ConnectivityWrapper> {
                 opacity: show ? 1.0 : 0.0,
                 duration: const Duration(milliseconds: 280),
                 child: _ConnectivityBanner(
-                  retrying:    _retrying,
-                  restored:    _restored,
-                  showReset:   _failedRetries >= 3,
-                  onRetry:     _handleRetry,
+                  retrying: _retrying,
+                  restored: _restored,
+                  showReset: _failedRetries >= 3,
+                  onRetry: _handleRetry,
                   onResetWifi: _handleResetWifi,
                 ),
               ),
@@ -130,9 +130,9 @@ class _ConnectivityBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l     = AppLocalizations.of(context);
+    final l = AppLocalizations.of(context);
     final color = restored ? AppColors.green : AppColors.red;
-    final icon  = restored ? Icons.wifi_rounded : Icons.wifi_off_rounded;
+    final icon = restored ? Icons.wifi_rounded : Icons.wifi_off_rounded;
     final title = restored ? l.connectionRestored : l.noConnectionTitle;
 
     return Material(

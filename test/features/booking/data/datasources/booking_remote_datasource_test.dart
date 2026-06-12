@@ -35,9 +35,9 @@ void main() {
   test('sends correct params in request body', () async {
     await dataSource.createBooking(_params);
 
-    final captured =
-        verify(() => apiClient.post(any(), captureAny())).captured.first
-            as Map<String, dynamic>;
+    final captured = verify(() => apiClient.post(any(), captureAny()))
+        .captured
+        .first as Map<String, dynamic>;
     expect(captured['taxiId'], 'taxi-1');
     expect(captured['lineId'], 'line-1');
     expect(captured['seatCount'], 2);

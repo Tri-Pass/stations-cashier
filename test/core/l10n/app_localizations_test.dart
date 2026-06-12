@@ -45,7 +45,8 @@ void main() {
     test('amount', () => expect(fr.amount, isNotEmpty));
     test('currentBalance', () => expect(fr.currentBalance, isNotEmpty));
     test('balanceAfter', () => expect(fr.balanceAfter, isNotEmpty));
-    test('insufficientBalance', () => expect(fr.insufficientBalance, isNotEmpty));
+    test('insufficientBalance',
+        () => expect(fr.insufficientBalance, isNotEmpty));
     test('confirmAndPrint', () => expect(fr.confirmAndPrint, isNotEmpty));
     test('processing', () => expect(fr.processing, isNotEmpty));
     test('nfcProcessing', () => expect(fr.nfcProcessing, isNotEmpty));
@@ -73,7 +74,8 @@ void main() {
     test('scanAnother', () => expect(fr.scanAnother, isNotEmpty));
     test('nfcCardTab', () => expect(fr.nfcCardTab, isNotEmpty));
     test('phoneTab', () => expect(fr.phoneTab, isNotEmpty));
-    test('rechargeAmountLabel', () => expect(fr.rechargeAmountLabel, isNotEmpty));
+    test('rechargeAmountLabel',
+        () => expect(fr.rechargeAmountLabel, isNotEmpty));
     test('scanAndCharge', () => expect(fr.scanAndCharge, isNotEmpty));
     test('confirmAndCharge', () => expect(fr.confirmAndCharge, isNotEmpty));
     test('rechargeSuccess', () => expect(fr.rechargeSuccess, isNotEmpty));
@@ -102,7 +104,8 @@ void main() {
     test('pinIncorrect', () => expect(fr.pinIncorrect, isNotEmpty));
     test('backToWallet', () => expect(fr.backToWallet, isNotEmpty));
     test('linkCopied', () => expect(fr.linkCopied, isNotEmpty));
-    test('transferAmountTitle', () => expect(fr.transferAmountTitle, isNotEmpty));
+    test('transferAmountTitle',
+        () => expect(fr.transferAmountTitle, isNotEmpty));
     test('howMuchTransfer', () => expect(fr.howMuchTransfer, isNotEmpty));
     test('otherAmount', () => expect(fr.otherAmount, isNotEmpty));
     test('freeTransferNote', () => expect(fr.freeTransferNote, isNotEmpty));
@@ -110,7 +113,8 @@ void main() {
     test('searchDriver', () => expect(fr.searchDriver, isNotEmpty));
     test('searchPlaceholder', () => expect(fr.searchPlaceholder, isNotEmpty));
     test('noResults', () => expect(fr.noResults, isNotEmpty));
-    test('confirmTransferTitle', () => expect(fr.confirmTransferTitle, isNotEmpty));
+    test('confirmTransferTitle',
+        () => expect(fr.confirmTransferTitle, isNotEmpty));
     test('confirmTransferBtn', () => expect(fr.confirmTransferBtn, isNotEmpty));
     test('continueBtn', () => expect(fr.continueBtn, isNotEmpty));
     test('recipient', () => expect(fr.recipient, isNotEmpty));
@@ -134,7 +138,8 @@ void main() {
     test('cardLinkSubtitle', () => expect(fr.cardLinkSubtitle, isNotEmpty));
     test('withdrawMethod', () => expect(fr.withdrawMethod, isNotEmpty));
     test('howToWithdraw', () => expect(fr.howToWithdraw, isNotEmpty));
-    test('withdrawAmountTitle', () => expect(fr.withdrawAmountTitle, isNotEmpty));
+    test('withdrawAmountTitle',
+        () => expect(fr.withdrawAmountTitle, isNotEmpty));
     test('bankInfoTitle', () => expect(fr.bankInfoTitle, isNotEmpty));
     test('enterBankInfo', () => expect(fr.enterBankInfo, isNotEmpty));
     test('beneficiaryName', () => expect(fr.beneficiaryName, isNotEmpty));
@@ -144,7 +149,8 @@ void main() {
     test('cashplusPhoneLabel', () => expect(fr.cashplusPhoneLabel, isNotEmpty));
     test('motif', () => expect(fr.motif, isNotEmpty));
     test('motifHint', () => expect(fr.motifHint, isNotEmpty));
-    test('confirmWithdrawTitle', () => expect(fr.confirmWithdrawTitle, isNotEmpty));
+    test('confirmWithdrawTitle',
+        () => expect(fr.confirmWithdrawTitle, isNotEmpty));
     test('confirmWithdrawBtn', () => expect(fr.confirmWithdrawBtn, isNotEmpty));
     test('qrWithdrawTitle', () => expect(fr.qrWithdrawTitle, isNotEmpty));
     test('qrWithdrawSubtitle', () => expect(fr.qrWithdrawSubtitle, isNotEmpty));
@@ -159,9 +165,11 @@ void main() {
     test('recentTrips', () => expect(fr.recentTrips, isNotEmpty));
     test('selectLine', () => expect(fr.selectLine, isNotEmpty));
     test('addSeat', () => expect(fr.addSeat, isNotEmpty));
-    test('seatValidationTitle', () => expect(fr.seatValidationTitle, isNotEmpty));
+    test('seatValidationTitle',
+        () => expect(fr.seatValidationTitle, isNotEmpty));
     test('nextTaxi', () => expect(fr.nextTaxi, isNotEmpty));
-    test('firstTaxiAvailableTitle', () => expect(fr.firstTaxiAvailableTitle, isNotEmpty));
+    test('firstTaxiAvailableTitle',
+        () => expect(fr.firstTaxiAvailableTitle, isNotEmpty));
     test('continueAnyway', () => expect(fr.continueAnyway, isNotEmpty));
     test('noConnectionTitle', () => expect(fr.noConnectionTitle, isNotEmpty));
     test('noConnectionBanner', () => expect(fr.noConnectionBanner, isNotEmpty));
@@ -179,7 +187,8 @@ void main() {
     test('disconnect', () => expect(fr.disconnect, isNotEmpty));
     test('kioskMode', () => expect(fr.kioskMode, isNotEmpty));
     test('kioskModeActivate', () => expect(fr.kioskModeActivate, isNotEmpty));
-    test('kioskModeDeactivate', () => expect(fr.kioskModeDeactivate, isNotEmpty));
+    test('kioskModeDeactivate',
+        () => expect(fr.kioskModeDeactivate, isNotEmpty));
     test('navCashouts', () => expect(fr.navCashouts, isNotEmpty));
     test('cashoutsTitle', () => expect(fr.cashoutsTitle, isNotEmpty));
     test('totalCashouts', () => expect(fr.totalCashouts, isNotEmpty));
@@ -209,7 +218,8 @@ void main() {
     test('cashout', () => expect(fr.cashout, isNotEmpty));
     test('cashoutAll', () => expect(fr.cashoutAll, isNotEmpty));
     test('confirmCashout', () => expect(fr.confirmCashout, isNotEmpty));
-    test('confirmCashoutTitle', () => expect(fr.confirmCashoutTitle, isNotEmpty));
+    test('confirmCashoutTitle',
+        () => expect(fr.confirmCashoutTitle, isNotEmpty));
     test('cashoutSuccess', () => expect(fr.cashoutSuccess, isNotEmpty));
     test('unpaid', () => expect(fr.unpaid, isNotEmpty));
     test('paid', () => expect(fr.paid, isNotEmpty));
@@ -262,7 +272,8 @@ void main() {
     test('ok ar', () => expect(ar.ok, isNotEmpty));
     test('nfcApproach ar', () => expect(ar.nfcApproach, isNotEmpty));
     test('seats ar', () => expect(ar.seats, isNotEmpty));
-    test('insufficientBalance ar', () => expect(ar.insufficientBalance, isNotEmpty));
+    test('insufficientBalance ar',
+        () => expect(ar.insufficientBalance, isNotEmpty));
     test('nfcError ar', () => expect(ar.nfcError, isNotEmpty));
     test('linkPassenger ar', () => expect(ar.linkPassenger, isNotEmpty));
     test('linkSuccess ar', () => expect(ar.linkSuccess, isNotEmpty));
@@ -279,15 +290,19 @@ void main() {
     test('confirm ar', () => expect(ar.confirm, isNotEmpty));
     test('noResults ar', () => expect(ar.noResults, isNotEmpty));
     test('free ar', () => expect(ar.free, isNotEmpty));
-    test('transferDoneTitle ar', () => expect(ar.transferDoneTitle, isNotEmpty));
+    test(
+        'transferDoneTitle ar', () => expect(ar.transferDoneTitle, isNotEmpty));
     test('topUpSentTitle ar', () => expect(ar.topUpSentTitle, isNotEmpty));
-    test('withdrawDoneTitle ar', () => expect(ar.withdrawDoneTitle, isNotEmpty));
+    test(
+        'withdrawDoneTitle ar', () => expect(ar.withdrawDoneTitle, isNotEmpty));
     test('profile ar', () => expect(ar.profile, isNotEmpty));
     test('logout ar', () => expect(ar.logout, isNotEmpty));
     test('disconnect ar', () => expect(ar.disconnect, isNotEmpty));
     test('kioskMode ar', () => expect(ar.kioskMode, isNotEmpty));
-    test('kioskModeActivate ar', () => expect(ar.kioskModeActivate, isNotEmpty));
-    test('kioskModeDeactivate ar', () => expect(ar.kioskModeDeactivate, isNotEmpty));
+    test(
+        'kioskModeActivate ar', () => expect(ar.kioskModeActivate, isNotEmpty));
+    test('kioskModeDeactivate ar',
+        () => expect(ar.kioskModeDeactivate, isNotEmpty));
     test('noPayments ar', () => expect(ar.noPayments, isNotEmpty));
     test('taxiFullTitle ar', () => expect(ar.taxiFullTitle, isNotEmpty));
     test('cashout ar', () => expect(ar.cashout, isNotEmpty));
@@ -310,28 +325,51 @@ void main() {
   group('parameterised methods (fr)', () {
     test('freeSeats singular', () => expect(fr.freeSeats(1), contains('1')));
     test('freeSeats plural', () => expect(fr.freeSeats(3), contains('3')));
-    test('seatsBookedSuccess singular', () => expect(fr.seatsBookedSuccess(1), contains('1')));
-    test('seatsBookedSuccess plural', () => expect(fr.seatsBookedSuccess(3), contains('3')));
-    test('seatValidationHasNext', () => expect(fr.seatValidationHasNext(2), contains('2')));
-    test('seatValidationNoNext', () => expect(fr.seatValidationNoNext(2), contains('2')));
-    test('firstTaxiAvailableMsg', () => expect(fr.firstTaxiAvailableMsg(3, 'ABC-123'), contains('ABC-123')));
-    test('cannotReserveBeforeFirstFull', () => expect(fr.cannotReserveBeforeFirstFull(2, 2, 'ABC-123'), contains('ABC-123')));
-    test('transferDoneSub', () => expect(fr.transferDoneSub('100', 'Ahmed'), contains('Ahmed')));
-    test('confirmCashoutMsg', () => expect(fr.confirmCashoutMsg('50'), contains('50')));
-    test('confirmCashoutAllMsg', () => expect(fr.confirmCashoutAllMsg(3, '150'), contains('150')));
+    test('seatsBookedSuccess singular',
+        () => expect(fr.seatsBookedSuccess(1), contains('1')));
+    test('seatsBookedSuccess plural',
+        () => expect(fr.seatsBookedSuccess(3), contains('3')));
+    test('seatValidationHasNext',
+        () => expect(fr.seatValidationHasNext(2), contains('2')));
+    test('seatValidationNoNext',
+        () => expect(fr.seatValidationNoNext(2), contains('2')));
+    test(
+        'firstTaxiAvailableMsg',
+        () => expect(
+            fr.firstTaxiAvailableMsg(3, 'ABC-123'), contains('ABC-123')));
+    test(
+        'cannotReserveBeforeFirstFull',
+        () => expect(fr.cannotReserveBeforeFirstFull(2, 2, 'ABC-123'),
+            contains('ABC-123')));
+    test('transferDoneSub',
+        () => expect(fr.transferDoneSub('100', 'Ahmed'), contains('Ahmed')));
+    test('confirmCashoutMsg',
+        () => expect(fr.confirmCashoutMsg('50'), contains('50')));
+    test('confirmCashoutAllMsg',
+        () => expect(fr.confirmCashoutAllMsg(3, '150'), contains('150')));
   });
 
   group('parameterised methods (ar)', () {
     test('freeSeats singular ar', () => expect(ar.freeSeats(1), contains('1')));
     test('freeSeats plural ar', () => expect(ar.freeSeats(2), contains('2')));
-    test('seatsBookedSuccess ar', () => expect(ar.seatsBookedSuccess(2), contains('2')));
-    test('seatValidationHasNext ar', () => expect(ar.seatValidationHasNext(3), contains('3')));
-    test('seatValidationNoNext ar', () => expect(ar.seatValidationNoNext(1), contains('1')));
-    test('firstTaxiAvailableMsg ar', () => expect(ar.firstTaxiAvailableMsg(2, 'XYZ'), contains('XYZ')));
-    test('cannotReserveBeforeFirstFull ar', () => expect(ar.cannotReserveBeforeFirstFull(1, 3, 'XYZ'), contains('XYZ')));
-    test('transferDoneSub ar', () => expect(ar.transferDoneSub('200', 'محمد'), contains('محمد')));
-    test('confirmCashoutMsg ar', () => expect(ar.confirmCashoutMsg('75'), contains('75')));
-    test('confirmCashoutAllMsg ar', () => expect(ar.confirmCashoutAllMsg(5, '200'), contains('200')));
+    test('seatsBookedSuccess ar',
+        () => expect(ar.seatsBookedSuccess(2), contains('2')));
+    test('seatValidationHasNext ar',
+        () => expect(ar.seatValidationHasNext(3), contains('3')));
+    test('seatValidationNoNext ar',
+        () => expect(ar.seatValidationNoNext(1), contains('1')));
+    test('firstTaxiAvailableMsg ar',
+        () => expect(ar.firstTaxiAvailableMsg(2, 'XYZ'), contains('XYZ')));
+    test(
+        'cannotReserveBeforeFirstFull ar',
+        () => expect(
+            ar.cannotReserveBeforeFirstFull(1, 3, 'XYZ'), contains('XYZ')));
+    test('transferDoneSub ar',
+        () => expect(ar.transferDoneSub('200', 'محمد'), contains('محمد')));
+    test('confirmCashoutMsg ar',
+        () => expect(ar.confirmCashoutMsg('75'), contains('75')));
+    test('confirmCashoutAllMsg ar',
+        () => expect(ar.confirmCashoutAllMsg(5, '200'), contains('200')));
   });
 
   // ── Delegate ─────────────────────────────────────────────────────────────

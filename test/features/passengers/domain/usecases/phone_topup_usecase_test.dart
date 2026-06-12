@@ -21,8 +21,7 @@ void main() {
 
   setUp(() {
     repo = MockPassengerRepository();
-    registerFallbackValue(
-        const PhoneTopupParams(phone: '0600', amount: 100));
+    registerFallbackValue(const PhoneTopupParams(phone: '0600', amount: 100));
   });
 
   test('delegates to repository.phoneTopup and returns result', () async {

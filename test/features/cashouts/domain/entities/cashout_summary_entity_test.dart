@@ -43,7 +43,8 @@ void main() {
         id: 'c3',
         driver: CashoutDriverEntity(id: 'd1', name: 'Ali', phone: '0600'),
         taxi: CashoutTaxiEntity(id: 't1', plateNumber: 'A-001'),
-        line: CashoutLineEntity(id: 'l1', origin: 'A', destination: 'B', price: 50),
+        line: CashoutLineEntity(
+            id: 'l1', origin: 'A', destination: 'B', price: 50),
         totalSeats: 4,
         totalAmount: 200,
       );
@@ -56,7 +57,8 @@ void main() {
         id: 'c4',
         driver: CashoutDriverEntity(id: 'd2', name: 'Omar', phone: '0611'),
         taxi: CashoutTaxiEntity(id: 't2', plateNumber: 'B-002'),
-        line: CashoutLineEntity(id: 'l2', origin: 'X', destination: 'Y', price: 80),
+        line: CashoutLineEntity(
+            id: 'l2', origin: 'X', destination: 'Y', price: 80),
         totalSeats: 5,
         totalAmount: 400,
         totalPaid: 226,
@@ -102,7 +104,8 @@ void main() {
         totalPayouts: 50,
         totalRemaining: 50,
       );
-      const r = CashoutsResponseEntity(cashouts: [], totalAmount: 100, stats: stats);
+      const r =
+          CashoutsResponseEntity(cashouts: [], totalAmount: 100, stats: stats);
       expect(r.stats, isNotNull);
       expect(r.stats!.totalTickets, 10);
     });
