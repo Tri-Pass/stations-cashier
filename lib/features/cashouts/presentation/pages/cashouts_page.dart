@@ -19,11 +19,8 @@ class CashoutsPage extends StatefulWidget {
 class _CashoutsPageState extends State<CashoutsPage> {
   DateTime? _dateFrom;
   DateTime? _dateTo;
-
-  // null = all methods
   String? _paymentMethod;
 
-  // Advanced filter fields
   final _taxiCtrl = TextEditingController();
   final _driverNameCtrl = TextEditingController();
   final _lineCtrl = TextEditingController();
@@ -128,7 +125,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
       _dateFrom!.day == _dateTo!.day;
 
   String _formatDate(AppLocalizations l, DateTime? d) {
-    if (d == null) return '—';
+    if (d == null) return l.allDates;
     if (_isToday(d)) return l.today;
     return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
   }
@@ -191,22 +188,21 @@ class _CashoutsPageState extends State<CashoutsPage> {
         actions: [
           IconButton(
             icon: Container(
-              width: 44,
-              height: 44,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: _hasAdvancedFilters
                     ? AppColors.primary.withValues(alpha: 0.15)
                     : AppColors.of(context).iconBg,
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
                 border: _hasAdvancedFilters
                     ? Border.all(color: AppColors.primary)
                     : null,
               ),
               child: Icon(
                 Icons.tune,
-                color:
-                    _hasAdvancedFilters ? AppColors.primary : AppColors.primary,
-                size: 20,
+                color: AppColors.primary,
+                size: 18,
               ),
             ),
             tooltip: l.filtersLabel,
@@ -214,18 +210,19 @@ class _CashoutsPageState extends State<CashoutsPage> {
           ),
           IconButton(
             icon: Container(
-              width: 44,
-              height: 44,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: AppColors.of(context).iconBg,
-                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
               child:
-                  const Icon(Icons.refresh, color: AppColors.primary, size: 20),
+                  const Icon(Icons.refresh, color: AppColors.primary, size: 18),
             ),
             tooltip: l.retry,
             onPressed: _load,
           ),
+          const SizedBox(width: 4),
         ],
       ),
       body: SafeArea(
@@ -242,14 +239,21 @@ class _CashoutsPageState extends State<CashoutsPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      _buildSummaryCard(l, c),
+                      const SizedBox(height: 14),
                       _buildDateRange(l, c),
                       const SizedBox(height: 10),
                       _buildPaymentMethodFilter(l, c),
-                      const SizedBox(height: 12),
-                      //Todo
-                      // _buildSummaryCard(l, c),
-                      // const SizedBox(height: 16),
-                      _buildSectionLabel(l.cashoutsListLabel, c),
+                      const SizedBox(height: 14),
+                      Text(
+                        l.cashoutsListLabel,
+                        style: TextStyle(
+                          color: c.textSecondary,
+                          fontSize: 11,
+                          letterSpacing: 0.8,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                     ],
                   ),
@@ -264,16 +268,150 @@ class _CashoutsPageState extends State<CashoutsPage> {
     );
   }
 
+  // ── Summary card (matches driver tickets page gradient style) ────────────────
+
+  Widget _buildSummaryCard(AppLocalizations l, AppColors c) {
+    final stats = _data?.stats;
+    final totalRemaining = stats?.totalRemaining ?? 0.0;
+    final totalTickets = stats?.totalTickets ?? 0;
+    final totalCollected = stats?.totalCollected ?? 0.0;
+    final totalPayouts = stats?.totalPayouts ?? 0.0;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.primary, AppColors.primaryDark],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Top row: label + trips badge
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  l.totalCashouts,
+                  style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.confirmation_number_outlined,
+                        color: Colors.white, size: 13),
+                    const SizedBox(width: 5),
+                    Text(
+                      _loading ? '—' : '$totalTickets ${l.trips}',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          // Big amount
+          Text(
+            _loading ? '— MAD' : '${totalRemaining.toStringAsFixed(0)} MAD',
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 30,
+                fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 14),
+          // Bottom: collected + paid chips
+          Row(
+            children: [
+              Expanded(
+                child: _SummaryChip(
+                  icon: Icons.account_balance_wallet_outlined,
+                  value: _loading
+                      ? '—'
+                      : '${totalCollected.toStringAsFixed(0)} MAD',
+                  label: l.statsTotalCollected,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _SummaryChip(
+                  icon: Icons.check_circle_outline,
+                  value: _loading
+                      ? '—'
+                      : '${totalPayouts.toStringAsFixed(0)} MAD',
+                  label: l.statsTotalPayouts,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Date range ───────────────────────────────────────────────────────────────
+
   Widget _buildDateRange(AppLocalizations l, AppColors c) {
+    final hasDate = !_isDefaultDateRange;
     return Row(
       children: [
         Expanded(
-          child: _DateChip(
-            label: l.dateFrom,
-            value: _formatDate(l, _dateFrom),
-            isToday: _dateFrom != null && _isToday(_dateFrom!),
+          child: GestureDetector(
             onTap: () => _pickDate(isFrom: true),
-            c: c,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: _dateFrom != null && _isToday(_dateFrom!)
+                    ? AppColors.primary.withValues(alpha: 0.07)
+                    : c.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _dateFrom != null && _isToday(_dateFrom!)
+                      ? AppColors.primary.withValues(alpha: 0.4)
+                      : c.border,
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.calendar_today,
+                      color: AppColors.primary, size: 15),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _formatDate(l, _dateFrom),
+                      style: TextStyle(
+                        color: _dateFrom != null && _isToday(_dateFrom!)
+                            ? AppColors.primary
+                            : c.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.expand_more, color: c.textSecondary, size: 16),
+                ],
+              ),
+            ),
           ),
         ),
         Padding(
@@ -281,17 +419,49 @@ class _CashoutsPageState extends State<CashoutsPage> {
           child: Icon(Icons.arrow_forward, size: 16, color: c.textSecondary),
         ),
         Expanded(
-          child: _DateChip(
-            label: l.dateTo,
-            value: _isSameDay && _dateTo != null && _isToday(_dateTo!)
-                ? l.today
-                : _formatDate(l, _dateTo),
-            isToday: _dateTo != null && _isToday(_dateTo!),
+          child: GestureDetector(
             onTap: () => _pickDate(isFrom: false),
-            c: c,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: _dateTo != null && _isToday(_dateTo!)
+                    ? AppColors.primary.withValues(alpha: 0.07)
+                    : c.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _dateTo != null && _isToday(_dateTo!)
+                      ? AppColors.primary.withValues(alpha: 0.4)
+                      : c.border,
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.calendar_today,
+                      color: AppColors.primary, size: 15),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _isSameDay && _dateTo != null && _isToday(_dateTo!)
+                          ? l.today
+                          : _formatDate(l, _dateTo),
+                      style: TextStyle(
+                        color: _dateTo != null && _isToday(_dateTo!)
+                            ? AppColors.primary
+                            : c.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Icon(Icons.expand_more, color: c.textSecondary, size: 16),
+                ],
+              ),
+            ),
           ),
         ),
-        if (!_isDefaultDateRange) ...[
+        if (hasDate) ...[
           const SizedBox(width: 8),
           GestureDetector(
             onTap: _resetDateFilter,
@@ -311,10 +481,12 @@ class _CashoutsPageState extends State<CashoutsPage> {
     );
   }
 
+  // ── Payment method filter (same _FilterChip as driver tickets) ───────────────
+
   Widget _buildPaymentMethodFilter(AppLocalizations l, AppColors c) {
     return Row(
       children: [
-        _MethodChip(
+        _FilterChip(
           label: l.allMethods,
           selected: _paymentMethod == null,
           onTap: () {
@@ -326,10 +498,9 @@ class _CashoutsPageState extends State<CashoutsPage> {
           c: c,
         ),
         const SizedBox(width: 8),
-        _MethodChip(
+        _FilterChip(
           label: l.cash,
           selected: _paymentMethod == 'cash',
-          icon: Icons.payments_outlined,
           onTap: () {
             if (_paymentMethod != 'cash') {
               setState(() => _paymentMethod = 'cash');
@@ -339,10 +510,9 @@ class _CashoutsPageState extends State<CashoutsPage> {
           c: c,
         ),
         const SizedBox(width: 8),
-        _MethodChip(
+        _FilterChip(
           label: l.nfc,
           selected: _paymentMethod == 'nfc',
-          icon: Icons.nfc,
           onTap: () {
             if (_paymentMethod != 'nfc') {
               setState(() => _paymentMethod = 'nfc');
@@ -355,17 +525,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
     );
   }
 
-  Widget _buildSectionLabel(String text, AppColors c) {
-    return Text(
-      text,
-      style: TextStyle(
-        color: c.textSecondary,
-        fontSize: 11,
-        letterSpacing: 0.8,
-        fontWeight: FontWeight.w600,
-      ),
-    );
-  }
+  // ── List ─────────────────────────────────────────────────────────────────────
 
   Widget _buildList(AppLocalizations l, AppColors c) {
     if (_loading) {
@@ -412,7 +572,8 @@ class _CashoutsPageState extends State<CashoutsPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            padding:
+                const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
             decoration: BoxDecoration(
               color: c.surface,
               borderRadius: BorderRadius.circular(14),
@@ -458,82 +619,74 @@ class _CashoutsPageState extends State<CashoutsPage> {
   }
 }
 
-// ─── Sub-widgets ──────────────────────────────────────────────────────────────
+// ─── Sub-widgets ───────────────────────────────────────────────────────────────
 
-class _DateChip extends StatelessWidget {
-  final String label;
+class _SummaryChip extends StatelessWidget {
+  final IconData icon;
   final String value;
-  final bool isToday;
-  final VoidCallback onTap;
-  final AppColors c;
+  final String label;
 
-  const _DateChip({
-    required this.label,
+  const _SummaryChip({
+    required this.icon,
     required this.value,
-    required this.isToday,
-    required this.onTap,
-    required this.c,
+    required this.label,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color:
-              isToday ? AppColors.primary.withValues(alpha: 0.07) : c.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color:
-                isToday ? AppColors.primary.withValues(alpha: 0.4) : c.border,
-          ),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.calendar_today,
-                color: AppColors.primary, size: 15),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(label,
-                      style: TextStyle(
-                          color: c.textSecondary,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 1),
-                  Text(value,
-                      style: TextStyle(
-                          color: isToday ? AppColors.primary : c.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold)),
-                ],
-              ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white, size: 15),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    height: 1.1,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 10,
+                    height: 1.2,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _MethodChip extends StatelessWidget {
+class _FilterChip extends StatelessWidget {
   final String label;
   final bool selected;
-  final IconData? icon;
+  final String? badge;
   final VoidCallback onTap;
   final AppColors c;
 
-  const _MethodChip({
+  const _FilterChip({
     required this.label,
     required this.selected,
-    this.icon,
     required this.onTap,
     required this.c,
+    this.badge,
   });
 
   @override
@@ -548,26 +701,38 @@ class _MethodChip extends StatelessWidget {
               selected ? AppColors.primary.withValues(alpha: 0.15) : c.surface,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: selected ? AppColors.primary : c.border,
-          ),
+              color: selected ? AppColors.primary : c.border),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) ...[
-              Icon(icon,
-                  size: 14,
-                  color: selected ? AppColors.primary : c.textSecondary),
-              const SizedBox(width: 5),
-            ],
             Text(
               label,
               style: TextStyle(
                 color: selected ? AppColors.primary : c.textSecondary,
                 fontSize: 12,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight:
+                    selected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
+            if (badge != null) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  badge!,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -575,7 +740,7 @@ class _MethodChip extends StatelessWidget {
   }
 }
 
-// ─── Advanced filter bottom sheet ────────────────────────────────────────────
+// ─── Advanced filter bottom sheet ─────────────────────────────────────────────
 
 class _AdvancedFilterSheet extends StatelessWidget {
   final TextEditingController taxiCtrl;

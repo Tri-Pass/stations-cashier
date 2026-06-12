@@ -25,6 +25,24 @@ class CashoutLineEntity {
   });
 }
 
+class CashoutStatsEntity {
+  final int totalTickets;
+  final double totalCollected;
+  final double totalNfc;
+  final double totalCash;
+  final double totalPayouts;
+  final double totalRemaining;
+
+  const CashoutStatsEntity({
+    required this.totalTickets,
+    required this.totalCollected,
+    required this.totalNfc,
+    required this.totalCash,
+    required this.totalPayouts,
+    required this.totalRemaining,
+  });
+}
+
 class CashoutSummaryEntity {
   final String id;
   final CashoutDriverEntity driver;
@@ -32,11 +50,12 @@ class CashoutSummaryEntity {
   final CashoutLineEntity line;
   final int totalSeats;
   final double totalAmount;
-  // Payment-method breakdown
   final int cashSeats;
   final int nfcSeats;
   final double cashAmount;
   final double nfcAmount;
+  final double totalPaid;
+  final double remaining;
   final DateTime? departedAt;
 
   const CashoutSummaryEntity({
@@ -50,6 +69,8 @@ class CashoutSummaryEntity {
     this.nfcSeats = 0,
     this.cashAmount = 0,
     this.nfcAmount = 0,
+    this.totalPaid = 0,
+    this.remaining = 0,
     this.departedAt,
   });
 }
@@ -57,9 +78,11 @@ class CashoutSummaryEntity {
 class CashoutsResponseEntity {
   final List<CashoutSummaryEntity> cashouts;
   final double totalAmount;
+  final CashoutStatsEntity? stats;
 
   const CashoutsResponseEntity({
     required this.cashouts,
     required this.totalAmount,
+    this.stats,
   });
 }

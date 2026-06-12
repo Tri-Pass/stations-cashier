@@ -394,6 +394,20 @@ class AppLocalizations {
   String get cashoutsListLabel =>
       _t('DÉTAIL DES PAIEMENTS', 'تفاصيل المدفوعات');
 
+  String get statsTotalTickets => _t('Tickets', 'التذاكر');
+
+  String get statsTotalCollected => _t('Collecté', 'محصل');
+
+  String get statsTotalNfc => _t('NFC', 'NFC');
+
+  String get statsTotalCash => _t('Espèces', 'نقداً');
+
+  String get statsTotalPayouts => _t('Payé', 'مدفوع');
+
+  String get statsTotalRemaining => _t('Restant', 'متبقي');
+
+  String get summaryLabel => _t('RÉSUMÉ', 'ملخص');
+
   String get noPayments => _t('Aucun paiement', 'لا توجد مدفوعات');
 
   String get filterDate => _t('DATE', 'التاريخ');

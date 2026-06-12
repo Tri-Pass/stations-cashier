@@ -5,18 +5,25 @@ import 'package:cashier/features/cashouts/domain/entities/cashout_summary_entity
 
 class CashoutCard extends StatelessWidget {
   final CashoutSummaryEntity cashout;
-  // null = show both, 'cash' = cash only, 'nfc' = nfc only
   final String? filter;
   final VoidCallback? onTap;
 
   const CashoutCard(
       {super.key, required this.cashout, this.filter, this.onTap});
 
+  String get _initials {
+    final parts = cashout.driver.name.trim().split(' ');
+    if (parts.length >= 2) return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    if (parts[0].isNotEmpty) return parts[0][0].toUpperCase();
+    return '?';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final c = AppColors.of(context);
 
+    final hasRemaining = cashout.remaining > 0;
     final hasRoute =
         cashout.line.origin.isNotEmpty || cashout.line.destination.isNotEmpty;
 
@@ -31,22 +38,33 @@ class CashoutCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── Header ─────────────────────────────────────────────────────────
+            // ── Header: avatar | name + phone | remaining + badge ─────────────
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Initials avatar
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.local_taxi,
-                        color: AppColors.primary, size: 20),
+                    child: Center(
+                      child: Text(
+                        _initials,
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(width: 12),
+                  // Name + phone + route
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,29 +77,72 @@ class CashoutCard extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
-                          cashout.driver.phone,
-                          style:
-                              TextStyle(color: c.textSecondary, fontSize: 12),
+                        const SizedBox(height: 3),
+                        Row(
+                          children: [
+                            Icon(Icons.confirmation_number_outlined,
+                                size: 13, color: c.textSecondary),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${cashout.totalSeats} ${l.trips}',
+                              style: TextStyle(
+                                  color: c.textSecondary, fontSize: 12),
+                            ),
+                            if (cashout.taxi.plateNumber.isNotEmpty) ...[
+                              Text('  ·  ',
+                                  style: TextStyle(
+                                      color: c.textSecondary, fontSize: 12)),
+                              Icon(Icons.local_taxi_outlined,
+                                  size: 13, color: c.textSecondary),
+                              const SizedBox(width: 3),
+                              Text(
+                                cashout.taxi.plateNumber,
+                                style: TextStyle(
+                                    color: c.textSecondary, fontSize: 12),
+                              ),
+                            ],
+                          ],
                         ),
+                        if (hasRoute)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Row(
+                              children: [
+                                Icon(Icons.route_outlined,
+                                    size: 13, color: c.textSecondary),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    cashout.line.destination.isEmpty
+                                        ? cashout.line.origin
+                                        : '${cashout.line.origin} → ${cashout.line.destination}',
+                                    style: TextStyle(
+                                        color: c.textSecondary, fontSize: 12),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  // Remaining amount + status badge
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        '${cashout.totalAmount.toStringAsFixed(0)} MAD',
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontSize: 18,
+                        '${cashout.remaining.toStringAsFixed(0)} MAD',
+                        style: TextStyle(
+                          color:
+                              hasRemaining ? AppColors.primary : c.textSecondary,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
-                        '${cashout.totalSeats} ${l.seats.toLowerCase()}',
-                        style: TextStyle(color: c.textSecondary, fontSize: 11),
-                      ),
+                      const SizedBox(height: 4),
+                      _StatusBadge(hasRemaining: hasRemaining, l: l),
                     ],
                   ),
                 ],
@@ -90,72 +151,49 @@ class CashoutCard extends StatelessWidget {
 
             Divider(color: c.border, height: 1),
 
-            // ── Payment breakdown ───────────────────────────────────────────────
+            // ── Footer: collected | cash | nfc chips + arrow ──────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
               child: Row(
                 children: [
-                  if (filter != 'nfc') ...[
-                    Expanded(
-                      child: _AmountTile(
-                        icon: Icons.payments_outlined,
-                        label: l.cash,
-                        amount: cashout.cashAmount,
-                        color: const Color(0xFF2E7D32),
-                        bgColor:
-                            const Color(0xFF2E7D32).withValues(alpha: 0.10),
-                        c: c,
-                      ),
-                    ),
-                  ],
-                  if (filter == null) const SizedBox(width: 8),
-                  if (filter != 'cash') ...[
-                    Expanded(
-                      child: _AmountTile(
-                        icon: Icons.nfc,
-                        label: l.nfc,
-                        amount: cashout.nfcAmount,
-                        color: const Color(0xFF1565C0),
-                        bgColor:
-                            const Color(0xFF1565C0).withValues(alpha: 0.10),
-                        c: c,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-
-            // ── Footer: plate · route · time ───────────────────────────────────
-            Container(
-              padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
-              decoration: BoxDecoration(
-                color: c.background.withValues(alpha: 0.5),
-                borderRadius:
-                    const BorderRadius.vertical(bottom: Radius.circular(14)),
-              ),
-              child: Wrap(
-                spacing: 10,
-                runSpacing: 4,
-                children: [
-                  _Tag(
-                    icon: Icons.confirmation_number_outlined,
-                    label: cashout.taxi.plateNumber,
-                    c: c,
+                  _InfoChip(
+                    icon: Icons.account_balance_wallet_outlined,
+                    label: '${cashout.totalAmount.toStringAsFixed(0)} MAD',
+                    color: AppColors.primary,
                   ),
-                  if (hasRoute)
-                    _Tag(
-                      icon: Icons.route_outlined,
-                      label: cashout.line.destination.isEmpty
-                          ? cashout.line.origin
-                          : '${cashout.line.origin} → ${cashout.line.destination}',
-                      c: c,
+                  if (filter != 'nfc') ...[
+                    const SizedBox(width: 8),
+                    _InfoChip(
+                      icon: Icons.payments_outlined,
+                      label: '${cashout.cashAmount.toStringAsFixed(0)}',
+                      color: const Color(0xFF2E7D32),
                     ),
-                  if (cashout.departedAt != null)
-                    _Tag(
-                      icon: Icons.access_time,
-                      label: _formatTime(cashout.departedAt!),
-                      c: c,
+                  ],
+                  if (filter != 'cash') ...[
+                    const SizedBox(width: 8),
+                    _InfoChip(
+                      icon: Icons.nfc,
+                      label: '${cashout.nfcAmount.toStringAsFixed(0)}',
+                      color: const Color(0xFF1565C0),
+                    ),
+                  ],
+                  const Spacer(),
+                  if (cashout.totalPaid > 0)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.check_circle,
+                            size: 14, color: AppColors.green),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${cashout.totalPaid.toStringAsFixed(0)} MAD',
+                          style: const TextStyle(
+                            color: AppColors.green,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                 ],
               ),
@@ -165,92 +203,64 @@ class CashoutCard extends StatelessWidget {
       ),
     );
   }
-
-  String _formatTime(DateTime dt) {
-    final h = dt.hour.toString().padLeft(2, '0');
-    final m = dt.minute.toString().padLeft(2, '0');
-    return '$h:$m';
-  }
 }
 
-class _AmountTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final double amount;
-  final Color color;
-  final Color bgColor;
-  final AppColors c;
+class _StatusBadge extends StatelessWidget {
+  final bool hasRemaining;
+  final AppLocalizations l;
 
-  const _AmountTile({
-    required this.icon,
-    required this.label,
-    required this.amount,
-    required this.color,
-    required this.bgColor,
-    required this.c,
-  });
+  const _StatusBadge({required this.hasRemaining, required this.l});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(10),
+        color: hasRemaining
+            ? AppColors.primary.withValues(alpha: 0.12)
+            : AppColors.green.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
       ),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: c.textSecondary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  '${amount.toStringAsFixed(0)} MAD',
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      child: Text(
+        hasRemaining ? l.unpaid : l.paid,
+        style: TextStyle(
+          color: hasRemaining ? AppColors.primary : AppColors.green,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
 }
 
-class _Tag extends StatelessWidget {
+class _InfoChip extends StatelessWidget {
   final IconData icon;
   final String label;
-  final AppColors c;
+  final Color color;
 
-  const _Tag({required this.icon, required this.label, required this.c});
+  const _InfoChip(
+      {required this.icon, required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 13, color: c.textSecondary),
-        const SizedBox(width: 4),
-        Text(
-          label,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: c.textSecondary, fontSize: 12),
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: TextStyle(
+                color: color, fontSize: 12, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 }
