@@ -475,6 +475,15 @@ class AppLocalizations {
       'Payer $count ticket(s) au chauffeur pour un total de $amount MAD ?',
       'دفع $count رحلة للسائق بمجموع $amount درهم؟');
 
+  // OTP sheet
+  String get otpSheetTitle => _t('Confirmer le paiement', 'تأكيد الدفع');
+  String get otpSheetSubtitle =>
+      _t('Un code OTP a été envoyé au chauffeur', 'تم إرسال رمز OTP إلى السائق');
+  String get otpIncorrect => _t('Code OTP incorrect', 'رمز OTP غير صحيح');
+  String get otpSendError =>
+      _t('Impossible d\'envoyer l\'OTP', 'تعذّر إرسال رمز OTP');
+  String get otpVerifying => _t('Vérification...', 'جارٍ التحقق...');
+
   // ── Printer labels ────────────────────────────────────────────────────────
   String get printStation => _t('Station', 'المحطة');
   String get printLine => _t('Ligne', 'الخط');

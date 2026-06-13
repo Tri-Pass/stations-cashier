@@ -7,6 +7,7 @@ import 'package:cashier/features/cashouts/data/datasources/ticket_remote_datasou
 import 'package:cashier/features/cashouts/domain/entities/ticket_entity.dart';
 import 'package:cashier/features/cashouts/domain/usecases/cashout_ticket_usecase.dart';
 import 'package:cashier/features/cashouts/domain/usecases/get_driver_tickets_usecase.dart';
+import 'package:cashier/features/cashouts/presentation/widgets/otp_sheet.dart';
 import 'package:cashier/features/cashouts/presentation/widgets/ticket_card.dart';
 
 class DriverTicketsPage extends StatefulWidget {
@@ -33,6 +34,7 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
 
   DriverTicketsEntity? _data;
   bool _loading = true;
+  bool _otpLoading = false;
   String? _error;
   final Set<String> _processingIds = {};
 
@@ -114,12 +116,13 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
       (_data?.tickets ?? []).where((t) => t.isCash && t.isUnpaid).length;
 
   Future<void> _cashoutSingle(TicketEntity ticket) async {
-    final l = AppLocalizations.of(context);
-    final confirmed = await _showConfirmDialog(
-      title: l.confirmCashoutTitle,
-      message: l.confirmCashoutMsg(ticket.amount.toStringAsFixed(0)),
-    );
-    if (!confirmed || !mounted) return;
+    setState(() => _otpLoading = true);
+    final sent = await sendOtpToDriver(context, widget.driverId);
+    if (mounted) setState(() => _otpLoading = false);
+    if (!sent || !mounted) return;
+
+    final verified = await showOtpVerifySheet(context, widget.driverId);
+    if (!verified || !mounted) return;
 
     setState(() => _processingIds.add(ticket.id));
     try {
@@ -142,13 +145,13 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
   }
 
   Future<void> _cashoutAll() async {
-    final l = AppLocalizations.of(context);
-    final confirmed = await _showConfirmDialog(
-      title: l.confirmCashoutTitle,
-      message: l.confirmCashoutAllMsg(
-          _unpaidCashCount, _totalUnpaidCash.toStringAsFixed(0)),
-    );
-    if (!confirmed || !mounted) return;
+    setState(() => _otpLoading = true);
+    final sent = await sendOtpToDriver(context, widget.driverId);
+    if (mounted) setState(() => _otpLoading = false);
+    if (!sent || !mounted) return;
+
+    final verified = await showOtpVerifySheet(context, widget.driverId);
+    if (!verified || !mounted) return;
 
     setState(() => _loading = true);
     try {
@@ -172,53 +175,15 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
     }
   }
 
-  Future<bool> _showConfirmDialog(
-      {required String title, required String message}) async {
-    final l = AppLocalizations.of(context);
-    final c = AppColors.of(context);
-    return await showDialog<bool>(
-          context: context,
-          builder: (_) => AlertDialog(
-            backgroundColor: c.surface,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            title: Text(title,
-                style: TextStyle(
-                    color: c.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold)),
-            content: Text(message,
-                style: TextStyle(color: c.textSecondary, fontSize: 14)),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text(l.cancel, style: TextStyle(color: c.textSecondary)),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                child: Text(l.confirmCashout,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        ) ??
-        false;
-  }
-
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final c = AppColors.of(context);
     final showCashoutAll = _unpaidCashCount > 0;
 
-    return Scaffold(
+    return Stack(
+      children: [
+        Scaffold(
       backgroundColor: c.background,
       appBar: AppBar(
         backgroundColor: c.surface,
@@ -301,6 +266,41 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
       ),
       bottomNavigationBar:
           showCashoutAll && !_loading ? _buildCashoutAllBar(l, c) : null,
+        ),
+        if (_otpLoading)
+          Container(
+            color: Colors.black.withValues(alpha: 0.45),
+            child: Center(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 28),
+                decoration: BoxDecoration(
+                  color: c.surface,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CircularProgressIndicator(
+                          color: AppColors.primary, strokeWidth: 3),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l.otpVerifying,
+                      style: TextStyle(
+                          color: c.textPrimary,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          decoration: TextDecoration.none),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -312,14 +312,21 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
     final totalTrips = _data?.summary.totalTickets ?? 0;
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
+          colors: [Color(0xFFF5A300), Color(0xFFE08000)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A300).withValues(alpha: 0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -327,7 +334,7 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
           Text(
             l.totalCashToPay,
             style: const TextStyle(
-                color: Colors.white70,
+                color: Colors.black54,
                 fontSize: 12,
                 fontWeight: FontWeight.w500),
           ),
@@ -335,7 +342,7 @@ class _DriverTicketsPageState extends State<DriverTicketsPage> {
           Text(
             _loading ? '— MAD' : '${cashToPay.toStringAsFixed(0)} MAD',
             style: const TextStyle(
-                color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+                color: Colors.black, fontSize: 30, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 14),
           Row(
@@ -599,10 +606,10 @@ class _SummaryChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: Colors.white70, size: 14),
+        Icon(icon, color: Colors.black54, size: 14),
         const SizedBox(width: 5),
         Text(label,
-            style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            style: const TextStyle(color: Colors.black54, fontSize: 12)),
       ],
     );
   }
