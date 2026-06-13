@@ -280,14 +280,21 @@ class _CashoutsPageState extends State<CashoutsPage> {
     final totalPayouts = stats?.totalPayouts ?? 0.0;
 
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
+          colors: [Color(0xFFF5A300), Color(0xFFE08000)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFF5A300).withValues(alpha: 0.35),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,7 +307,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
                 child: Text(
                   l.totalCashouts,
                   style: const TextStyle(
-                      color: Colors.white70,
+                      color: Colors.black54,
                       fontSize: 12,
                       fontWeight: FontWeight.w500),
                 ),
@@ -309,19 +316,19 @@ class _CashoutsPageState extends State<CashoutsPage> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.black.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(Icons.confirmation_number_outlined,
-                        color: Colors.white, size: 13),
+                        color: Colors.black54, size: 13),
                     const SizedBox(width: 5),
                     Text(
                       _loading ? '—' : '$totalTickets ${l.trips}',
                       style: const TextStyle(
-                          color: Colors.white,
+                          color: Colors.black54,
                           fontSize: 12,
                           fontWeight: FontWeight.bold),
                     ),
@@ -335,7 +342,7 @@ class _CashoutsPageState extends State<CashoutsPage> {
           Text(
             _loading ? '— MAD' : '${totalRemaining.toStringAsFixed(0)} MAD',
             style: const TextStyle(
-                color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold),
+                color: Colors.black, fontSize: 30, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 14),
           // Bottom: collected + paid chips
@@ -635,12 +642,12 @@ class _SummaryChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.18),
+        color: Colors.black.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 15),
+          Icon(icon, color: Colors.black54, size: 15),
           const SizedBox(width: 8),
           Expanded(
             child: Column(
@@ -649,7 +656,7 @@ class _SummaryChip extends StatelessWidget {
                 Text(
                   value,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                     height: 1.1,
@@ -658,7 +665,7 @@ class _SummaryChip extends StatelessWidget {
                 Text(
                   label,
                   style: const TextStyle(
-                    color: Colors.white70,
+                    color: Colors.black54,
                     fontSize: 10,
                     height: 1.2,
                   ),

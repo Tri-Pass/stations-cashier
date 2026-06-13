@@ -66,6 +66,10 @@ class ApiEndpoints {
   static String cashierWalletChannel(String cashierId) =>
       'cashier-wallet-$cashierId';
 
+  // ── OTP ───────────────────────────────────────────────────────────────────
+  static const String otpSend = '/api/otp/send';
+  static const String otpVerify = '/api/otp/verify';
+
   // ── Socket channels ───────────────────────────────────────────────────────
   static String stationChannel(String stationId) => 'station/$stationId';
 }
